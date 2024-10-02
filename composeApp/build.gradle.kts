@@ -154,6 +154,9 @@ tasks.register("deploy") {
 
 tasks.register<Copy>("copyDylibToApp") {
     dependsOn("assemble") // Sicherstellen, dass die .app zuerst erstellt wird
-    from("$buildDir/composeApp/mac/.build/release/libmac.dylib") // Pfad zur erstellten .dylib Datei
-    into("$buildDir/composeApp/build/compose/binaries/main/app/macApp/at.crowdware.nocodedesigner/Contents/Resources") // Zielordner in der .app Struktur
+    val from = "$buildDir/../mac/.build/release/libmac.dylib"
+    val to = "$buildDir/../build/compose/binaries/main/app/NoCodeDesigner.app/Contents/Resources"
+    println("Copying $from - $to")
+    from(from) // Pfad zur erstellten .dylib Datei
+    into(to) // Zielordner in der .app Struktur
 }

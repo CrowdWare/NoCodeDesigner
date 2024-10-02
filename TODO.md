@@ -1,6 +1,7 @@
 # TODO
 
 ## Next release
+- [x] put .dynlib into .app/.dmg
 - [ ] Menu -> New Project business logic
 - [ ] Menu -> New Page business logic
 - [ ] Menu -> New Asset business logic
@@ -14,7 +15,6 @@
 - [ ] Undo Redo suppor for xml editor
 - [ ] Context menu tree view (new, rename, copy, paste, delete, open)
 - [ ] TreeView items too much padding
-- [ ] put .dynlib into .app/.dmg
 - [ ] Icon exchange with custom svg 
 
 ## Nice to have
