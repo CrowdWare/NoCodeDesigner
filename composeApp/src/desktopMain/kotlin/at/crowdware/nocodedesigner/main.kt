@@ -65,14 +65,14 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
+import at.crowdware.nocodedesigner.Version
 
 val LocalProjectState = compositionLocalOf<ProjectState> { error("No ProjectState provided") }
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() = application {
-    println("Starting NoCodeDesigner...")
     val appName = "NoCodeDesigner"
-    val version = "1.1.0"
+    val version = Version.version
     var action by remember { mutableStateOf("Last action: None") }
     val loadedState = loadAppState()
     val windowState = rememberWindowState(

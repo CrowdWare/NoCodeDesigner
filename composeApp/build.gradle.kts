@@ -1,6 +1,13 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
+import java.text.SimpleDateFormat
+import java.util.Date
+
+val minor = SimpleDateFormat("yy").format(Date()).toInt()
+val build = SimpleDateFormat("MMddHH").format(Date()).toInt()
+val version = "1.$minor.$build".take(10)
+
 
 plugins {
     alias(libs.plugins.multiplatform)
@@ -19,24 +26,7 @@ repositories {
 
 kotlin {
     jvmToolchain(11) // Wenn Java 11 verwendet werden soll
-    /*
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        moduleName = "composeApp"
-        browser {
-            val projectDirPath = project.projectDir.path
-            commonWebpackConfig {
-                outputFileName = "composeApp.js"
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(projectDirPath)
-                    }
-                }
-            }
-        }
-        binaries.executable()
-    }*/
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         moduleName = "composeApp"
@@ -68,13 +58,9 @@ kotlin {
                 implementation(compose.components.uiToolingPreview)
                 implementation(libs.androidx.lifecycle.viewmodel)
                 implementation(libs.androidx.lifecycle.runtime.compose)
-                //implementation("com.mikepenz:multiplatform-markdown-renderer:0.26.0")
-                //implementation("com.github.jeziellago:compose-markdown:0.2.7")
-                //implementation("org.jetbrains.compose.ui:ui-markdown:1.0.0-alpha4")
                 implementation("org.jetbrains.compose.material:material-icons-extended:1.6.11")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
                 implementation(project(":nocodeLib"))
-                //implementation(files("/Users/art/SourceCode/NoCode/NoCodeLib/composeLib/build/libs/nocodelib.jar"))
             }
         }
 
@@ -85,8 +71,7 @@ kotlin {
                 implementation("net.java.dev.jna:jna:5.9.0")
                 implementation("net.java.dev.jna:jna-platform:5.9.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
-                //implementation(project(":NoCodeLib"))
-                //implementation(files("/Users/art/SourceCode/NoCode/NoCodeLib/composeLib/build/libs/composeLib-desktop.jar"))
+                kotlin.srcDir(layout.buildDirectory.dir("generated/version"))
             }
         }
 
@@ -94,14 +79,9 @@ kotlin {
             dependencies {
 
                 implementation(compose.runtime)
-                //implementation(compose.html.core)
-
-                //implementation("org.jetbrains.compose.web:web-core:1.6.0")
-                //implementation("org.jetbrains.compose.web:web-core:1.6.11")  // Aktuelle Version von web-core
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")  // Korrekte Coroutines-Version
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-                //implementation(project(":NoCodeLib"))
-                //implementation(files("/Users/art/SourceCode/NoCode/NoCodeLib/composeLib/build/libs/composeLib-wasm-js.klib"))
+                kotlin.srcDir(layout.buildDirectory.dir("generated/version"))
             }
         }
     }
@@ -115,7 +95,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "NoCodeDesigner"
-            packageVersion = "1.0.0"
+            packageVersion = "$version"
             linux {
                 iconFile.set(project.file("desktopAppIcons/LinuxIcon.png"))
             }
@@ -144,19 +124,87 @@ tasks.named("wasmJsJar", Jar::class) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Verhindert das Kopieren doppelter Manifest-Dateien
 }
 
-tasks.register("deploy") {
-    dependsOn("copyDylibToApp") // Kopiere die .dylib Datei zuerst
-    finalizedBy("packageDmg") // Rufe den bestehenden packageDmg Task auf
-    doFirst {
-        println("Copying .dylib to .app and packaging .dmg")
+/*
+tasks.register<Copy>("copyDylibToApp") {
+    dependsOn("createDistributable")
+    // Berechne die Pfade zur Konfigurationszeit
+    val fromPath = layout.buildDirectory.dir("../mac/.build/release/libmac.dylib").get().asFile
+    val toPath = layout.buildDirectory.dir("compose/binaries/main/app/NoCodeDesigner.app/Contents/Resources").get().asFile
+
+    // Verwende 'from' und 'into' zur Konfigurationszeit
+    from(fromPath)
+    into(toPath)
+
+    doLast {
+        println("Copying $fromPath to $toPath")
+        copy {
+            from(fromPath)
+            into(toPath)
+        }
+    }
+}*/
+
+tasks.register<Copy>("copyDylibToApp") {
+    dependsOn("createDistributable")  // Stellt sicher, dass die .app zuerst erstellt wird
+
+    // Berechne die Pfade zur Konfigurationszeit
+    val fromPath = layout.buildDirectory.dir("../mac/.build/release/libmac.dylib").get().asFile
+    val toPath = layout.buildDirectory.dir("compose/binaries/main/app/NoCodeDesigner.app/Contents/Resources").get().asFile
+
+    // Vermeide die Verwendung von `file()` oder `project` zur Ausführungszeit
+    from(fromPath)
+    into(toPath)
+
+    // Protokollierung und Überprüfung zur Ausführungszeit
+    doLast {
+        println("Copying $fromPath to $toPath")
+        if (!fromPath.exists()) {
+            throw GradleException(".dylib file not found at $fromPath")
+        }
     }
 }
 
-tasks.register<Copy>("copyDylibToApp") {
-    dependsOn("assemble") // Sicherstellen, dass die .app zuerst erstellt wird
-    val from = "$buildDir/../mac/.build/release/libmac.dylib"
-    val to = "$buildDir/../build/compose/binaries/main/app/NoCodeDesigner.app/Contents/Resources"
-    println("Copying $from - $to")
-    from(from) // Pfad zur erstellten .dylib Datei
-    into(to) // Zielordner in der .app Struktur
+tasks.register("deploy") {
+    dependsOn("generateVersionFile")
+    dependsOn("copyDylibToApp")
+    finalizedBy("packageDmg")
+    doFirst {
+        println("Deploy App")
+    }
+}
+
+tasks.named("assemble") {
+    mustRunAfter("generateVersionFile")
+}
+
+tasks.register("generateVersionFile") {
+    // Lege das Ausgabeverzeichnis zur Konfigurationszeit fest
+    val outputDir = layout.buildDirectory.dir("generated/version").get().asFile
+
+    // Berechne die Versionsnummer zur Konfigurationszeit
+    val versionValue = version
+
+    inputs.property("version", versionValue)
+    outputs.dir(outputDir)
+
+    doLast {
+        // Schreibe die Versionsnummer in die Datei
+        val versionFile = outputDir.resolve("Version.kt")
+        versionFile.parentFile.mkdirs()
+        versionFile.writeText("""
+            package at.crowdware.nocodedesigner
+
+            object Version {
+                const val version = "$versionValue"
+            }
+        """.trimIndent())
+    }
+}
+
+tasks.named("compileKotlinWasmJs") {
+    dependsOn("generateVersionFile") // Stellt sicher, dass die Version-Datei vor dem Kompilieren für Wasm generiert wird
+}
+
+tasks.named("compileKotlinDesktop") {
+    dependsOn("generateVersionFile") // Stellt sicher, dass die Version-Datei vor dem Kompilieren generiert wird
 }
