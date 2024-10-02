@@ -1,0 +1,470 @@
+/*
+ * Copyright (C) 2024 CrowdWare
+ *
+ * This file is part of NoCodeDesigner.
+ *
+ *  NoCodeDesigner is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  NoCodeDesigner is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with NoCodeDesigner.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package at.crowdware.nocodedesigner.ui
+
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import at.crowdware.nocodedesigner.theme.ExtendedTheme
+import at.crowdware.nocodedesigner.utils.uiStates
+import androidx.compose.runtime.*
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.colorspace.ColorSpaces.match
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.toSize
+import at.crowdware.nocodedesigner.theme.ExtendedColors
+
+@Composable
+fun SyntaxTextField(
+    textFieldValue: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    extension: String,
+    modifier: Modifier = Modifier
+) {
+    val scrollState = rememberScrollState()
+    val currentState = uiStates.current
+    val extendedColors = ExtendedTheme.colors
+    var pos by remember { mutableStateOf(Offset(0f,0f)) }
+
+    var isFocused by remember { mutableStateOf(false) }
+    var isHovered = currentState.hasCollided.value
+
+    // Default colors
+    val backgroundColor = MaterialTheme.colors.surface
+    val cursorColor = MaterialTheme.colors.onSurface
+    val focusedBorderColor = MaterialTheme.colors.primary
+    val unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = 0.4f)
+
+    // Border color changes based on hover, focus, or default state
+    val borderColor = when {
+        isHovered -> MaterialTheme.colors.secondary // Use hover border color when hovered
+        isFocused -> focusedBorderColor
+        else -> unfocusedBorderColor
+    }
+
+    CustomSelectionColors {
+        Row(
+            modifier = modifier
+                .fillMaxSize() // Ensures the whole available area is filled
+                .background(backgroundColor)
+                .border(BorderStroke(1.dp, borderColor)/*, RoundedCornerShape(8.dp)*/)
+                .padding(start = 6.dp, top = 4.dp)
+                .onGloballyPositioned{
+                    pos = it.localToWindow(Offset(0f,0f))
+                    currentState.targetLocalPosition = it.localToWindow(Offset(0f,0f))
+                    currentState.targetSize = it.size.toSize()
+                }
+        ) {
+            // Scrollable Box for the text field
+            Box(
+                modifier = Modifier
+                    .weight(1f) // Take up remaining space for the text field
+                    .fillMaxHeight() // Fill the height of the parent
+                    .verticalScroll(scrollState)
+                    .padding(6.dp)
+            ) {
+                BasicTextField(
+                    value = textFieldValue,
+                    onValueChange = onValueChange,
+                    modifier = Modifier
+                        .fillMaxWidth() // Fill the available width
+                        .fillMaxHeight() // Fill the available height of the box
+                        .heightIn(min = 640.dp)
+                        .background(Color.Transparent), // Make the background transparent for the text field
+                    textStyle = TextStyle(fontSize = 14.sp, color = extendedColors.attributeNameColor, fontFamily = FontFamily.Monospace),
+                    cursorBrush = SolidColor(cursorColor),
+                    visualTransformation = if(extension == "xml") XmlSyntaxHighlighter(extendedColors) else if (extension == "md")MarkdownSyntaxHighlighter(extendedColors) else VisualTransformation.None,
+                    maxLines = Int.MAX_VALUE
+                )
+            }
+
+            // Vertical Scrollbar positioned next to the text field
+            VerticalScrollbar(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(12.dp)
+                    .padding(vertical = 4.dp),
+                adapter = rememberScrollbarAdapter(scrollState)
+            )
+        }
+    }
+}
+
+class XmlSyntaxHighlighter(extendedColors: ExtendedColors) : VisualTransformation {
+    val colors = extendedColors
+    override fun filter(text: AnnotatedString): TransformedText {
+        val builder = AnnotatedString.Builder(text.text)
+
+        // Regex patterns for XML declarations and regular tags
+        val xmlDeclRegex = Regex("<\\?xml\\s*[^>]*\\?>") // Full valid XML declarations
+        val tagRegex = Regex("</?\\w+\\s*[^>]*>") // Full valid XML tags with or without attributes
+
+        // Handle XML declarations
+        for (match in xmlDeclRegex.findAll(text.text)) {
+            val start = match.range.first
+            val end = match.range.last + 1
+            val tagText = match.value
+
+            // Only render full valid XML declarations in blue
+            if (isValidXmlDeclaration(tagText)) {
+                builder.addStyle(SpanStyle(color = colors.syntaxColor), start, end)
+                styleAttributes(builder, tagText, start)
+            } else {
+                builder.addStyle(SpanStyle(color = colors.attributeNameColor), start, end) // Invalid XML declaration
+            }
+        }
+
+        // Handle regular tags
+        for (match in tagRegex.findAll(text.text)) {
+            val start = match.range.first
+            val end = match.range.last + 1
+            val tagText = match.value
+
+            // Only valid tags are styled blue, invalid tags are left black
+            if (isValidTag(tagText)) {
+                builder.addStyle(SpanStyle(color = colors.syntaxColor), start, end)
+                styleAttributes(builder, tagText, start)
+            } else {
+                builder.addStyle(SpanStyle(color = colors.attributeNameColor), start, end) // Invalid tag
+            }
+        }
+
+        return TransformedText(builder.toAnnotatedString(), OffsetMapping.Identity)
+    }
+
+    // Helper function to style attributes within tags
+    private fun styleAttributes(builder: AnnotatedString.Builder, tagText: String, tagStart: Int) {
+        // Regex to find attributes in the format: name="value"
+        val attributeRegex = Regex("(\\w+)=\"([^\"]*)\"")
+
+        for (attrMatch in attributeRegex.findAll(tagText)) {
+            val attrName = attrMatch.groups[1]?.value ?: ""
+            val attrValue = attrMatch.groups[2]?.value ?: ""
+
+            // Calculate the positions of the attribute name, equals sign, and value within the tag
+            val attrNameStartInTag = attrMatch.range.first
+            val attrNameEndInTag = attrNameStartInTag + attrName.length
+
+            val attrNameStart = tagStart + attrNameStartInTag
+            val attrNameEnd = tagStart + attrNameEndInTag
+
+            val equalsSignStart = attrNameEnd
+            val equalsSignEnd = equalsSignStart + 1 // '=' is 1 character
+
+            val attrValueStart = equalsSignEnd // Include the opening quote
+            val attrValueEnd = attrValueStart + attrValue.length + 2 // Include closing quote
+
+            builder.addStyle(SpanStyle(color = colors.attributeNameColor), attrNameStart, attrNameEnd)
+
+            builder.addStyle(SpanStyle(color = colors.attributeValueColor), equalsSignStart, attrValueEnd)
+        }
+    }
+
+    // Validate if the tag is well-formed (fully valid, with attributes or properly closed)
+    private fun isValidTag(tag: String): Boolean {
+        val validTagRegex = Regex("</?\\w+\\s*(\\w+=\"[^\"]*\"\\s*)*/?>")
+        return tag.matches(validTagRegex)
+    }
+
+    // Validate XML declaration, ensuring the correct format and attributes
+    private fun isValidXmlDeclaration(declaration: String): Boolean {
+        val validXmlDeclRegex = Regex("<\\?xml(\\s+\\w+=\"[^\"]*\")*\\s*\\?>") // Full XML declarations with valid attributes or no attributes
+        return declaration.matches(validXmlDeclRegex)
+    }
+}
+
+@Composable
+fun CustomSelectionColors(content: @Composable () -> Unit) {
+    val customSelectionColors = TextSelectionColors(
+        handleColor = Color.Magenta,
+        backgroundColor = Color.LightGray.copy(alpha = 0.4f)
+    )
+
+    CompositionLocalProvider(LocalTextSelectionColors provides customSelectionColors) {
+        content()
+    }
+}
+
+class MarkdownSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
+
+    override fun filter(text: AnnotatedString): TransformedText {
+        return TransformedText(applyMarkdownHighlighting(text), OffsetMapping.Identity)
+    }
+
+    private fun applyMarkdownHighlighting(text: AnnotatedString): AnnotatedString {
+        val builder = AnnotatedString.Builder(text)
+
+        // Apply all the highlight rules
+        highlightHeaders(builder, text)
+        highlightBold(builder, text)
+        highlightItalic(builder, text)
+        highlightLinks(builder, text)
+        highlightCodeBlocks(builder, text)
+        highlightListItems(builder, text)
+        highlightInlineHtml(builder, text)
+        return builder.toAnnotatedString()
+    }
+
+    // Header highlighting: "# Title" and "## Subtitle"
+    private fun highlightHeaders(builder: AnnotatedString.Builder, text: AnnotatedString) {
+        val headerRegex = Regex("(^#+)\\s(.+)", RegexOption.MULTILINE)
+        headerRegex.findAll(text.text).forEach { match ->
+            // Berechnung des Bereichs für headerMarks
+            val headerMarks = match.groups[1]?.value ?: ""
+            val matchStart = match.range.first
+            val headerMarksStart = matchStart + match.value.indexOf(headerMarks)
+            val headerMarksEnd = headerMarksStart + headerMarks.length
+            val headerMarksRange = headerMarksStart until headerMarksEnd
+
+            // Berechnung des Bereichs für headerText
+            val headerText = match.groups[2]?.value ?: ""
+            val headerTextStart = matchStart + match.value.indexOf(headerText)
+            val headerTextEnd = headerTextStart + headerText.length
+            val headerTextRange = headerTextStart until headerTextEnd
+
+            // "#" in syntax color
+            builder.addStyle(
+                style = SpanStyle(color = colors.syntaxColor),
+                start = headerMarksRange.first,
+                end = headerMarksRange.last + 1
+            )
+            // Text in magenta
+            builder.addStyle(
+                style = SpanStyle(color = colors.mdHeader),
+                start = headerTextRange.first,
+                end = headerTextRange.last + 1
+            )
+        }
+    }
+
+    // Bold highlighting: "**bold**"
+    private fun highlightBold(builder: AnnotatedString.Builder, text: AnnotatedString) {
+        val boldRegex = Regex("\\*\\*(.*?)\\*\\*")
+        boldRegex.findAll(text.text).forEach { match ->
+            val boldText = match.groups[1]?.value ?: ""
+            val matchStart = match.range.first
+            val boldTextStart = matchStart + match.value.indexOf(boldText)
+            val boldTextEnd = boldTextStart + boldText.length
+            val boldTextRange = boldTextStart until boldTextEnd
+
+            // "**" in syntax color (white)
+            builder.addStyle(
+                style = SpanStyle(color = colors.syntaxColor),
+                start = match.range.first,
+                end = match.range.first + 2
+            )
+            builder.addStyle(
+                style = SpanStyle(color = colors.syntaxColor),
+                start = match.range.last - 1,
+                end = match.range.last + 1
+            )
+
+            // Bold text in default text color
+            builder.addStyle(
+                style = SpanStyle(fontWeight = FontWeight.Bold, color = colors.defaultTextColor),
+                start = boldTextRange.first,
+                end = boldTextRange.last + 1
+            )
+        }
+    }
+
+    // Italic highlighting: "*italic*"
+    private fun highlightItalic(builder: AnnotatedString.Builder, text: AnnotatedString) {
+        val italicRegex = Regex("\\*(.*?)\\*")
+        italicRegex.findAll(text.text).forEach { match ->
+            val italicText = match.groups[1]?.value ?: ""
+            val matchStart = match.range.first
+            val italicTextStart = matchStart + match.value.indexOf(italicText)
+            val italicTextEnd = italicTextStart + italicText.length
+            val italicTextRange = italicTextStart until italicTextEnd
+
+            // "*" in syntax color (white)
+            builder.addStyle(
+                style = SpanStyle(color = colors.syntaxColor),
+                start = match.range.first,
+                end = match.range.first + 1
+            )
+            builder.addStyle(
+                style = SpanStyle(color = colors.syntaxColor),
+                start = match.range.last,
+                end = match.range.last + 1
+            )
+
+            // Italic text in default text color
+            builder.addStyle(
+                style = SpanStyle(fontStyle = FontStyle.Italic, color = colors.defaultTextColor),
+                start = italicTextRange.first,
+                end = italicTextRange.last + 1
+            )
+        }
+    }
+
+    // Link highlighting: "[link](url)"
+    private fun highlightLinks(builder: AnnotatedString.Builder, text: AnnotatedString) {
+        val linkRegex = Regex("\\[(.+?)\\]\\((.+?)\\)")
+        linkRegex.findAll(text.text).forEach { match ->
+            val linkText = match.groups[1]?.value ?: ""
+            var matchStart = match.range.first
+            val linkTextStart = matchStart + match.value.indexOf(linkText)
+            val linkTextEnd = linkTextStart + linkText.length
+            val linkTextRange = linkTextStart until linkTextEnd
+
+            val urlText = match.groups[2]?.value ?: ""
+            val urlTextStart = matchStart + match.value.indexOf(urlText)
+            val urlTextEnd = urlTextStart + urlText.length
+            val urlRange = urlTextStart until urlTextEnd
+
+            // "[" and "]" in blue (covering the entire link text with brackets)
+            builder.addStyle(
+                style = SpanStyle(color = colors.linkColor),
+                start = match.range.first, // The '['
+                end = linkTextRange.last + 2 // The ']'
+            )
+
+            // "(" and ")" in green
+            builder.addStyle(
+                style = SpanStyle(color = colors.attributeValueColor),
+                start = linkTextRange.last + 2, // The '('
+                end = urlRange.last + 2 // The ')' (include the final parenthesis)
+            )
+
+            // URL in blue
+            builder.addStyle(
+                style = SpanStyle(color = colors.linkColor),
+                start = urlRange.first,
+                end = urlRange.last + 1
+            )
+        }
+    }
+
+    private fun highlightCodeBlocks(builder: AnnotatedString.Builder, text: AnnotatedString) {
+        //val codeBlockRegex = Regex("```(.*?)```", RegexOption.DOT_MATCHES_ALL)
+        val codeBlockRegex = createCodeBlockRegex()
+        codeBlockRegex.findAll(text.text).forEach { match ->
+            // Render the code block in a different color (e.g., light gray for background, dark gray for text)
+            builder.addStyle(
+                style = SpanStyle(/*background = Color.LightGray,*/ color = colors.syntaxColor),
+                start = match.range.first,
+                end = match.range.last + 1
+            )
+        }
+    }
+
+    // List item highlighting: "- Item"
+    private fun highlightListItems(builder: AnnotatedString.Builder, text: AnnotatedString) {
+        val listItemRegex = Regex("^(-)\\s", RegexOption.MULTILINE)
+        listItemRegex.findAll(text.text).forEach { match ->
+            builder.addStyle(
+                style = SpanStyle(color = colors.syntaxColor),
+                start = match.range.first,
+                end = match.range.last
+            )
+        }
+    }
+
+    private fun highlightInlineHtml(builder: AnnotatedString.Builder, text: AnnotatedString) {
+        val htmlTagRegex = Regex("<([a-zA-Z]+)(\\s+[a-zA-Z]+=\"[^\"]*\")*\\s*/?>")
+        htmlTagRegex.findAll(text.text).forEach { match ->
+            //val tagNameRange = match.groups[1]!!.range // HTML Tag name
+            val tagName = match.groups[1]?.value ?: ""
+            val matchStart = match.range.first
+            val tagNameStart = matchStart + match.value.indexOf(tagName)
+            val tagNameEnd = tagNameStart + tagName.length
+            val tagNameRange = tagNameStart until tagNameEnd
+            val attributesRegex = Regex("([a-zA-Z]+)=(\"[^\"]*\")")
+            val attributesMatch = attributesRegex.findAll(match.value)
+
+            builder.addStyle(
+                style = SpanStyle(color = colors.syntaxColor), // Purple for HTML tag
+                start = match.range.first,
+                end = tagNameRange.last + 1
+            )
+
+            // HTML attributes in attributeNameColor and values in attributeValueColor
+            attributesMatch.forEach { attrMatch ->
+                // Berechnung des Bereichs für attrName
+                val attrName = attrMatch.groups[1]?.value ?: ""
+                val attrMatchStart = attrMatch.range.first
+                val attrNameStart = attrMatchStart + attrMatch.value.indexOf(attrName)
+                val attrNameEnd = attrNameStart + attrName.length
+                val attrNameRange = attrNameStart until attrNameEnd
+
+                // Berechnung des Bereichs für attrValue
+                val attrValue = attrMatch.groups[2]?.value ?: ""
+                val attrValueStart = attrMatchStart + attrMatch.value.indexOf(attrValue)
+                val attrValueEnd = attrValueStart + attrValue.length
+                val attrValueRange = attrValueStart until attrValueEnd
+
+                // Attribute name in attributeNameColor (e.g., src, id)
+                builder.addStyle(
+                    style = SpanStyle(color = colors.attributeNameColor),
+                    start = match.range.first + attrNameRange.first,
+                    end = match.range.first + attrNameRange.last + 1
+                )
+
+                // `=` and value in attributeValueColor (e.g., ="link")
+                builder.addStyle(
+                    style = SpanStyle(color = colors.attributeValueColor),
+                    start = match.range.first + attrValueRange.first - 1, // Include `=`
+                    end = match.range.first + attrValueRange.last + 1 // Include `"`
+                )
+            }
+
+            // Close tag `/>` in purple
+            val closeTagIndex = match.range.last - 1
+            if (text.text[closeTagIndex] == '/') {
+                builder.addStyle(
+                    style = SpanStyle(color = colors.syntaxColor),
+                    start = closeTagIndex,
+                    end = match.range.last + 1 // Cover `/>`
+                )
+            } else {
+                builder.addStyle(
+                    style = SpanStyle(color = colors.syntaxColor),
+                    start = match.range.last,
+                    end = match.range.last + 1
+                )
+            }
+        }
+    }
+}
+
