@@ -65,6 +65,7 @@ import java.io.File
 import java.io.IOException
 import at.crowdware.nocodedesigner.ui.projectDialog
 
+
 val LocalProjectState = compositionLocalOf<ProjectState> { error("No ProjectState provided") }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -236,7 +237,13 @@ fun main() = application {
                             )
                         }
                         if(projectState.isNewProjectDialogVisible) {
+                            var projectName by remember { mutableStateOf("") }
+                            var projectFolder by remember { mutableStateOf("") }
                             projectDialog(
+                                name = projectName,
+                                folder = projectFolder,
+                                onFolderChange = {projectFolder = it},
+                                onNameChange = {projectName = it},
                                 onDismissRequest = { projectState.isNewProjectDialogVisible = false },
                                 onCreateRequest = {projectState.isNewProjectDialogVisible = false})
                         }
