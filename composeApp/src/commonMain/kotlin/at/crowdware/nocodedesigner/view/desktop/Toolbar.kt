@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AddBusiness
 import androidx.compose.material.icons.outlined.CheckBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,6 +44,13 @@ fun toolbar(currentProject: ProjectState?) {
             maxLines = 1,
             style = TextStyle(color = MaterialTheme.colors.onPrimary),
             overflow = TextOverflow.Ellipsis
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        HoverableIcon(
+            onClick = { currentProject?.isNewProjectDialogVisible = true },
+            imageVector = Icons.Outlined.AddBusiness,
+            tooltipText = "Create new Project",
+            isSelected = currentProject?.isNewProjectDialogVisible == true
         )
         Spacer(modifier = Modifier.height(8.dp))
         HoverableIcon(

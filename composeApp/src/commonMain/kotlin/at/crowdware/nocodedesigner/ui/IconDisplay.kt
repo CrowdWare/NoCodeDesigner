@@ -22,40 +22,20 @@ package at.crowdware.nocodedesigner.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 //import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.dp
-//import java.io.InputStream
 
-/*
-@Composable
-fun loadPngIcon(resourcePath: String): ImageBitmap? {
-    return try {
-        val inputStream: InputStream = object {}.javaClass.getResourceAsStream(resourcePath)
-        loadImageBitmap(inputStream)  // Load .png image instead
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
-}*/
 
 @Composable
-fun IconDisplay() {
-    val icnsIcon = null//loadPngIcon("/icons/icon.png")
-
-    if (icnsIcon != null) {
+fun IconDisplay(bmp: ImageBitmap?) {
         Image(
-            bitmap = icnsIcon,
+            bitmap = bmp!!,
             contentDescription = "App Icon",
             modifier = Modifier
                 .size(128.dp)
                 .padding(16.dp)
         )
-    } else {
-        // Handle case when the icon couldn't be loaded
-        Text("Icon could not be loaded")
-    }
 }

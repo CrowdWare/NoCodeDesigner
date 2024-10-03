@@ -32,10 +32,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogWindow
 import at.crowdware.nocodedesigner.theme.AppTheme
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
+import java.io.InputStream
 
 @Composable
 fun AboutDialog(appName: String, version: String, onDismissRequest: () -> Unit) {
@@ -80,7 +83,8 @@ fun AboutDialog(appName: String, version: String, onDismissRequest: () -> Unit) 
                     Spacer(modifier = Modifier.height(16.dp))
                     Row {
                         Column{
-                            IconDisplay()
+                            val icnsIcon = loadPngIcon("/icons/icon.png")
+                            IconDisplay(icnsIcon)
                         }
                         Column(
                             modifier = Modifier.padding(16.dp).fillMaxWidth(),
@@ -106,5 +110,16 @@ fun AboutDialog(appName: String, version: String, onDismissRequest: () -> Unit) 
                 }
             }
         }
+    }
+}
+
+@Composable
+fun loadPngIcon(resourcePath: String): ImageBitmap? {
+    return try {
+        val inputStream: InputStream = object {}.javaClass.getResourceAsStream(resourcePath)
+        loadImageBitmap(inputStream)  // Load .png image instead
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
 }

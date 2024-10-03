@@ -1,4 +1,3 @@
-/*
 package at.crowdware.nocodedesigner.ui
 
 import androidx.compose.foundation.background
@@ -18,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerMoveFilter
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,7 +53,7 @@ actual fun HoverableIconContent(
         Icon(
             imageVector = imageVector,
             contentDescription = "Hoverable Icon",
-            tint = if (isHovered || isSelected) ExtendedTheme.colors.customAccentColor else MaterialTheme.colors.onPrimary,
+            tint = if (isHovered || isSelected) ExtendedTheme.colors.accentColor else MaterialTheme.colors.onPrimary,
             modifier = Modifier.size(32.dp).align(Alignment.Center)
         )
         if (isHovered) {
@@ -87,4 +87,4 @@ actual fun HoverableIconContent(
             }
         }
     }
-}*/
+}

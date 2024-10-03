@@ -91,6 +91,10 @@ class WasmProjectState : ProjectState() {
 
         callFetchFromKotlin("http://localhost:5000/listFiles", uuid, pid)
     }
+
+    override suspend fun createProjectFiles(path: String, uuid: String, pid: String) {
+        TODO("Not yet implemented")
+    }
 }
 
 fun convertToTreeNode(serverNode: ServerTreeNode, directoryPath: String): TreeNode {

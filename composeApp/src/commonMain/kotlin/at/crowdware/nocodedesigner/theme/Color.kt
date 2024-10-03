@@ -43,7 +43,8 @@ val OnSurfaceColorDark = Color(0xFFFFFFFF)
 data class ExtendedColors(
     val surfaceHoverColor: Color,
     val secondaryHoverColor: Color,
-    val customAccentColor: Color,
+    val accentColor: Color,
+    val onAccentColor: Color,
     val syntaxColor: Color,
     val attributeNameColor: Color,
     val attributeValueColor: Color,
@@ -62,7 +63,8 @@ data class ExtendedColors(
 val LightExtendedColors = ExtendedColors(
     surfaceHoverColor = Color(0xFFE0E0E0),      // Slightly darker for hover in light theme
     secondaryHoverColor = Color(0xFFD0D0D0),
-    customAccentColor = Color(0xFF6200EA),
+    accentColor = Color(0xFF6200EA),
+    onAccentColor = Color(0xFFFFFFFF),
     syntaxColor = Color(0xFFB97A57),            // Warm orange
     attributeNameColor = Color(0xFF6A5ACD),     // Slate blue
     attributeValueColor = Color(0xFF008000),    // Dark green
@@ -81,7 +83,8 @@ val LightExtendedColors = ExtendedColors(
 val DarkExtendedColors = ExtendedColors(
     surfaceHoverColor = Color(0xFF333333),      // Slightly lighter for hover in dark theme
     secondaryHoverColor = Color(0xFF555555),
-    customAccentColor = Color(0xFFBB86FC),
+    accentColor = Color(0xFFBB86FC),
+    onAccentColor = Color(0xFF1F1F1F),
     syntaxColor = Color(0xFFDBB965),            // Gold
     attributeNameColor = Color(0xFFA5A5A3),     // Grayish
     attributeValueColor = Color(0xFF60774E),    // Olive green

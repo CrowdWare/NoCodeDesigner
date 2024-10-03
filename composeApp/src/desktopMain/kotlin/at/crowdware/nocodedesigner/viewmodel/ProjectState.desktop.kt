@@ -89,6 +89,10 @@ class DesktopProjectState : ProjectState() {
             println("Error parsing app.xml: ${e.message}")
         }
     }
+
+    override suspend fun createProjectFiles(path: String, uuid: String, pid: String) {
+        println("Create Project: $path")
+    }
 }
 
 actual fun createProjectState(): ProjectState {

@@ -66,6 +66,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
 import at.crowdware.nocodedesigner.Version
+import at.crowdware.nocodedesigner.ui.ProjectDialog
 
 val LocalProjectState = compositionLocalOf<ProjectState> { error("No ProjectState provided") }
 
@@ -83,6 +84,7 @@ fun main() = application {
     GlobalProjectState.projectState = projectState
 
     var isAboutDialogOpen by remember { mutableStateOf(false) }
+    //var isProjectDialogOpen by remember { mutableStateOf(false) }
     val darkMode = androidx.compose.foundation.isSystemInDarkTheme()
     // setup logging, all println are stored in a log file
     setupLogging()
@@ -137,7 +139,9 @@ fun main() = application {
             MenuBar {
                 Menu("File", mnemonic = 'F') {
                     Menu("New") {
-                        Item("Project", onClick = {})
+                        Item("Project", onClick = {
+                            projectState.isNewProjectDialogVisible = true
+                        })
                         Separator()
                         Item("Page", onClick = {})
                         Item("Asset", onClick = {})
@@ -234,6 +238,11 @@ fun main() = application {
                                 version = version,
                                 onDismissRequest = { isAboutDialogOpen = false }
                             )
+                        }
+                        if(projectState.isNewProjectDialogVisible) {
+                            ProjectDialog(
+                                onDismissRequest = { projectState.isNewProjectDialogVisible = false },
+                                onCreateRequest = {projectState.isNewProjectDialogVisible = false})
                         }
                     }
                 }

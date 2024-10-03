@@ -35,11 +35,24 @@ abstract class ProjectState {
         private set
 
     var isProjectStructureVisible by mutableStateOf(true)
+    var isNewProjectDialogVisible by mutableStateOf(false)
 
     lateinit var app: App
     lateinit var page: Page
 
     abstract suspend fun loadProjectFiles(path: String, uuid: String, pid: String)
+    abstract suspend fun createProjectFiles(path: String, uuid: String, pid: String)
+
+    fun CreateProject(path: String, uuid: String, pid: String) {
+        val projectState = at.crowdware.nocodedesigner.viewmodel.GlobalProjectState.projectState
+        if (projectState != null) {
+            CoroutineScope(Dispatchers.Main).launch {
+                projectState.createProjectFiles(path, uuid, pid)
+            }
+        } else {
+            println("Error: ProjectState is null. Make sure GlobalProjectState.projectState is initialized.")
+        }
+    }
 
     fun LoadProject(path: String = folder, uuid: String, pid: String) {
         folder = path
