@@ -3,6 +3,7 @@ package at.crowdware.nocodedesigner.viewmodel
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import at.crowdware.nocodedesigner.model.NodeType
@@ -36,12 +37,21 @@ abstract class ProjectState {
 
     var isProjectStructureVisible by mutableStateOf(true)
     var isNewProjectDialogVisible by mutableStateOf(false)
+    var isAboutDialogOpen by  mutableStateOf(false)
 
     lateinit var app: App
     lateinit var page: Page
 
     abstract suspend fun loadProjectFiles(path: String, uuid: String, pid: String)
     abstract suspend fun createProjectFiles(path: String, uuid: String, pid: String)
+
+    fun isDialogOpen(): Boolean {
+        return when {
+            isNewProjectDialogVisible -> true
+            isAboutDialogOpen -> true
+            else -> false
+        }
+    }
 
     fun CreateProject(path: String, uuid: String, pid: String) {
         val projectState = at.crowdware.nocodedesigner.viewmodel.GlobalProjectState.projectState

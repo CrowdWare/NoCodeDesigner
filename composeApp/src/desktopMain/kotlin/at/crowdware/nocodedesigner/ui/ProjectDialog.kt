@@ -38,6 +38,7 @@ import at.crowdware.nocodedesigner.theme.AppTheme
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.graphicsLayer
 
 @Composable
 fun ProjectDialog( onDismissRequest: () -> Unit, onCreateRequest: () -> Unit) {
@@ -56,6 +57,7 @@ fun ProjectDialog( onDismissRequest: () -> Unit, onCreateRequest: () -> Unit) {
             Surface(
                 modifier = Modifier
                     .fillMaxSize()
+                    .graphicsLayer(alpha = 1F)
                     .border(0.5.dp, Color.Gray, RoundedCornerShape(10.dp)),
                 color = MaterialTheme.colors.primary,
                 shape = RoundedCornerShape(10.dp) //window has round corners now

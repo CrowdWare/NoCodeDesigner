@@ -83,7 +83,6 @@ fun main() = application {
     val projectState = createProjectState()
     GlobalProjectState.projectState = projectState
 
-    var isAboutDialogOpen by remember { mutableStateOf(false) }
     //var isProjectDialogOpen by remember { mutableStateOf(false) }
     val darkMode = androidx.compose.foundation.isSystemInDarkTheme()
     // setup logging, all println are stored in a log file
@@ -100,7 +99,7 @@ fun main() = application {
         // Set custom "About" handler
         if (desktop.isSupported(Desktop.Action.APP_ABOUT)) {
             desktop.setAboutHandler {
-                isAboutDialogOpen = true
+                projectState.isAboutDialogOpen = true
             }
         }
 
@@ -232,11 +231,11 @@ fun main() = application {
                             }
                         }
                         desktop()
-                        if (isAboutDialogOpen) {
+                        if (projectState.isAboutDialogOpen) {
                             AboutDialog(
                                 appName = appName,
                                 version = version,
-                                onDismissRequest = { isAboutDialogOpen = false }
+                                onDismissRequest = { projectState.isAboutDialogOpen = false }
                             )
                         }
                         if(projectState.isNewProjectDialogVisible) {

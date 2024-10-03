@@ -10,7 +10,7 @@
 - [ ] Youtube video embed
 - [ ] App.xml -> open splash screen in preview
 - [ ] Paging as navigation maybe visual paging for book content
-- [ ] About dialog does not show icon anymore
+- [x] About dialog does not show icon anymore
 - [ ] Edit menu support for xml editor
 - [ ] Undo Redo suppor for xml editor
 - [ ] Context menu tree view (new, rename, copy, paste, delete, open)
@@ -26,4 +26,4 @@
 - [ ] Git support
 - [ ] Save only when xml is valid or after a period od time
 - [ ] Drag and drop tree node to editor (button)
-- [ ] Menu Alternative for web (left toolbar)
+- [x] Menu Alternative for web (left toolbar)

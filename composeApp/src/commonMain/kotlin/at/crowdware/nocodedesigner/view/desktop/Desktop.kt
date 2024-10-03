@@ -30,6 +30,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import at.crowdware.nocodedesigner.model.NodeType
@@ -62,7 +63,16 @@ fun desktop() {
         textFieldValue = currentProject?.currentFileContent ?: ""
     }
 
-    Row(modifier = Modifier.fillMaxWidth().fillMaxHeight().background(color = Color(0xFF3D4041))) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .fillMaxHeight()
+        .graphicsLayer {
+            // dim when dialog is open
+            if (currentProject?.isDialogOpen() == true) {
+                alpha = 0.5f
+            }
+        }
+        .background(color = MaterialTheme.colors.primary)) {
         toolbar(currentProject)
         if (currentProject?.isProjectStructureVisible == true)
             projectStructure(currentProject)
