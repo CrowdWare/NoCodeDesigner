@@ -66,12 +66,6 @@ fun desktop() {
     Row(modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight()
-        .graphicsLayer {
-            // dim when dialog is open
-            if (currentProject?.isDialogOpen() == true) {
-                alpha = 0.5f
-            }
-        }
         .background(color = MaterialTheme.colors.primary)) {
         toolbar(currentProject)
         if (currentProject?.isProjectStructureVisible == true)

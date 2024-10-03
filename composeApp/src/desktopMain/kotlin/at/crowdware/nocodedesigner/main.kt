@@ -39,7 +39,6 @@ import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import at.crowdware.nocodelib.AppParser
 
 import at.crowdware.nocodedesigner.theme.AppTheme
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
@@ -50,7 +49,6 @@ import at.crowdware.nocodedesigner.view.desktop.desktop
 import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import at.crowdware.nocodedesigner.viewmodel.createProjectState
-import at.crowdware.nocodedesigner.viewmodel.projectState
 
 import com.sun.jna.Library
 import com.sun.jna.Native
@@ -65,8 +63,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
-import at.crowdware.nocodedesigner.Version
-import at.crowdware.nocodedesigner.ui.ProjectDialog
+import at.crowdware.nocodedesigner.ui.projectDialog
 
 val LocalProjectState = compositionLocalOf<ProjectState> { error("No ProjectState provided") }
 
@@ -239,7 +236,7 @@ fun main() = application {
                             )
                         }
                         if(projectState.isNewProjectDialogVisible) {
-                            ProjectDialog(
+                            projectDialog(
                                 onDismissRequest = { projectState.isNewProjectDialogVisible = false },
                                 onCreateRequest = {projectState.isNewProjectDialogVisible = false})
                         }

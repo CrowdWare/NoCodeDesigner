@@ -26,6 +26,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,7 +41,9 @@ import at.crowdware.nocodedesigner.theme.ExtendedTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.foundation.clickable
 
+/*
 @Composable
 fun ProjectDialog( onDismissRequest: () -> Unit, onCreateRequest: () -> Unit) {
     var name by remember { mutableStateOf("") }
@@ -104,6 +108,7 @@ fun ProjectDialog( onDismissRequest: () -> Unit, onCreateRequest: () -> Unit) {
                                 label = {Text("Name")}
                             )
                         }
+                        Spacer(modifier = Modifier.height(16.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -118,6 +123,9 @@ fun ProjectDialog( onDismissRequest: () -> Unit, onCreateRequest: () -> Unit) {
                                 value = location,
                                 onValueChange = { location = it },
                                 modifier = Modifier.width(300.dp),
+                                trailingIcon = { Icon(Icons.Default.Folder, contentDescription = "Folder", modifier = Modifier.clickable {
+                                    openFolder()
+                                }) },
                                 label = {Text("Location")}
                             )
                         }
@@ -150,25 +158,81 @@ fun ProjectDialog( onDismissRequest: () -> Unit, onCreateRequest: () -> Unit) {
 }
 
 
+@Composable
+actual fun renderProjectDialog(onDismissRequest: () -> Unit, onCreateRequest: () -> Unit) {
+    // we render the MacOS native window
 
-/*
+    var name by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf("") }
 
-                            try {
-                                // Call the native Swift method
-                                val folderPathPointer = macLib.selectFolder(darkMode)
+    DialogWindow(
+        onCloseRequest = onDismissRequest,
+        visible = true,
+        undecorated = true,
+        transparent = true,
+        alwaysOnTop = true,
+        resizable = false
+    ) {
+        AppTheme() {
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer(alpha = 1F)
+                    .border(0.5.dp, Color.Gray, RoundedCornerShape(10.dp)),
+                color = MaterialTheme.colors.primary,
+                shape = RoundedCornerShape(10.dp) //window has round corners now
+            ) {
+                Column {
+                    WindowDraggableArea {
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .height(40.dp)
+                                .background(ExtendedTheme.colors.captionColor)
+                                .padding(start = 12.dp, top = 6.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxHeight(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                WindowControlButton(color = Color(255, 92, 92), onClick = onDismissRequest)
+                            }
 
-                                // Check if the pointer is null
-                                if (folderPathPointer == null) {
-                                    println("No folder selected or an error occurred in the Swift function.")
-                                } else {
-                                    // Convert the result from a Pointer to a String
-                                    val folderPath = folderPathPointer.getString(0)
-                                    println("Selected folder: $folderPath")
-                                    projectState.CreateProject(folderPath, "", "")
-                                }
-                            } catch (e: Exception) {
-                                // Catch any exceptions that happen during the JNA call
-                                println("Error calling native function: ${e.message}")
-                                e.printStackTrace()
+                            Text(
+                                text = "New Project",
+                                color = MaterialTheme.colors.onPrimary,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                        renderProjectDialogContent(onDismissRequest, onCreateRequest)
+                    }
+                }
+            }
+        }
+    }
+}
 
- */
+
+actual fun openFolder() {
+    try {
+        // Call the native Swift method
+        val folderPathPointer = macLib.selectFolder(darkMode)
+
+        // Check if the pointer is null
+        if (folderPathPointer == null) {
+            println("No folder selected or an error occurred in the Swift function.")
+        } else {
+            // Convert the result from a Pointer to a String
+            val folderPath = folderPathPointer.getString(0)
+            println("Selected folder: $folderPath")
+            projectState.CreateProject(folderPath, "", "")
+        }
+    } catch (e: Exception) {
+        // Catch any exceptions that happen during the JNA call
+        println("Error calling native function: ${e.message}")
+        e.printStackTrace()
+    }
+}*/

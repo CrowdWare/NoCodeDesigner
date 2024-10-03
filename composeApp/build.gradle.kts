@@ -124,28 +124,9 @@ tasks.named("wasmJsJar", Jar::class) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Verhindert das Kopieren doppelter Manifest-Dateien
 }
 
-/*
+
 tasks.register<Copy>("copyDylibToApp") {
     dependsOn("createDistributable")
-    // Berechne die Pfade zur Konfigurationszeit
-    val fromPath = layout.buildDirectory.dir("../mac/.build/release/libmac.dylib").get().asFile
-    val toPath = layout.buildDirectory.dir("compose/binaries/main/app/NoCodeDesigner.app/Contents/Resources").get().asFile
-
-    // Verwende 'from' und 'into' zur Konfigurationszeit
-    from(fromPath)
-    into(toPath)
-
-    doLast {
-        println("Copying $fromPath to $toPath")
-        copy {
-            from(fromPath)
-            into(toPath)
-        }
-    }
-}*/
-
-tasks.register<Copy>("copyDylibToApp") {
-    dependsOn("createDistributable")  // Stellt sicher, dass die .app zuerst erstellt wird
 
     // Berechne die Pfade zur Konfigurationszeit
     val fromPath = layout.buildDirectory.dir("../mac/.build/release/libmac.dylib").get().asFile
@@ -178,10 +159,7 @@ tasks.named("assemble") {
 }
 
 tasks.register("generateVersionFile") {
-    // Lege das Ausgabeverzeichnis zur Konfigurationszeit fest
     val outputDir = layout.buildDirectory.dir("generated/version").get().asFile
-
-    // Berechne die Versionsnummer zur Konfigurationszeit
     val versionValue = version
 
     inputs.property("version", versionValue)
@@ -198,6 +176,7 @@ tasks.register("generateVersionFile") {
                 const val version = "$versionValue"
             }
         """.trimIndent())
+        println("Version changed to: $versionValue")
     }
 }
 
@@ -206,5 +185,9 @@ tasks.named("compileKotlinWasmJs") {
 }
 
 tasks.named("compileKotlinDesktop") {
+    dependsOn("generateVersionFile") // Stellt sicher, dass die Version-Datei vor dem Kompilieren generiert wird
+}
+
+tasks.named("build") {
     dependsOn("generateVersionFile") // Stellt sicher, dass die Version-Datei vor dem Kompilieren generiert wird
 }
