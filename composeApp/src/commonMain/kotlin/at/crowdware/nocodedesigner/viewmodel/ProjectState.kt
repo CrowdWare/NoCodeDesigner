@@ -3,7 +3,6 @@ package at.crowdware.nocodedesigner.viewmodel
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import at.crowdware.nocodedesigner.model.NodeType
@@ -38,12 +37,13 @@ abstract class ProjectState {
     var isProjectStructureVisible by mutableStateOf(true)
     var isNewProjectDialogVisible by mutableStateOf(false)
     var isAboutDialogOpen by  mutableStateOf(false)
+    var darkMode by mutableStateOf(false)
 
     lateinit var app: App
     lateinit var page: Page
 
     abstract suspend fun loadProjectFiles(path: String, uuid: String, pid: String)
-    abstract suspend fun createProjectFiles(path: String, uuid: String, pid: String)
+    abstract suspend fun createProjectFiles(path: String, uuid: String, pid: String, name: String, appId:String)
 
     fun isDialogOpen(): Boolean {
         return when {
@@ -57,7 +57,7 @@ abstract class ProjectState {
         val projectState = at.crowdware.nocodedesigner.viewmodel.GlobalProjectState.projectState
         if (projectState != null) {
             CoroutineScope(Dispatchers.Main).launch {
-                projectState.createProjectFiles(path, uuid, pid)
+                projectState.createProjectFiles(path = path, uuid = uuid, pid = pid, name="", appId = "")
             }
         } else {
             println("Error: ProjectState is null. Make sure GlobalProjectState.projectState is initialized.")
@@ -81,7 +81,6 @@ abstract class ProjectState {
 
     fun LoadFile(filePath: String) {
         path = filePath
-        //val file = File(filePath)
         fileName = path.substringAfterLast("/")
         println("loadFile: $path $fileName")
         CoroutineScope(Dispatchers.Main).launch {

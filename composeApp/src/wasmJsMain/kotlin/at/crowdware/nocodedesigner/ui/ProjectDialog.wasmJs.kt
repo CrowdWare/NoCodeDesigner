@@ -6,4 +6,6 @@ actual fun renderProjectDialog(onDismissRequest: () -> Unit, onCreateRequest: ()
 
 actual fun openFolder() {
     TODO("Not yet implemented")
-}*/
+}*/actual fun openFolder() {
+    TODO("Not yet implemented")
+}

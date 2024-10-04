@@ -64,6 +64,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
 import at.crowdware.nocodedesigner.ui.projectDialog
+import kotlinx.coroutines.launch
 
 
 val LocalProjectState = compositionLocalOf<ProjectState> { error("No ProjectState provided") }
@@ -80,9 +81,8 @@ fun main() = application {
     )
     val projectState = createProjectState()
     GlobalProjectState.projectState = projectState
+    projectState.darkMode = androidx.compose.foundation.isSystemInDarkTheme()
 
-    //var isProjectDialogOpen by remember { mutableStateOf(false) }
-    val darkMode = androidx.compose.foundation.isSystemInDarkTheme()
     // setup logging, all println are stored in a log file
     setupLogging()
 
@@ -146,7 +146,7 @@ fun main() = application {
                     Item("Open...", onClick = {
                         try {
                             // Call the native Swift method
-                            val folderPathPointer = macLib.selectFolder(darkMode)
+                            val folderPathPointer = macLib.selectFolder(projectState.darkMode)
 
                             // Check if the pointer is null
                             if (folderPathPointer == null) {
@@ -180,7 +180,7 @@ fun main() = application {
                     Item("Delete", onClick = {}, shortcut = KeyShortcut(Key.Delete))
                 }
             }
-            AppTheme(darkTheme = darkMode) {
+            AppTheme(darkTheme = projectState.darkMode) {
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
@@ -237,15 +237,24 @@ fun main() = application {
                             )
                         }
                         if(projectState.isNewProjectDialogVisible) {
+                            val coroutineScope = rememberCoroutineScope()
                             var projectName by remember { mutableStateOf("") }
+                            var appId by remember { mutableStateOf("com.sample.app") }
                             var projectFolder by remember { mutableStateOf("") }
                             projectDialog(
                                 name = projectName,
                                 folder = projectFolder,
                                 onFolderChange = {projectFolder = it},
                                 onNameChange = {projectName = it},
+                                id = appId,
+                                onIdChange = {appId = it},
                                 onDismissRequest = { projectState.isNewProjectDialogVisible = false },
-                                onCreateRequest = {projectState.isNewProjectDialogVisible = false})
+                                onCreateRequest = {
+                                    projectState.isNewProjectDialogVisible = false
+                                    coroutineScope.launch {
+                                        projectState.createProjectFiles(projectFolder, "", "", projectName, appId)
+                                    }
+                                })
                         }
                     }
                 }
@@ -384,3 +393,4 @@ fun loadAppState(): AppState? {
         null // Return null if loading fails
     }
 }
+

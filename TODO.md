@@ -2,7 +2,7 @@
 
 ## Next release
 - [x] put .dynlib into .app/.dmg
-- [ ] Menu -> New Project business logic
+- [x] Menu -> New Project business logic
 - [ ] Menu -> New Page business logic
 - [ ] Menu -> New Asset business logic
 - [ ] Video element

@@ -1,33 +1,15 @@
 package at.crowdware.nocodedesigner.viewmodel
 
-import androidx.compose.runtime.*
 import at.crowdware.nocodelib.AppParser
 import at.crowdware.nocodelib.PageParser
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
-import kotlinx.browser.localStorage
 import at.crowdware.nocodedesigner.model.extensionToNodeType
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.browser.window
 import kotlinx.coroutines.await
-import org.w3c.fetch.RequestInit
-import org.w3c.fetch.Headers
-import kotlinx.serialization.json.*
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlin.js.toJsString
-import org.w3c.xhr.FormData
-import kotlinx.browser.window
-import kotlinx.coroutines.MainScope
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.w3c.fetch.Response
-import kotlin.js.Promise
-import kotlin.js.JsAny
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 
 actual fun saveFileContent(path: String, uuid: String, pid: String, content: String) {
     TODO("Not yet implemented")
@@ -92,7 +74,7 @@ class WasmProjectState : ProjectState() {
         callFetchFromKotlin("http://localhost:5000/listFiles", uuid, pid)
     }
 
-    override suspend fun createProjectFiles(path: String, uuid: String, pid: String) {
+    override suspend fun createProjectFiles(path: String, uuid: String, pid: String, string: String) {
         TODO("Not yet implemented")
     }
 }
