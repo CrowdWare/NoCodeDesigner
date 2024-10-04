@@ -29,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
@@ -56,6 +55,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.Button
 import androidx.compose.material.Text
+import androidx.compose.ui.unit.Dp
+import at.crowdware.nocodelib.YoutubeElement
 
 @Composable
 fun mobilePreview(currentProject: ProjectState?) {
@@ -205,7 +206,10 @@ fun RenderUIElement(element: UIElement) {
             Spacer(modifier = Modifier.height(element.height.dp))
         }
         is VideoElement -> {
-            dynamicVideofromAssets(element.src)
+            dynamicVideofromAssets(element.src, element.height)
+        }
+        is YoutubeElement -> {
+            dynamicYoutube(element.height)
         }
         else -> {
             // Hier können andere Elemente behandelt werden
@@ -369,7 +373,9 @@ expect fun dynamicImageFromAssets(filename: String, scale: String, link: String)
 @Composable
 expect fun dynamicSoundfromAssets(filename: String)
 @Composable
-expect fun dynamicVideofromAssets(filename: String)
+expect fun dynamicVideofromAssets(filename: String, height: Int)
+@Composable
+expect fun dynamicYoutube(height: Int)
 
 fun handleButtonClick(link: String) {
     when {

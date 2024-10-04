@@ -34,6 +34,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import at.crowdware.nocodedesigner.ui.HoverableIcon
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Brands
+import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.brands.Github
+import compose.icons.fontawesomeicons.solid.FolderOpen
+import compose.icons.fontawesomeicons.solid.Palette
+import compose.icons.fontawesomeicons.solid.PlusCircle
 
 @Composable
 fun toolbar(currentProject: ProjectState?) {
@@ -48,7 +55,7 @@ fun toolbar(currentProject: ProjectState?) {
         Spacer(modifier = Modifier.height(8.dp))
         HoverableIcon(
             onClick = { currentProject?.isNewProjectDialogVisible = true },
-            imageVector = Icons.Outlined.AddBusiness,
+            imageVector = FontAwesomeIcons.Solid.PlusCircle,
             tooltipText = "Create new Project",
             isSelected = currentProject?.isNewProjectDialogVisible == true
         )
@@ -61,7 +68,7 @@ fun toolbar(currentProject: ProjectState?) {
         Spacer(modifier = Modifier.height(8.dp))
         HoverableIcon(
             onClick = { currentProject?.isProjectStructureVisible = true },
-            imageVector = Icons.Outlined.CheckBox,
+            imageVector = FontAwesomeIcons.Solid.FolderOpen,
             tooltipText = "Project Structure",
             isSelected = currentProject?.isProjectStructureVisible == true
         )
@@ -69,7 +76,7 @@ fun toolbar(currentProject: ProjectState?) {
         currentProject?.isProjectStructureVisible?.let {
             HoverableIcon(
                 onClick = { currentProject.isProjectStructureVisible = false },
-                imageVector = Icons.Outlined.CheckBox,
+                imageVector = FontAwesomeIcons.Solid.Palette,
                 tooltipText = "Widget Palette",
                 isSelected = !it
             )

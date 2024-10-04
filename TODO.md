@@ -5,9 +5,9 @@
 - [x] Menu -> New Project business logic
 - [ ] Menu -> New Page business logic
 - [ ] Menu -> New Asset business logic
-- [ ] Video element
-- [ ] Sound element
-- [ ] Youtube video embed
+- [x] Video element
+- [x] Sound element
+- [X] Youtube video embed
 - [ ] App.xml -> open splash screen in preview
 - [ ] Paging as navigation maybe visual paging for book content
 - [x] About dialog does not show icon anymore

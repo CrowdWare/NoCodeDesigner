@@ -60,6 +60,7 @@ kotlin {
                 implementation(libs.androidx.lifecycle.runtime.compose)
                 implementation("org.jetbrains.compose.material:material-icons-extended:1.6.11")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+                implementation("br.com.devsrsouza.compose.icons:font-awesome:1.1.1")
                 implementation(project(":nocodeLib"))
             }
         }

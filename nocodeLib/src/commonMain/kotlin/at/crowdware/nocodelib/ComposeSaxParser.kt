@@ -14,6 +14,7 @@ data class ButtonElement(val label: String, val link: String) : UIElement()
 data class ImageElement(val src: String, val scale: String, val link: String) : UIElement()
 data class SpacerElement(val height: Int) : UIElement()
 data class VideoElement(val src: String, val height: Int) : UIElement()
+data class YoutubeElement(val id: String, val height: Int) : UIElement()
 data class SoundElement(val src: String) : UIElement()
 data class RowElement(val padding: Padding, val uiElements: MutableList<UIElement> = mutableListOf()) : UIElement()
 data class ColumnElement(val padding: Padding, val uiElements: MutableList<UIElement> = mutableListOf()) : UIElement()
@@ -144,6 +145,13 @@ open class PageHandlerBase : PageHandlerCommon {
                 val src = attributes["src"] ?: "default_video.mp4"
                 val height = (attributes["height"] ?: "200").toInt()
                 val videoElement = VideoElement(src, height)
+                addElementToStack(videoElement)
+            }
+
+            "youtube" -> {
+                val src = attributes["id"] ?: "P335ruDKONo" // hine ani Nessi Gomes
+                val height = (attributes["height"] ?: "200").toInt()
+                val videoElement = YoutubeElement(src, height)
                 addElementToStack(videoElement)
             }
 
