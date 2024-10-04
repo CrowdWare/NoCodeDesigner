@@ -71,6 +71,8 @@ kotlin {
                 implementation("net.java.dev.jna:jna:5.9.0")
                 implementation("net.java.dev.jna:jna-platform:5.9.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+                implementation("org.jcodec:jcodec:0.2.5")
+                implementation("org.jcodec:jcodec-javase:0.2.5")
                 kotlin.srcDir(layout.buildDirectory.dir("generated/version"))
             }
         }
@@ -89,6 +91,7 @@ kotlin {
 
 
 compose.desktop {
+
     application {
         mainClass = "at.crowdware.nocodedesigner.MainKt"
 

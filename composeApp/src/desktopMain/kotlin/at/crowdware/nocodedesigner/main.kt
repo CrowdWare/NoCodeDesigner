@@ -144,25 +144,7 @@ fun main() = application {
                         Item("Asset", onClick = {})
                     }
                     Item("Open...", onClick = {
-                        try {
-                            // Call the native Swift method
-                            val folderPathPointer = macLib.selectFolder(projectState.darkMode)
-
-                            // Check if the pointer is null
-                            if (folderPathPointer == null) {
-                                println("No folder selected or an error occurred in the Swift function.")
-                            } else {
-                                // Convert the result from a Pointer to a String
-                                val folderPath = folderPathPointer.getString(0)
-                                println("Selected folder: $folderPath")
-                                projectState.LoadProject(folderPath, "", "")
-                            }
-                        } catch (e: Exception) {
-                            // Catch any exceptions that happen during the JNA call
-                            println("Error calling native function: ${e.message}")
-                            e.printStackTrace()
-                        }
-
+                        projectState.isOpenProjectDialogVisible = true
                     })
                     Item("Close Project", onClick = {})
                 }
@@ -255,6 +237,27 @@ fun main() = application {
                                         projectState.createProjectFiles(projectFolder, "", "", projectName, appId)
                                     }
                                 })
+                        }
+                        if(projectState.isOpenProjectDialogVisible) {
+                            try {
+                                // Call the native Swift method
+                                val folderPathPointer = macLib.selectFolder(projectState.darkMode)
+
+                                // Check if the pointer is null
+                                if (folderPathPointer == null) {
+                                    println("No folder selected or an error occurred in the Swift function.")
+                                } else {
+                                    // Convert the result from a Pointer to a String
+                                    val folderPath = folderPathPointer.getString(0)
+                                    println("Selected folder: $folderPath")
+                                    projectState.LoadProject(folderPath, "", "")
+                                }
+                            } catch (e: Exception) {
+                                // Catch any exceptions that happen during the JNA call
+                                println("Error calling native function: ${e.message}")
+                                e.printStackTrace()
+                            }
+                            projectState.isOpenProjectDialogVisible = false
                         }
                     }
                 }

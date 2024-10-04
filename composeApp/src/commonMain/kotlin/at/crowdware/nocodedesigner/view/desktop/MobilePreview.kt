@@ -91,8 +91,6 @@ fun mobilePreview(currentProject: ProjectState?) {
         null
     }
 
-
-
     Column(modifier = Modifier.width(430.dp).fillMaxHeight().background(color = MaterialTheme.colors.primary)) {
         BasicText(
             text = "Mobile Preview",

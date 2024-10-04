@@ -52,6 +52,12 @@ fun toolbar(currentProject: ProjectState?) {
             tooltipText = "Create new Project",
             isSelected = currentProject?.isNewProjectDialogVisible == true
         )
+        HoverableIcon(
+            onClick = { currentProject?.isOpenProjectDialogVisible = true },
+            imageVector = Icons.Outlined.AddBusiness,
+            tooltipText = "Open Project",
+            isSelected = currentProject?.isOpenProjectDialogVisible == true
+        )
         Spacer(modifier = Modifier.height(8.dp))
         HoverableIcon(
             onClick = { currentProject?.isProjectStructureVisible = true },

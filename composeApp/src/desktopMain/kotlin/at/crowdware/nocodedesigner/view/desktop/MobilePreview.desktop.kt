@@ -4,16 +4,22 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.res.loadImageBitmap
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.text.TextStyle
 import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
+import org.jcodec.api.FrameGrab
+import org.jcodec.common.model.Picture
+import org.jcodec.scale.AWTUtil
 import java.awt.Desktop
+import java.awt.image.BufferedImage
 import java.io.File
 import java.net.URI
+
 
 
 @Composable
@@ -34,7 +40,7 @@ actual fun dynamicImageFromAssets(filename: String, scale: String, link: String)
         Image(
             bitmap = bitmap,
             contentDescription = null,
-            modifier = Modifier.fillMaxWidth() // Passe die Modifikatoren an das Layout an
+            modifier = Modifier.fillMaxWidth()
         )
     } else {
         Text(text = "Image not found: $filename", style = TextStyle(color = MaterialTheme.colors.onPrimary))
@@ -48,7 +54,22 @@ actual fun dynamicSoundfromAssets(filename: String) {
 
 @Composable
 actual fun dynamicVideofromAssets(filename: String) {
-    Text(text="Video not found: $filename", style = TextStyle(color = MaterialTheme.colors.onPrimary))
+    val ps = GlobalProjectState.projectState
+    val path = "${ps?.folder}/assets/$filename"
+    var bitmap: BufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB)
+    try {
+        val picture: Picture = FrameGrab.getFrameFromFile(File(path), 0)
+        println("${picture}, ${picture.size.width}, ${picture.size.height}")
+        bitmap = AWTUtil.toBufferedImage(picture)
+    } catch (e: Exception) {
+        println("${e.message}")
+        return
+    }
+    Image(
+        bitmap = bitmap.toComposeImageBitmap(),
+        contentDescription = "Video Thumbnail",
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 actual fun loadPage(pageId: String) {

@@ -74,7 +74,7 @@ class WasmProjectState : ProjectState() {
         callFetchFromKotlin("http://localhost:5000/listFiles", uuid, pid)
     }
 
-    override suspend fun createProjectFiles(path: String, uuid: String, pid: String, string: String) {
+    override suspend fun createProjectFiles(path: String, uuid: String, pid: String, name: String, appId:String) {
         TODO("Not yet implemented")
     }
 }

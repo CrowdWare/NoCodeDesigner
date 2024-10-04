@@ -36,6 +36,7 @@ abstract class ProjectState {
 
     var isProjectStructureVisible by mutableStateOf(true)
     var isNewProjectDialogVisible by mutableStateOf(false)
+    var isOpenProjectDialogVisible by mutableStateOf(false)
     var isAboutDialogOpen by  mutableStateOf(false)
     var darkMode by mutableStateOf(false)
 
