@@ -99,3 +99,28 @@ dependencies {
     }
 }
 
+tasks.register<Copy>("copyAar") {
+    // Task soll erst nach 'assemble' ausgeführt werden
+    dependsOn("assemble")
+
+    val fromPath = layout.buildDirectory.dir("outputs/aar/nocodeLib-debug.aar").get().asFile
+    val toPath = layout.projectDirectory.dir("../../NoCodeBrowser/app/libs")
+    println("Copying  $fromPath $toPath")
+    from(fromPath)
+    into(toPath)
+
+    doLast {
+        // Debug-Ausgaben
+        println("Copying $fromPath $toPath")
+        //println("Copying from: ${fromPath.get().asFile.absolutePath} to: ${toPath.get().asFile.absolutePath}")
+
+        if (!fromPath.exists()) {
+            throw GradleException(".aar file not found at")
+        }
+    }
+}
+
+// Ensure that 'copyAar' is executed after 'assemble'
+tasks.named("assemble").configure {
+    finalizedBy("copyAar")
+}

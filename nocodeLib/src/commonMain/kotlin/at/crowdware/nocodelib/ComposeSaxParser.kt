@@ -113,8 +113,8 @@ open class PageHandlerBase : PageHandlerCommon {
             }
 
             "button" -> {
-                val label = attributes.getValue("label")
-                val link = attributes.getValue("link")
+                val label = attributes["label"] ?: ""
+                val link = attributes["link"] ?: ""
                 val buttonElement = ButtonElement(label, link)
                 addElementToStack(buttonElement)
             }
@@ -181,14 +181,12 @@ open class PageHandlerBase : PageHandlerCommon {
                 )
                 addElementToStack(textElement)
             }
-
             "markdown" -> {
                 val md = MarkdownElement(currentText.toString().trim(), colorString)
                 addElementToStack(md)
             }
 
             "row", "column" -> {
-                // Pop the row or column from the element stack when the end tag is encountered
                 elementStack.removeAt(elementStack.size - 1)
             }
         }
@@ -209,13 +207,12 @@ open class PageHandlerBase : PageHandlerCommon {
 }
 
 fun parsePadding(padding: String): Padding {
-    // Prüfen, ob ein einzelner Wert angegeben wurde
     val paddingValues = padding.split(" ").mapNotNull { it.toIntOrNull() }
 
     return when (paddingValues.size) {
         1 -> Padding(paddingValues[0], paddingValues[0], paddingValues[0], paddingValues[0]) // Alle Seiten gleich
         2 -> Padding(paddingValues[0], paddingValues[1], paddingValues[0], paddingValues[1]) // Vertikal und Horizontal gleich
         4 -> Padding(paddingValues[0], paddingValues[1], paddingValues[2], paddingValues[3]) // Oben, Rechts, Unten, Links
-        else -> Padding(0, 0, 0, 0) // Default, falls die Werte nicht korrekt sind
+        else -> Padding(0, 0, 0, 0)
     }
 }
