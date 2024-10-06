@@ -64,7 +64,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
 import at.crowdware.nocodedesigner.ui.projectDialog
-import at.crowdware.nocodedesigner.utils.testQML
+import at.crowdware.nocodelib.testQML
 import kotlinx.coroutines.launch
 
 

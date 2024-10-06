@@ -79,7 +79,6 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
                 implementation("org.jcodec:jcodec:0.2.5")
                 implementation("org.jcodec:jcodec-javase:0.2.5")
-                implementation("com.github.h0tk3y.betterParse:better-parse:0.4.4")
                 kotlin.srcDir(layout.buildDirectory.dir("generated/version"))
             }
         }

@@ -1,5 +1,9 @@
-package at.crowdware.nocodedesigner.utils
+package at.crowdware.nocodelib
 
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 
 data class QMLNode(
     val name: String,
@@ -124,8 +128,66 @@ fun printParsedTree(node: QMLNode?, indent: Int = 0) {
     }
 }
 
+fun deserializeApp(properties: Map<String, String>): App {
+    val type = properties["type"] ?: "default"
+    val items = properties["items"]?.split(",")?.toMutableList() ?: mutableListOf()
+
+    return App(type, items)
+}
+
+fun deserializePage(properties: Map<String, String>, elements: List<UIElement>): Page {
+    val color = properties["color"] ?: "#FFFFFF"
+    val backgroundColor = properties["backgroundColor"] ?: "#000000"
+    val padding = deserializePadding(properties["padding"])
+
+    return Page(color, backgroundColor, padding, elements)
+}
+
+fun deserializeUIElement(properties: Map<String, String>): UIElement {
+    return when (properties["type"]) {
+        "Text" -> TextElement(
+            text = properties["text"] ?: "",
+            color = properties["color"] ?: "#000000",
+            fontSize = 12.sp,               //properties["fontSize"]?.toFloat()?.let { TextUnit(it) } ?: TextUnit(12f),
+            fontWeight = FontWeight.Normal, //FontWeight(properties["fontWeight"] ?: "normal"),
+            textAlign = TextAlign.Left      //TextAlign(properties["textAlign"] ?: "left")
+        )
+        "Button" -> ButtonElement(
+            label = properties["label"] ?: "",
+            link = properties["link"] ?: ""
+        )
+        "Image" -> ImageElement(
+            src = properties["src"] ?: "",
+            scale = properties["scale"] ?: "fit",
+            link = properties["link"] ?: ""
+        )
+        // Weitere Elemente hier hinzufügen...
+        else -> throw IllegalArgumentException("Unbekannter Elementtyp")
+    }
+}
+
+
+fun deserializePadding(paddingString: String?): Padding {
+    return paddingString?.split(",")?.let {
+        Padding(
+            top = it.getOrNull(0)?.toInt() ?: 0,
+            right = it.getOrNull(1)?.toInt() ?: 0,
+            bottom = it.getOrNull(2)?.toInt() ?: 0,
+            left = it.getOrNull(3)?.toInt() ?: 0
+        )
+    } ?: Padding(0, 0, 0, 0)
+}
+
+val elements = mutableListOf<UIElement>()
+
+// Beispielhafte Nutzung
+//elements.add(deserializeUIElement(elementProperties)) // Hier `elementProperties` sollte ein Map<String, String> sein
+
+val properties = mapOf("color" to "#FFFFFF", "backgroundColor" to "#000000", "padding" to "10,10,10,10")
+val page = deserializePage(properties, elements)
+
+
 fun testQML() {
     val parsedTree = parseQML(qmlString)
     printParsedTree(parsedTree)
-    //println(parsedTree.toString())
 }
