@@ -1,6 +1,8 @@
 # TODO
 
 ## Next release
+- [ ] Domparser in lib fills App / Page objects
+- [ ] App.xml is delivering a list of files including timestamp (caching)
 - [x] put .dynlib into .app/.dmg
 - [x] Menu -> New Project business logic
 - [ ] Menu -> New Page business logic

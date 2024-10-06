@@ -22,6 +22,8 @@ repositories {
     mavenCentral()
     google()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") // JetBrains Compose Repository
+    maven { url = uri("https://kotlin.bintray.com/kotlinx") }
+
 }
 
 kotlin {
@@ -61,6 +63,9 @@ kotlin {
                 implementation("org.jetbrains.compose.material:material-icons-extended:1.6.11")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
                 implementation("br.com.devsrsouza.compose.icons:font-awesome:1.1.1")
+
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3")
+
                 implementation(project(":nocodeLib"))
             }
         }
@@ -74,6 +79,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
                 implementation("org.jcodec:jcodec:0.2.5")
                 implementation("org.jcodec:jcodec-javase:0.2.5")
+                implementation("com.github.h0tk3y.betterParse:better-parse:0.4.4")
                 kotlin.srcDir(layout.buildDirectory.dir("generated/version"))
             }
         }
