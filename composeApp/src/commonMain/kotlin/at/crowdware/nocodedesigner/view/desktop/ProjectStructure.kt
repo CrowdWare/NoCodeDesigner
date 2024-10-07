@@ -68,6 +68,8 @@ fun projectStructure(currentProject: ProjectState) {
                         currentProject.LoadFile(node.path)
                     if (node.type == NodeType.MD)
                         currentProject.LoadFile(node.path)
+                    if (node.type == NodeType.QML)
+                        currentProject.LoadFile(node.path)
                 })
         }
         /*

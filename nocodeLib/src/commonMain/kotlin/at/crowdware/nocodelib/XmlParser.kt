@@ -24,12 +24,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 
-expect class AppParser() {
+expect class XmlAppParser() {
     fun parse(xmlData: String): App
 }
 
-expect class PageParser() {
+expect class XmlPageParser() {
     fun parse(xmlData: String): Page
+}
+
+fun isXmlRootElement(xmlString: String, root: String): Boolean {
+    val regex = Regex("""^\s*(<\?xml\b[^>]*\?>\s*)?<$root\b""")
+    return regex.containsMatchIn(xmlString)
 }
 
 interface PageHandlerCommon {

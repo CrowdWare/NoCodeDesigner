@@ -19,6 +19,7 @@ expect fun getDisplayName(path: String): String
 expect suspend fun loadFileContent(path: String, uuid: String, pid: String): String
 expect fun saveFileContent(path: String, uuid: String, pid: String, content: String)
 expect fun createProjectState(): ProjectState
+expect fun fileExists(path: String): Boolean
 
 abstract class ProjectState {
     var currentFileContent by mutableStateOf(TextFieldValue(""))
@@ -85,8 +86,19 @@ abstract class ProjectState {
         fileName = path.substringAfterLast("/")
         println("loadFile: $path $fileName")
         CoroutineScope(Dispatchers.Main).launch {
-            val fileText = loadFileContent(path, "", "")
             extension = path.substringAfterLast('.', "")
+            if (extension.isEmpty()) {
+                extension = when {
+                    fileExists("$path.xml") -> "xml"
+                    fileExists("$path.qml") -> "qml"
+                    else -> {
+                        println("Keine gültige Datei gefunden.")
+                        return@launch // Wenn keine gültige Datei gefunden wird, breche ab
+                    }
+                }
+                path = "$filePath.$extension"
+            }
+            val fileText = loadFileContent("$path", "", "")
             currentFileContent = TextFieldValue(fileText)
         }
     }

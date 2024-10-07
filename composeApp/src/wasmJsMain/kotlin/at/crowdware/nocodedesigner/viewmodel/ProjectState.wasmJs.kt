@@ -1,7 +1,7 @@
 package at.crowdware.nocodedesigner.viewmodel
 
-import at.crowdware.nocodelib.AppParser
-import at.crowdware.nocodelib.PageParser
+import at.crowdware.nocodelib.XmlAppParser
+import at.crowdware.nocodelib.XmlPageParser
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
 import at.crowdware.nocodedesigner.model.extensionToNodeType
@@ -118,14 +118,14 @@ fun onFetchResponse(response: String) {
             </navigation>
         </app>
             """.trimIndent()
-        val appParser = AppParser()
+        val appParser = XmlAppParser()
         ps.app = appParser.parse(xmlData)
 
         println("App Type: ${ps.app.type}")
         println("Pages: ${ps.app.items.joinToString()}")
 
         val xml = "<page><text>Das ist eine test page</text><button label='btnLabel' link='btnlink'/></page>"
-        val pageParser = PageParser()
+        val pageParser = XmlPageParser()
         ps.page = pageParser.parse(xml)
         println("Page : ${ps.page.elements.joinToString()}")
 
@@ -141,4 +141,9 @@ fun onFetchError(errorMessage: String) {
 
 actual fun createProjectState(): ProjectState {
     return WasmProjectState()
+}
+
+actual fun fileExists(path: String): Boolean {
+    TODO("Not yet implemented")
+    return false
 }

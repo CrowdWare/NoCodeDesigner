@@ -28,7 +28,7 @@ import org.w3c.dom.Attr
 
 external fun parseXmlString(xmlData: String): Document
 
-actual class AppParser {
+actual class XmlAppParser {
     actual fun parse(xmlData: String): App {
         val parser = DOMParser()
         val doc = parseXmlString(xmlData)
@@ -93,7 +93,7 @@ class AppHandler {
     }
 }
 
-actual class PageParser {
+actual class XmlPageParser {
     actual fun parse(xmlData: String): Page {
         val parser = DOMParser()
         val doc = parseXmlString(xmlData)

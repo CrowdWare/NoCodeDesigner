@@ -1,6 +1,6 @@
 package at.crowdware.nocodedesigner.viewmodel
 
-import at.crowdware.nocodelib.AppParser
+import at.crowdware.nocodelib.XmlAppParser
 import java.io.File
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
@@ -85,7 +85,7 @@ class DesktopProjectState : ProjectState() {
         // app.xml load and parse
         try {
             val uiXml = File("$path/app.xml").readText()
-            val appParser = AppParser()
+            val appParser = XmlAppParser()
             app = appParser.parse(uiXml)
 
             LoadFile("$path/pages/home.xml")
@@ -134,4 +134,9 @@ fun copyResourceToFile(resourcePath: String, outputPath: String) {
     } else {
         println("Ressource $resourcePath konnte nicht gefunden werden.")
     }
+}
+
+actual fun fileExists(path: String): Boolean {
+    println("fileExists: $path")
+    return File(path).exists()
 }

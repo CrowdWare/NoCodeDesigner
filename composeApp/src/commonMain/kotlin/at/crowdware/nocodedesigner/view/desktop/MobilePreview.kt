@@ -44,7 +44,7 @@ import at.crowdware.nocodelib.SoundElement
 import at.crowdware.nocodelib.SpacerElement
 import at.crowdware.nocodelib.VideoElement
 import at.crowdware.nocodelib.MarkdownElement
-import at.crowdware.nocodelib.PageParser
+import at.crowdware.nocodelib.XmlPageParser
 import at.crowdware.nocodelib.UIElement
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -55,40 +55,70 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.ui.unit.Dp
+import at.crowdware.nocodelib.QmlPageParser
 import at.crowdware.nocodelib.YoutubeElement
+import at.crowdware.nocodelib.isQmlRootElement
+import at.crowdware.nocodelib.isXmlRootElement
 
 @Composable
 fun mobilePreview(currentProject: ProjectState?) {
     var parseError = ""
-    val xml = currentProject?.currentFileContent?.text ?: ""
+    val source = currentProject?.currentFileContent?.text ?: ""
+    val ext = currentProject?.extension
 
     val parsedPage = try {
-        if (xml.isEmpty()) {
-            parseError = "no page loaded"
-            null
-        } else {
-            if(xml.contains("<page")) {
-                val pageParser = PageParser()
-                val page = pageParser.parse(xml)
-                println("page: $page")
-                if (page.elements.isEmpty()) {
-                    parseError = "page is empty"
-                    null
-                } else {
-                    page
-                }
-            } else if (xml.contains("<app")) {
-                println("app loaded")
-                null
-            } else {
+        if (ext == "xml") {
+            if (source.isEmpty()) {
                 parseError = "no page loaded"
                 null
+            } else {
+                if (isXmlRootElement(source,"page")) {
+                    val pageParser = XmlPageParser()
+                    val page = pageParser.parse(source)
+                    println("page: $page")
+                    if (page.elements.isEmpty()) {
+                        parseError = "page is empty"
+                        null
+                    } else {
+                        page
+                    }
+                } else if (isXmlRootElement(source, "app")) {
+                    println("app loaded")
+                    null
+                } else {
+                    parseError = "no page loaded"
+                    null
+                }
             }
+        } else if (ext == "qml") {
+            if (source.isEmpty()) {
+                parseError = "no page loaded"
+                null
+            }  else {
+                if (isQmlRootElement(source, "Page")) {
+                    val pageParser = QmlPageParser()
+                    val page = pageParser.parse(source)
+                    println("page: $page")
+                    if (page.elements.isEmpty()) {
+                        parseError = "page is empty"
+                        null
+                    } else {
+                        page
+                    }
+                } else if (isQmlRootElement(source,"App")) {
+                    println("app loaded")
+                    null
+                } else {
+                    parseError = "no page loaded"
+                    null
+                }
+            }
+        } else {
+            null
         }
     } catch (e: Exception) {
         parseError = e.message ?: ""
-        println("Error parsing xml: ${e.message}")
+        println("Error parsing source: ${e.message}")
         null
     }
 
@@ -123,7 +153,7 @@ fun mobilePreview(currentProject: ProjectState?) {
                         .fillMaxHeight(0.9f) // Height of the screen relative to the phone body
                         .align(Alignment.Center) // Center the screen inside the phone
                         .background(Color.Black)
-                        //.clip(RoundedCornerShape(16.dp))
+                    //.clip(RoundedCornerShape(16.dp))
                 ) {
                     // Scalable content inside the screen
                     Box(
@@ -132,14 +162,21 @@ fun mobilePreview(currentProject: ProjectState?) {
                     ) {
                         if (parsedPage != null) {
                             println("padding: ${parsedPage.padding.left}")
-                            Row (modifier = Modifier
-                                .padding(start = parsedPage.padding.left.dp, top = parsedPage.padding.top.dp, bottom = parsedPage.padding.bottom.dp, end = parsedPage.padding.right.dp )
-                                .fillMaxSize()
-                                .background(color = hexToColor(parsedPage.backgroundColor))) {
+                            Row(
+                                modifier = Modifier
+                                    .padding(
+                                        start = parsedPage.padding.left.dp,
+                                        top = parsedPage.padding.top.dp,
+                                        bottom = parsedPage.padding.bottom.dp,
+                                        end = parsedPage.padding.right.dp
+                                    )
+                                    .fillMaxSize()
+                                    .background(color = hexToColor(parsedPage.backgroundColor))
+                            ) {
                                 RenderPage(parsedPage)
                             }
                         } else {
-                            Row{
+                            Row {
                                 Text(text = parseError, color = Color.Red)
                             }
                         }

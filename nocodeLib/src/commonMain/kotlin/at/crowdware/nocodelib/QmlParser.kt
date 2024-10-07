@@ -1,9 +1,10 @@
 package at.crowdware.nocodelib
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.TextUnit
 
 data class QMLNode(
     val name: String,
@@ -11,26 +12,25 @@ data class QMLNode(
     val children: MutableList<QMLNode> = mutableListOf()
 )
 
-val qmlString = """
-    Column {
-        padding: "0 3 45 2"
-        Markdown {
-            color: "#FFFFFF"
-            content: "
-            # header 1
-            ## header 2
-            "
-        }
-        Markdown { content: "# header 1\n## header 2" }
-        Button {
-            label: "Click" 
-            link: "web:http://bla.de"
-            Icon {
-                width: 78
-            }
-        }
+class QmlAppParser() {
+    fun parse(xmlData: String): App {
+        return App(type = "", items = mutableListOf<String>())
     }
-"""
+}
+
+fun isQmlRootElement(qmlString: String, root: String): Boolean {
+    val regex = Regex("""^\s*$root\s*\{""")
+    return regex.containsMatchIn(qmlString)
+}
+
+class QmlPageParser() {
+    fun parse(qmlData: String): Page {
+        println("parsing page")
+        val parsedTree = parseQML(qmlData)
+        println("parsed tree: $parsedTree")
+        return deserializePage(parsedTree)
+    }
+}
 
 fun parseQML(qml: String): QMLNode {
     val root = QMLNode("Root", mutableListOf(), mutableListOf())
@@ -104,8 +104,8 @@ fun parseQML(qml: String): QMLNode {
             }
         }
     }
-
-    return root
+    // we only need root temporarily
+    return root.children.first()
 }
 
 fun processStringLiteral(value: String): String {
@@ -116,18 +116,6 @@ fun processStringLiteral(value: String): String {
     }
 }
 
-fun printParsedTree(node: QMLNode?, indent: Int = 0) {
-    node?.let {
-        println("  ".repeat(indent) + "Element: ${it.name}")
-        for (prop in it.properties) {
-            println("  ".repeat(indent + 1) + "Property: ${prop.first} = ${prop.second}")
-        }
-        for (child in it.children) {
-            printParsedTree(child, indent + 1)
-        }
-    }
-}
-
 fun deserializeApp(properties: Map<String, String>): App {
     val type = properties["type"] ?: "default"
     val items = properties["items"]?.split(",")?.toMutableList() ?: mutableListOf()
@@ -135,14 +123,52 @@ fun deserializeApp(properties: Map<String, String>): App {
     return App(type, items)
 }
 
-fun deserializePage(properties: Map<String, String>, elements: List<UIElement>): Page {
+fun deserializePage(node: QMLNode?): Page {
+    if (node == null) {
+        val color = "#FFFFFF"
+        val backgroundColor = "#000000"
+        val padding = Padding(0,0,0,0)
+        return Page(color, backgroundColor, padding, mutableListOf<UIElement>())
+    }
+
+    val properties = node.properties.toMap()
     val color = properties["color"] ?: "#FFFFFF"
     val backgroundColor = properties["backgroundColor"] ?: "#000000"
-    val padding = deserializePadding(properties["padding"])
+    val padding = parsePadding(properties["padding"].toString())
+    val elements = node.children.map { deserializeUIElement(it) }
 
     return Page(color, backgroundColor, padding, elements)
 }
 
+fun deserializeUIElement(node: QMLNode): UIElement {
+    println("deserializeElement: ${node.name}")
+    val properties = node.properties.toMap()
+    return when(node.name) {
+        "Text" -> {
+            TextElement(
+                text = properties["content"] ?: "",
+                color = properties["color"] ?: "#000000",
+                fontSize = properties["fontSize"]?.toFloat()?.sp ?: 12f.sp,
+                fontWeight = FontWeight.Normal, //FontWeight(properties["fontWeight"] ?: "normal"),
+                textAlign = TextAlign.Left      //TextAlign(properties["textAlign"] ?: "left")
+            )
+        }
+        "Button" -> {
+            ButtonElement(
+                label = properties["label"] ?: "",
+                link = properties["link"] ?: ""
+            )
+        }
+        "Column" -> {
+            ColumnElement(
+                padding = parsePadding(properties["padding"].toString()),
+                uiElements = node.children.map { deserializeUIElement(it) }.toMutableList()
+            )
+        } else -> throw IllegalArgumentException("Unbekannter Elementtyp: $node.name")
+    }
+    //return TextElement(text = "", color = "#000000", fontSize = 12.sp, fontWeight = FontWeight.Normal, textAlign = TextAlign.Left)
+}
+/*
 fun deserializeUIElement(properties: Map<String, String>): UIElement {
     return when (properties["type"]) {
         "Text" -> TextElement(
@@ -165,10 +191,10 @@ fun deserializeUIElement(properties: Map<String, String>): UIElement {
         else -> throw IllegalArgumentException("Unbekannter Elementtyp")
     }
 }
-
-
+*/
+/*
 fun deserializePadding(paddingString: String?): Padding {
-    return paddingString?.split(",")?.let {
+    return paddingString?.split(" ")?.let {
         Padding(
             top = it.getOrNull(0)?.toInt() ?: 0,
             right = it.getOrNull(1)?.toInt() ?: 0,
@@ -177,17 +203,22 @@ fun deserializePadding(paddingString: String?): Padding {
         )
     } ?: Padding(0, 0, 0, 0)
 }
-
-val elements = mutableListOf<UIElement>()
-
-// Beispielhafte Nutzung
-//elements.add(deserializeUIElement(elementProperties)) // Hier `elementProperties` sollte ein Map<String, String> sein
-
-val properties = mapOf("color" to "#FFFFFF", "backgroundColor" to "#000000", "padding" to "10,10,10,10")
-val page = deserializePage(properties, elements)
-
-
+*/
+/*
 fun testQML() {
     val parsedTree = parseQML(qmlString)
     printParsedTree(parsedTree)
-}
+}*/
+
+/*
+fun printParsedTree(node: QMLNode?, indent: Int = 0) {
+    node?.let {
+        println("  ".repeat(indent) + "Element: ${it.name}")
+        for (prop in it.properties) {
+            println("  ".repeat(indent + 1) + "Property: ${prop.first} = ${prop.second}")
+        }
+        for (child in it.children) {
+            printParsedTree(child, indent + 1)
+        }
+    }
+}*/

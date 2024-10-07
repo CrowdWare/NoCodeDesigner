@@ -78,7 +78,7 @@ class PageHandler : DefaultHandler(), PageHandlerCommon by PageHandlerBase() {
     }
 }
 
-actual class AppParser {
+actual class XmlAppParser {
     actual fun parse(xmlData: String): App {
         val saxParserFactory = SAXParserFactory.newInstance()
         val saxParser = saxParserFactory.newSAXParser()
@@ -91,7 +91,7 @@ actual class AppParser {
     }
 }
 
-actual class PageParser {
+actual class XmlPageParser {
     actual fun parse(xmlData: String): Page {
         val saxParserFactory = SAXParserFactory.newInstance()
         val saxParser = saxParserFactory.newSAXParser()
