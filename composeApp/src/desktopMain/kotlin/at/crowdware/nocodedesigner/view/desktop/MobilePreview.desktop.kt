@@ -77,7 +77,6 @@ actual fun dynamicVideofromAssets(filename: String, height: Int) {
 
 actual fun loadPage(pageId: String) {
     val ps = GlobalProjectState.projectState
-    println("Loading page: $pageId")
     ps?.LoadFile(ps.folder + "/pages/" + pageId)
 }
 

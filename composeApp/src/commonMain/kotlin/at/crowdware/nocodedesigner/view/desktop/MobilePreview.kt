@@ -55,7 +55,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import at.crowdware.nocodelib.QmlPageParser
 import at.crowdware.nocodelib.YoutubeElement
 import at.crowdware.nocodelib.isQmlRootElement
 import at.crowdware.nocodelib.isXmlRootElement
@@ -99,7 +98,6 @@ fun mobilePreview(currentProject: ProjectState?) {
                 if (isQmlRootElement(source, "Page")) {
                     //val pageParser = QmlPageParser()
                     val page = parseQmlPage(source)//pageParser.parse(source)
-                    println("page: $page")
                     if (page.elements.isEmpty()) {
                         parseError = "page is empty"
                         null

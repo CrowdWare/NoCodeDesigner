@@ -21,37 +21,32 @@ package at.crowdware.nocodedesigner.ui
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import at.crowdware.nocodedesigner.theme.ExtendedTheme
-import at.crowdware.nocodedesigner.utils.uiStates
-import androidx.compose.runtime.*
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.colorspace.ColorSpaces.match
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.toSize
 import at.crowdware.nocodedesigner.theme.ExtendedColors
+import at.crowdware.nocodedesigner.theme.ExtendedTheme
+import at.crowdware.nocodedesigner.utils.uiStates
 
 @Composable
 fun SyntaxTextField(
@@ -112,7 +107,12 @@ fun SyntaxTextField(
                         .background(Color.Transparent), // Make the background transparent for the text field
                     textStyle = TextStyle(fontSize = 14.sp, color = extendedColors.attributeNameColor, fontFamily = FontFamily.Monospace),
                     cursorBrush = SolidColor(cursorColor),
-                    visualTransformation = if(extension == "xml") XmlSyntaxHighlighter(extendedColors) else if (extension == "md")MarkdownSyntaxHighlighter(extendedColors) else VisualTransformation.None,
+                          visualTransformation = when(extension) {
+                        "xml" -> XmlSyntaxHighlighter(extendedColors)
+                        "md" -> MarkdownSyntaxHighlighter(extendedColors)
+                        "qml" -> QmlSyntaxHighlighter(extendedColors)
+                        else -> VisualTransformation.None
+                    },
                     maxLines = Int.MAX_VALUE
                 )
             }
@@ -129,7 +129,44 @@ fun SyntaxTextField(
     }
 }
 
-class XmlSyntaxHighlighter(extendedColors: ExtendedColors) : VisualTransformation {
+class QmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val builder = AnnotatedString.Builder(text)
+
+        // Highlight QML elements
+        val elementRegex = Regex("(\\w+)\\s*\\{")
+        elementRegex.findAll(text).forEach { match ->
+            builder.addStyle(SpanStyle(color = colors.syntaxColor), match.range.first, match.range.last + 1)
+        }
+
+        // Highlight properties
+        val propertyRegex = Regex("(\\w+)\\s*:")
+        propertyRegex.findAll(text).forEach { match ->
+            builder.addStyle(SpanStyle(color = colors.attributeNameColor), match.range.first, match.range.last)
+        }
+        // Highlight string values and embedded Markdown
+        val stringRegex = Regex("(text:\\s*)?\"([^\"]+)\"")
+        stringRegex.findAll(text).forEach { match ->
+            val isTextProperty = match.groups[1] != null
+            val content = match.groups[2]?.value ?: ""
+            val start = match.range.first
+            val end = match.range.last + 1
+
+            // Highlight the entire string in green
+            builder.addStyle(SpanStyle(color = colors.attributeValueColor), start, end)
+
+            if (isTextProperty) {
+                val markdownHighlighter = MarkdownSyntaxHighlighter(colors)
+                val highlightedMarkdown = markdownHighlighter.filter(AnnotatedString(content))
+                highlightedMarkdown.text.spanStyles.forEach { spanStyle ->
+                    val textPropertyLength = match.groups[1]?.value?.length ?: 0
+                    builder.addStyle(spanStyle.item, start + textPropertyLength + 1 + spanStyle.start, start + textPropertyLength + 1 + spanStyle.end)
+                }
+            }
+        }
+        return TransformedText(builder.toAnnotatedString(), OffsetMapping.Identity)
+    }
+}class XmlSyntaxHighlighter(extendedColors: ExtendedColors) : VisualTransformation {
     val colors = extendedColors
     override fun filter(text: AnnotatedString): TransformedText {
         val builder = AnnotatedString.Builder(text.text)
