@@ -59,6 +59,7 @@ import at.crowdware.nocodelib.QmlPageParser
 import at.crowdware.nocodelib.YoutubeElement
 import at.crowdware.nocodelib.isQmlRootElement
 import at.crowdware.nocodelib.isXmlRootElement
+import at.crowdware.nocodelib.parseQmlPage
 
 @Composable
 fun mobilePreview(currentProject: ProjectState?) {
@@ -75,7 +76,7 @@ fun mobilePreview(currentProject: ProjectState?) {
                 if (isXmlRootElement(source,"page")) {
                     val pageParser = XmlPageParser()
                     val page = pageParser.parse(source)
-                    println("page: $page")
+
                     if (page.elements.isEmpty()) {
                         parseError = "page is empty"
                         null
@@ -96,8 +97,8 @@ fun mobilePreview(currentProject: ProjectState?) {
                 null
             }  else {
                 if (isQmlRootElement(source, "Page")) {
-                    val pageParser = QmlPageParser()
-                    val page = pageParser.parse(source)
+                    //val pageParser = QmlPageParser()
+                    val page = parseQmlPage(source)//pageParser.parse(source)
                     println("page: $page")
                     if (page.elements.isEmpty()) {
                         parseError = "page is empty"
@@ -161,7 +162,7 @@ fun mobilePreview(currentProject: ProjectState?) {
                             .align(Alignment.Center)
                     ) {
                         if (parsedPage != null) {
-                            println("padding: ${parsedPage.padding.left}")
+
                             Row(
                                 modifier = Modifier
                                     .padding(

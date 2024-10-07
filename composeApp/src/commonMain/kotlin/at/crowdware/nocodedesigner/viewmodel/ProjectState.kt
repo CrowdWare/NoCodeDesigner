@@ -84,7 +84,7 @@ abstract class ProjectState {
     fun LoadFile(filePath: String) {
         path = filePath
         fileName = path.substringAfterLast("/")
-        println("loadFile: $path $fileName")
+
         CoroutineScope(Dispatchers.Main).launch {
             extension = path.substringAfterLast('.', "")
             if (extension.isEmpty()) {

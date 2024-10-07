@@ -19,28 +19,29 @@ import com.github.h0tk3y.betterParse.parser.Parser
 import com.github.h0tk3y.betterParse.utils.Tuple7
 
 
-// Definiere die Tokens
 val identifier: Token = regexToken("[a-zA-Z_][a-zA-Z0-9_]*")
 val lBrace: Token = literalToken("{")
 val rBrace: Token = literalToken("}")
 val colon: Token = literalToken(":")
 val stringLiteral: Token = regexToken("\"[^\"]*\"")
 val whitespace: Token = regexToken("\\s+")
+val integerLiteral: Token = regexToken("\\d+")
 
 object QmlGrammar : Grammar<List<Any>>() {
     val whitespaceParser = zeroOrMore(whitespace)
 
-        val property by (whitespaceParser and identifier and whitespaceParser and colon and whitespaceParser and stringLiteral).map { (_, id, _, _, _, value) ->
-        id.text to value.text.removeSurrounding("\"")
+    val propertyValue = stringLiteral.map { it.text.removeSurrounding("\"") } or integerLiteral.map { it.text }
+
+    val property by (whitespaceParser and identifier and whitespaceParser and colon and whitespaceParser and propertyValue).map { (_, id, _, _, _, value) ->
+        id.text to value
     }
+
     val elementContent: Parser<List<Any>> = oneOrMore(property or parser { element })
     val element: Parser<Any> by whitespaceParser and identifier and whitespaceParser and lBrace and elementContent and whitespaceParser and rBrace
-
-    override val tokens: List<Token> = listOf(identifier, lBrace, rBrace, colon, stringLiteral, whitespace)
+    
+    override val tokens: List<Token> = listOf(identifier, lBrace, rBrace, colon, stringLiteral, integerLiteral, whitespace)
     override val rootParser: Parser<List<Any>> = oneOrMore(element)
 }
-
-// Beispiel QML Code
 
 
 fun deserializeQml(parsedResult: List<Any>): Page {
@@ -52,25 +53,18 @@ fun deserializeQml(parsedResult: List<Any>): Page {
                 val elementName = (tuple.t2 as? TokenMatch)?.text
                 val properties = (tuple.t5 as? List<*>)?.filterIsInstance<Pair<String, String>>()?.toMap()
 
-                println("element1: $elementName")
                 when (elementName) {
                     "Page" -> {
+
                         page.color = properties?.get("color") ?: ""
                         page.backgroundColor = properties?.get("backgroundColor") ?: ""
-                        page.padding = parsePadding(properties?.get("padding"))
+                        page.padding = parsePadding(properties?.get("padding").toString())
+                        println("page: $page")
                         parseNestedElements(tuple.t5 as? List<*>, page.elements as MutableList<UIElement>)
                     }
-                    "Column" -> {
-                      
-                        parseNestedElements(tuple.t5 as? List<*>, page.elements as MutableList<UIElement>)
+                    "App" -> {
+                        // TODO: parse app
                     }
-                    "Text" -> {
-                        val text = properties?.get("text") ?: ""
-                        val color = properties?.get("color") ?: ""
-                        val te = TextElement(text, color, 14.sp, FontWeight.Normal, TextAlign.Left)
-                        page.elements.add(te)
-                    }
-                    // Add more cases for other element types
                 }
             }
         }
@@ -79,56 +73,52 @@ fun deserializeQml(parsedResult: List<Any>): Page {
     return page
 }
 
-fun parsePadding(paddingString: String?): Padding {
-    val parts = paddingString?.split(",")?.map { it.trim().toIntOrNull() ?: 0 } ?: listOf(0, 0, 0, 0)
-    return Padding(parts.getOrElse(0) { 0 }, parts.getOrElse(1) { 0 }, parts.getOrElse(2) { 0 }, parts.getOrElse(3) { 0 })
-}
-
 fun parseNestedElements(nestedElements: List<*>?, elements: MutableList<UIElement>) {
     nestedElements?.forEach { element ->
         when (element) {
             is Tuple7<*, *, *, *, *, *, *> -> {
                 val elementName = (element.t2 as? TokenMatch)?.text
                 val properties = (element.t5 as? List<*>)?.filterIsInstance<Pair<String, String>>()?.toMap()
-
-                println("element2: $elementName")
+                println(properties)
                 when (elementName) {
                     "Text" -> {
-                        val text = properties?.get("text") ?: ""
-                        val color = properties?.get("color") ?: ""
-                        elements.add(TextElement(text, color, 14.sp, FontWeight.Normal, TextAlign.Left))
+                        elements.add(TextElement(
+                            text = properties?.get("text") ?: "def",
+                            color = properties?.get("color") ?: "",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Normal,
+                            textAlign = TextAlign.Left))
+                        println("text: ${properties?.get("text") ?: "def"}")
                     }
-                    // Add more cases for other element types
+                    "Column" -> {
+                        val col = ColumnElement(padding = parsePadding(properties?.get("padding") ?: "0"))
+                        parseNestedElements(element.t5 as? List<*>, col.uiElements as MutableList<UIElement>)
+                        elements.add(col)
+                    }
+                    "Markdown" -> {
+                        val md = MarkdownElement(text = properties?.get("text") ?: "", color = properties?.get("color") ?: "#FFFFFF")
+                        elements.add(md)
+                    }
+                    "Button" -> {
+                        val btn = ButtonElement(label = properties?.get("label") ?: "", link = properties?.get("link") ?: "")
+                        elements.add(btn)
+                    }
+                    "Image" -> {
+                        val img = ImageElement(src = properties?.get("src") ?: "", scale = properties?.get("scale") ?: "1", link = properties?.get("link") ?: "")
+                        elements.add(img)
+                    }
+                    "Spacer" -> {
+                        val sp = SpacerElement(height = properties?.get("height")?.toInt() ?: 0)
+                        elements.add(sp)
+                    }
                 }
             }
         }
     }
 }
 
-
-val qmlCode = """
-Page { 
-	backgroundColor: "#0000ßß" 
-	color: "#ffffFF"
-    padding: "8"
-			
-	Column {
-		padding: "8"
-	
-		Text { content: "#Zeile 1" 
-            color:"#ffffff" }
-				  
-        Text { content: "#Zeile 2" color:"#ffffff" }
-		Button { link: "page:about" label: "About" }
-		Button { label: "test" link: "page:home" }
-	}
+fun parseQmlPage(qml: String): Page {
+    val result = QmlGrammar.parseToEnd(qml)
+    return deserializeQml(result)
 }
-""".trimIndent()
 
-// Parsen des QML Codes
-fun testQML() {
-    val result = QmlGrammar.parseToEnd(qmlCode)
-    println(result)
-    val page = deserializeQml(result)
-    println(page)
-}

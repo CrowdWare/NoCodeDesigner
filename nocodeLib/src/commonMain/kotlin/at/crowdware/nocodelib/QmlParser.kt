@@ -44,9 +44,9 @@ fun isQmlRootElement(qmlString: String, root: String): Boolean {
 
 class QmlPageParser() {
     fun parse(qmlData: String): Page {
-        println("parsing page")
+        //println("parsing page")
         val parsedTree = parseQML(qmlData)
-        println("parsed tree: $parsedTree")
+        //println("parsed tree: $parsedTree")
         return deserializePage(parsedTree)
     }
 }

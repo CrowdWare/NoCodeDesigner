@@ -99,7 +99,6 @@ actual class XmlPageParser {
         val handler = PageHandler()
 
         saxParser.parse(InputSource(xmlData.byteInputStream()), handler)
-        println("Creating new page with ${handler.uiElements.size} elements")
         return Page(color = handler.color, backgroundColor = handler.backgroundColor, padding = handler.padding, elements = handler.uiElements)
     }
 }
