@@ -1,6 +1,14 @@
 # TODO
 
 ## Next release
+- [ ] Parse problems with QmlParser 
+```qml
+  Text { content: "Zeile 1"
+    color:"#ffffff"
+  }
+```
+- [ ] Tabsize in Edit set to 4
+- [ ] Syntax highlight for QML
 - [ ] Domparser in lib fills App / Page objects
 - [ ] App.xml is delivering a list of files including timestamp (caching)
 - [x] put .dynlib into .app/.dmg
@@ -14,7 +22,7 @@
 - [ ] Paging as navigation maybe visual paging for book content
 - [x] About dialog does not show icon anymore
 - [ ] Edit menu support for xml editor
-- [ ] Undo Redo suppor for xml editor
+- [ ] Undo Redo support for xml editor
 - [ ] Context menu tree view (new, rename, copy, paste, delete, open)
 - [ ] TreeView items too much padding
 - [ ] Icon exchange with custom svg 
@@ -29,3 +37,4 @@
 - [ ] Save only when xml is valid or after a period od time
 - [ ] Drag and drop tree node to editor (button)
 - [x] Menu Alternative for web (left toolbar)
+- [ ] WebService in KTOR also for Desktop

@@ -51,6 +51,12 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation("com.github.h0tk3y.betterParse:better-parse:0.4.4")
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
         }
 
         commonTest.dependencies {
@@ -112,7 +118,6 @@ tasks.register<Copy>("copyAar") {
     doLast {
         // Debug-Ausgaben
         println("Copying $fromPath $toPath")
-        //println("Copying from: ${fromPath.get().asFile.absolutePath} to: ${toPath.get().asFile.absolutePath}")
 
         if (!fromPath.exists()) {
             throw GradleException(".aar file not found at")
@@ -123,4 +128,11 @@ tasks.register<Copy>("copyAar") {
 // Ensure that 'copyAar' is executed after 'assemble'
 tasks.named("assemble").configure {
     finalizedBy("copyAar")
+}
+
+tasks.withType<Test> {
+    testLogging {
+        events("passed", "failed", "skipped", "standardOut", "standardError")
+        showStandardStreams = true
+    }
 }

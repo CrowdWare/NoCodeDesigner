@@ -25,6 +25,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonColors
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -103,8 +105,8 @@ fun AboutDialog(appName: String, version: String, onDismissRequest: () -> Unit) 
                         }
                     }
                     Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Center) {
-                        Button( onClick = onDismissRequest) {
-                            Text("Close",style = MaterialTheme.typography.button, color = MaterialTheme.colors.onSecondary)
+                        Button( onClick = onDismissRequest, colors = ButtonDefaults.buttonColors(backgroundColor = ExtendedTheme.colors.accentColor)) {
+                            Text("Close",style = MaterialTheme.typography.button, color = ExtendedTheme.colors.onAccentColor)
                         }
                     }
                 }

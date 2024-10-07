@@ -64,6 +64,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
 import at.crowdware.nocodedesigner.ui.projectDialog
+import at.crowdware.nocodelib.testQML
 import kotlinx.coroutines.launch
 
 val LocalProjectState = compositionLocalOf<ProjectState> { error("No ProjectState provided") }
@@ -82,6 +83,7 @@ fun main() = application {
     GlobalProjectState.projectState = projectState
     projectState.darkMode = androidx.compose.foundation.isSystemInDarkTheme()
 
+    testQML()
     // setup logging, all println are stored in a log file
     //setupLogging()
 

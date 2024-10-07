@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2024 CrowdWare
+ *
+ * This file is part of NoCodeLib.
+ *
+ *  NoCodeLib is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  NoCodeLib is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with NoCodeLib.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package at.crowdware.nocodelib
 
 import androidx.compose.foundation.layout.Column
@@ -32,82 +51,6 @@ class QmlPageParser() {
     }
 }
 
-fun parseQML(qml: String): QMLNode {
-    val root = QMLNode("Root", mutableListOf(), mutableListOf())
-    val stack = mutableListOf(root)
-    var currentNode: QMLNode = root
-    val lines = qml.lines().iterator()
-    var readingMultilineContent = false
-    var multilinePropertyKey: String? = null
-    val multilineContent = StringBuilder()
-
-    while (lines.hasNext()) {
-        val line = lines.next().trim()
-
-        when {
-            line.endsWith("{") -> {
-                val name = line.substringBefore("{").trim()
-                currentNode = QMLNode(name, mutableListOf(), mutableListOf())
-
-                if (stack.isNotEmpty()) {
-                    stack.last().children.add(currentNode)
-                }
-                stack.add(currentNode)
-            }
-            line.contains("{") && line.contains("}") -> {
-                val name = line.substringBefore("{").trim()
-                currentNode = QMLNode(name, mutableListOf(), mutableListOf())
-
-                if (stack.isNotEmpty()) {
-                    stack.last().children.add(currentNode)
-                }
-
-                val properties = line.substringAfter("{").substringBefore("}").trim()
-                if (properties.isNotEmpty()) {
-                    properties.split(";").forEach { prop ->
-                        val (key, value) = prop.split(":", limit = 2).map { it.trim() }
-                        currentNode.properties.add(key to processStringLiteral(value))
-                    }
-                }
-                currentNode = stack.removeAt(stack.size - 1)
-            }
-            line.endsWith("}") -> {
-                currentNode = stack.removeAt(stack.size - 1)
-            }
-            line.contains(":") && !readingMultilineContent -> {
-                val (key, value) = line.split(":", limit = 2).map { it.trim() }
-
-                if (value == "\"" || (value.startsWith("\"") && !value.endsWith("\""))) {
-                    readingMultilineContent = true
-                    multilinePropertyKey = key
-                    multilineContent.append(value.drop(1))
-                } else {
-                    currentNode.properties.add(key to processStringLiteral(value))
-                }
-            }
-            readingMultilineContent -> {
-
-                if (line.endsWith("\"")) {
-                    multilineContent.appendLine(line.dropLast(1))
-                    currentNode.properties.add(multilinePropertyKey!! to multilineContent.toString().trim())
-                    multilineContent.clear()
-                    readingMultilineContent = false
-                    multilinePropertyKey = null
-                } else {
-                    multilineContent.appendLine(line)
-                }
-            }
-            else -> {
-                if (readingMultilineContent) {
-                    multilineContent.appendLine(line)
-                }
-            }
-        }
-    }
-    // we only need root temporarily
-    return root.children.first()
-}
-
 fun processStringLiteral(value: String): String {
     return if (value.startsWith("\"") && value.endsWith("\"")) {
         value.trim().removeSurrounding("\"").replace("\\n", "\n")
@@ -137,7 +80,7 @@ fun deserializePage(node: QMLNode?): Page {
     val padding = parsePadding(properties["padding"].toString())
     val elements = node.children.map { deserializeUIElement(it) }
 
-    return Page(color, backgroundColor, padding, elements)
+    return Page(color, backgroundColor, padding, elements as MutableList<UIElement>)
 }
 
 fun deserializeUIElement(node: QMLNode): UIElement {
@@ -166,59 +109,140 @@ fun deserializeUIElement(node: QMLNode): UIElement {
             )
         } else -> throw IllegalArgumentException("Unbekannter Elementtyp: $node.name")
     }
-    //return TextElement(text = "", color = "#000000", fontSize = 12.sp, fontWeight = FontWeight.Normal, textAlign = TextAlign.Left)
 }
-/*
-fun deserializeUIElement(properties: Map<String, String>): UIElement {
-    return when (properties["type"]) {
-        "Text" -> TextElement(
-            text = properties["text"] ?: "",
-            color = properties["color"] ?: "#000000",
-            fontSize = 12.sp,               //properties["fontSize"]?.toFloat()?.let { TextUnit(it) } ?: TextUnit(12f),
-            fontWeight = FontWeight.Normal, //FontWeight(properties["fontWeight"] ?: "normal"),
-            textAlign = TextAlign.Left      //TextAlign(properties["textAlign"] ?: "left")
-        )
-        "Button" -> ButtonElement(
-            label = properties["label"] ?: "",
-            link = properties["link"] ?: ""
-        )
-        "Image" -> ImageElement(
-            src = properties["src"] ?: "",
-            scale = properties["scale"] ?: "fit",
-            link = properties["link"] ?: ""
-        )
-        // Weitere Elemente hier hinzufügen...
-        else -> throw IllegalArgumentException("Unbekannter Elementtyp")
-    }
-}
-*/
-/*
-fun deserializePadding(paddingString: String?): Padding {
-    return paddingString?.split(" ")?.let {
-        Padding(
-            top = it.getOrNull(0)?.toInt() ?: 0,
-            right = it.getOrNull(1)?.toInt() ?: 0,
-            bottom = it.getOrNull(2)?.toInt() ?: 0,
-            left = it.getOrNull(3)?.toInt() ?: 0
-        )
-    } ?: Padding(0, 0, 0, 0)
-}
-*/
-/*
-fun testQML() {
-    val parsedTree = parseQML(qmlString)
-    printParsedTree(parsedTree)
-}*/
 
-/*
-fun printParsedTree(node: QMLNode?, indent: Int = 0) {
-    node?.let {
-        println("  ".repeat(indent) + "Element: ${it.name}")
-        for (prop in it.properties) {
-            println("  ".repeat(indent + 1) + "Property: ${prop.first} = ${prop.second}")
-        }
-        for (child in it.children) {
-            printParsedTree(child, indent + 1)
+
+fun parseQML(qml: String): QMLNode {
+    val root = QMLNode("Root", mutableListOf(), mutableListOf())
+    val stack = mutableListOf(root)
+    var currentNode: QMLNode = root
+    val lines = qml.lines().iterator()
+    var readingMultilineContent = false
+    var multilinePropertyKey: String? = null
+    val multilineContent = StringBuilder()
+
+    while (lines.hasNext()) {
+        val line = lines.next().trim()
+
+        when {
+            // Neuer Block ohne Eigenschaften erkannt
+            line.endsWith("{") && !line.contains(":") -> {
+                println("node without properties")
+                val name = line.substringBefore("{").trim()
+                currentNode = QMLNode(name, mutableListOf(), mutableListOf())
+
+                if (stack.isNotEmpty()) {
+                    stack.last().children.add(currentNode)
+                }
+                stack.add(currentNode)
+            }
+            // Knoten mit Eigenschaften in derselben Zeile (z.B. Text { content: "Zeile 1" })
+            line.contains("{") && line.contains("}") -> {
+                println("node with property and close")
+                val name = line.substringBefore("{").trim()
+                currentNode = QMLNode(name, mutableListOf(), mutableListOf())
+
+                if (stack.isNotEmpty()) {
+                    stack.last().children.add(currentNode)
+                }
+
+                // Verarbeite die Eigenschaften
+                val propertiesPart = line.substringAfter("{").substringBefore("}").trim()
+                if (propertiesPart.isNotEmpty()) {
+                    val regex = """(\w+):\s*("[^"]*"|[^"\s]+)""".toRegex()
+                    regex.findAll(propertiesPart).forEach { matchResult ->
+                        val (key, value) = matchResult.destructured
+                        currentNode.properties.add(key to processStringLiteral(value))
+                    }
+                }
+
+                // Füge den aktuellen Knoten zum Stack hinzu, da er Kinder haben könnte
+                stack.add(currentNode)
+            }
+            // Neuer Block mit Eigenschaften erkannt, der nicht direkt geschlossen wird
+            line.endsWith("{") && line.contains(":") -> {
+                println("node with properties opening")
+                val name = line.substringBefore("{").trim()
+                currentNode = QMLNode(name, mutableListOf(), mutableListOf())
+
+                if (stack.isNotEmpty()) {
+                    stack.last().children.add(currentNode)
+                }
+
+                // Verarbeite die Eigenschaften, falls vorhanden
+                val propertiesPart = line.substringAfter("{").trim()
+                if (propertiesPart.isNotEmpty()) {
+                    val regex = """(\w+):\s*("[^"]*"|[^"\s]+)""".toRegex()
+                    regex.findAll(propertiesPart).forEach { matchResult ->
+                        val (key, value) = matchResult.destructured
+                        currentNode.properties.add(key to processStringLiteral(value))
+                    }
+                }
+
+                // Füge den Knoten in den Stack ein
+                stack.add(currentNode)
+            }
+
+            line.contains("{") -> {
+                println("Node with properties opening")
+                val name = line.substringBefore("{").trim()
+                currentNode = QMLNode(name, mutableListOf(), mutableListOf())
+
+                if (stack.isNotEmpty()) {
+                    stack.last().children.add(currentNode)
+                }
+
+                // Verarbeite die Eigenschaften, falls vorhanden
+                val propertiesPart = line.substringAfter("{").substringBefore("}").trim()
+                if (propertiesPart.isNotEmpty()) {
+                    val regex = """(\w+):\s*("[^"]*"|[^"\s]+)""".toRegex()
+                    regex.findAll(propertiesPart).forEach { matchResult ->
+                        val (key, value) = matchResult.destructured
+                        currentNode.properties.add(key to processStringLiteral(value))
+                    }
+                }
+
+                // Füge den Knoten in den Stack ein
+                stack.add(currentNode)
+            }
+            // Block-Ende erkannt
+            line.endsWith("}") -> {
+                println("node closed")
+                currentNode = stack.removeAt(stack.size - 1)
+            }
+            // Eigenschaft erkannt
+            line.contains(":") && !readingMultilineContent -> {
+                println("property found")
+                val (key, value) = line.split(":", limit = 2).map { it.trim() }
+
+                if (value == "\"" || (value.startsWith("\"") && !value.endsWith("\""))) {
+                    readingMultilineContent = true
+                    multilinePropertyKey = key
+                    multilineContent.append(value.drop(1))  // Erstes Anführungszeichen entfernen
+                } else {
+                    currentNode.properties.add(key to processStringLiteral(value))
+                }
+            }
+            // Mehrzeiliger Inhalt erkannt
+            readingMultilineContent -> {
+                if (line.endsWith("\"")) {
+                    multilineContent.appendLine(line.dropLast(1))  // Abschließendes Anführungszeichen entfernen
+                    currentNode.properties.add(multilinePropertyKey!! to multilineContent.toString().trim())
+                    multilineContent.clear()
+                    readingMultilineContent = false
+                    multilinePropertyKey = null
+                } else {
+                    multilineContent.appendLine(line)
+                }
+            }
+
+            else -> {
+                if (readingMultilineContent) {
+                    multilineContent.appendLine(line)
+                }
+            }
         }
     }
-}*/
+
+    return root.children.firstOrNull() ?: root // Falls keine Knoten geparst wurden
+}

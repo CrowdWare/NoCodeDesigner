@@ -58,6 +58,7 @@ fun RowScope.syntaxEditor(
         )
         SyntaxTextField(
             onValueChange = { newValue ->
+
                 onTextFieldValueChange(newValue)
                 currentProject?.currentFileContent = newValue
 
