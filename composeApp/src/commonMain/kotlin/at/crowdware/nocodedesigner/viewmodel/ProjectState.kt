@@ -22,7 +22,7 @@ expect fun saveFileContent(path: String, uuid: String, pid: String, content: Str
 expect fun createProjectState(): ProjectState
 expect fun fileExists(path: String): Boolean
 expect fun deleteFile(path: String)
-expect fun addPage(path: String)
+expect fun createPage(path: String)
 
 abstract class ProjectState {
     var currentFileContent by mutableStateOf(TextFieldValue(""))
@@ -34,7 +34,6 @@ abstract class ProjectState {
     var path by mutableStateOf("")
         private set
     var treeData by mutableStateOf<List<TreeNode>>(emptyList())
-       // private set
     var extension by mutableStateOf("")
         private set
 
@@ -73,14 +72,8 @@ abstract class ProjectState {
         folder = path
         projectName = getDisplayName(path)
 
-
-        val projectState = GlobalProjectState.projectState
-        if (projectState != null) {
-            CoroutineScope(Dispatchers.Main).launch {
-                projectState.loadProjectFiles(path, uuid, pid)
-            }
-        } else {
-            println("Error: ProjectState is null. Make sure GlobalProjectState.projectState is initialized.")
+        CoroutineScope(Dispatchers.Main).launch {
+            loadProjectFiles(path, uuid, pid)
         }
     }
 
@@ -110,8 +103,18 @@ abstract class ProjectState {
         saveFileContent(path, "", "", currentFileContent.text)
     }
 
-    fun addPage(name: String) {
-        addPage("$folder/$name")
+    fun addPage(name: String, node: TreeNode) {
+        val path = "$folder/pages/$name.qml"
+        createPage(path)
+
+        val newNode = TreeNode("$name.qml", path, NodeType.QML)
+        val updatedChildren = if (node.children == null) {
+            listOf(newNode)
+        } else {
+            node.children!! + newNode
+        }
+        node.children = updatedChildren
+        LoadFile(path)
     }
 
     fun deleteItem(path: String) {

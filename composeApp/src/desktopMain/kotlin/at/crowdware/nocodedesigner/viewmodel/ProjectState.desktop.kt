@@ -84,8 +84,8 @@ class DesktopProjectState : ProjectState() {
 
         // app.xml load and parse
         try {
-            val uiXml = File("$path/app.qml").readText()
-            app = parseApp(uiXml)
+            val uiQml = File("$path/app.qml").readText()
+            app = parseApp(uiQml)
             LoadFile("$path/pages/home.qml")
         } catch (e: Exception) {
             println("Error parsing app.qml: ${e.message}")
@@ -143,7 +143,8 @@ actual fun deleteFile(path: String) {
     File(path).delete()
 }
 
-actual fun addPage(path: String) {
+actual fun createPage(path: String) {
+    println("addpage: $path")
     val file = File(path)
     file.createNewFile()
     file.writeText("Page {\n\n}")

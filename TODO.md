@@ -1,13 +1,23 @@
 # TODO
 
 ## Next release
+- Grammar should accept empty Page "Page {}"
 - Menu -> New Page business logic
 - Menu -> New Asset business logic
 - Edit menu support for qml editor
 - Undo Redo support for qml editor
 - Context menu tree view (new, rename, delete)
-- Icon exchange with custom svg 
-
+- Icon exchange with custom svg
+- Grammar
+  - Empty Page {} gives error
+- Syntax
+  - Closing bracket same color as opening brackets
+  - "page:home" has attributeName color
+  - attributeName should have light blue as color
+- TestCases
+  - Syntax highligt..errors
+  - Grammar tests
+    
 
 ## Nice to have
 - New Project (Theme chooser)

@@ -19,10 +19,6 @@
 
 package at.crowdware.nocodedesigner.ui
 
-
-
-
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
@@ -49,6 +45,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
+import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
 import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
 
@@ -76,7 +73,7 @@ fun TreeNodeView(
                                 val event = awaitPointerEvent()
                                 when {
                                     event.type == PointerEventType.Press && event.buttons.isPrimaryPressed -> {
-                                        if (node.children == null || node.children.isEmpty()) {
+                                        if (node.children == null || node.children!!.isEmpty()) {
                                             onClick(node)
                                         } else {
                                             node.expanded.value = !node.expanded.value
@@ -140,7 +137,7 @@ fun TreeNodeView(
                 offset = contextMenuOffset,
                 properties = PopupProperties(focusable = true)
             ) {
-                if (node.children == null || node.children.isEmpty()) {
+                if (node.children == null || node.children!!.isEmpty()) {
                     DropdownMenuItem(onClick = {
                         expanded = false
                         println("Clicked on Rename for ${node.title}")
@@ -151,15 +148,18 @@ fun TreeNodeView(
                         modifier = Modifier.background(color = Color.DarkGray),
                         onClick = {
                             expanded = false
-                            println("Clicked on Delete for ${node.title}")
+                            currentProject?.deleteItem(node.path)
+                            //val updatedChildren = nodeParent.children?.filter { it != node }
+                            //nodeParent.children = nodeParent.copy(children = updatedChildren)
                         }
                     ) {
                         Text(text = "Delete", fontSize = 12.sp)
                     }
-                } else {
+                } else if (node.title == "pages"){
                     DropdownMenuItem(onClick = {
                         expanded = false
                         println("Clicked on New for ${node.title}")
+                        currentProject?.addPage("test", node)
                     }) {
                         Text(text = "New", fontSize = 12.sp)
                     }

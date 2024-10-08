@@ -29,6 +29,6 @@ data class TreeNode(
     val title: String,
     val path: String,
     val type: NodeType,
-    val children: List<TreeNode>? = null,
+    var children: List<TreeNode>? = null,
     var expanded: MutableState<Boolean> = mutableStateOf(false) // Use mutableStateOf for the expanded flag
 )
