@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import at.crowdware.nocodelib.App
 import at.crowdware.nocodelib.Page
+import java.io.File
 
 
 expect fun getNodeType(path: String): NodeType
@@ -20,6 +21,8 @@ expect suspend fun loadFileContent(path: String, uuid: String, pid: String): Str
 expect fun saveFileContent(path: String, uuid: String, pid: String, content: String)
 expect fun createProjectState(): ProjectState
 expect fun fileExists(path: String): Boolean
+expect fun deleteFile(path: String)
+expect fun addPage(path: String)
 
 abstract class ProjectState {
     var currentFileContent by mutableStateOf(TextFieldValue(""))
@@ -106,10 +109,15 @@ abstract class ProjectState {
         if (path.isEmpty()) return
         saveFileContent(path, "", "", currentFileContent.text)
     }
-}
 
-//val projectState = compositionLocalOf { ProjectState() }
-val projectState = compositionLocalOf { createProjectState() }
+    fun addPage(name: String) {
+        addPage("$folder/$name")
+    }
+
+    fun deleteItem(path: String) {
+        deleteFile(path)
+    }
+}
 
 object GlobalProjectState {
     var projectState: ProjectState? = null

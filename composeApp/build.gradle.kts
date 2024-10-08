@@ -1,8 +1,7 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
+
 
 val minor = SimpleDateFormat("yy").format(Date()).toInt()
 val build = SimpleDateFormat("MMddHH").format(Date()).toInt()
@@ -45,9 +44,7 @@ kotlin {
                 implementation("org.jetbrains.compose.material:material-icons-extended:1.6.11")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
                 implementation("br.com.devsrsouza.compose.icons:font-awesome:1.1.1")
-
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3")
-
                 implementation(project(":nocodeLib"))
             }
         }

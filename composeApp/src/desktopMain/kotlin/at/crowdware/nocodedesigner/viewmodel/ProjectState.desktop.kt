@@ -136,6 +136,15 @@ fun copyResourceToFile(resourcePath: String, outputPath: String) {
 }
 
 actual fun fileExists(path: String): Boolean {
-    println("fileExists: $path")
     return File(path).exists()
+}
+
+actual fun deleteFile(path: String) {
+    File(path).delete()
+}
+
+actual fun addPage(path: String) {
+    val file = File(path)
+    file.createNewFile()
+    file.writeText("Page {\n\n}")
 }
