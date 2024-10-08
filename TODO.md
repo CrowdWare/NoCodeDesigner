@@ -1,8 +1,6 @@
 # TODO
 
 ## Next release
-- [ ] Grammar, at the end of the file space should be allowed
-- [ ] Support double values
 - [ ] Tabsize in Edit set to 4
 - [ ] App.xml is delivering a list of files including timestamp (caching)
 - [ ] Menu -> New Page business logic

@@ -37,7 +37,7 @@ object QmlGrammar : Grammar<List<Any>>() {
     val element: Parser<Any> by whitespaceParser and identifier and whitespaceParser and lBrace and elementContent and whitespaceParser and rBrace
 
     override val tokens: List<Token> = listOf(identifier, lBrace, rBrace, colon, stringLiteral, integerLiteral, whitespace)
-    override val rootParser: Parser<List<Any>> = oneOrMore(element)
+    override val rootParser: Parser<List<Any>> = (oneOrMore(element) and whitespaceParser).map { (elements, _) -> elements }
 }
 
 fun isQmlRootElement(qmlString: String, root: String): Boolean {
