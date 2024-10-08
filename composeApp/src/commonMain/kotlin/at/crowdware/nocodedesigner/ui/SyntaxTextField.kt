@@ -109,7 +109,6 @@ fun SyntaxTextField(
                     textStyle = TextStyle(fontSize = 14.sp, color = extendedColors.attributeNameColor, fontFamily = FontFamily.Monospace),
                     cursorBrush = SolidColor(cursorColor),
                           visualTransformation = when(extension) {
-                        "md" -> MarkdownSyntaxHighlighter(extendedColors)
                         "qml" -> QmlSyntaxHighlighter(extendedColors)
                         else -> VisualTransformation.None
                     },
@@ -130,23 +129,36 @@ fun SyntaxTextField(
 }
 
 class QmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
+    private val tabWidth = 4 // Anzahl der Leerzeichen für einen Tab
+
     override fun filter(text: AnnotatedString): TransformedText {
-        val builder = AnnotatedString.Builder(text)
+        // Ersetzen Sie zuerst alle Tabs durch Leerzeichen
+        val textWithExpandedTabs = expandTabs(text.text)
+
+        val builder = AnnotatedString.Builder(textWithExpandedTabs)
+
+        // Übertragen Sie die ursprünglichen Stile auf den neuen Text
+        text.spanStyles.forEach { span ->
+            val newStart = mapIndexForward(text.text, span.start)
+            val newEnd = mapIndexForward(text.text, span.end)
+            builder.addStyle(span.item, newStart, newEnd)
+        }
 
         // Highlight QML elements
         val elementRegex = Regex("(\\w+)\\s*\\{")
-        elementRegex.findAll(text).forEach { match ->
+        elementRegex.findAll(textWithExpandedTabs).forEach { match ->
             builder.addStyle(SpanStyle(color = colors.syntaxColor), match.range.first, match.range.last + 1)
         }
 
         // Highlight properties
         val propertyRegex = Regex("(\\w+)\\s*:")
-        propertyRegex.findAll(text).forEach { match ->
+        propertyRegex.findAll(textWithExpandedTabs).forEach { match ->
             builder.addStyle(SpanStyle(color = colors.attributeNameColor), match.range.first, match.range.last)
         }
+
         // Highlight string values and embedded Markdown
         val stringRegex = Regex("(text:\\s*)?\"([^\"]+)\"")
-        stringRegex.findAll(text).forEach { match ->
+        stringRegex.findAll(textWithExpandedTabs).forEach { match ->
             val isTextProperty = match.groups[1] != null
             val content = match.groups[2]?.value ?: ""
             val start = match.range.first
@@ -164,11 +176,43 @@ class QmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
                 }
             }
         }
-        return TransformedText(builder.toAnnotatedString(), OffsetMapping.Identity)
+
+        return TransformedText(builder.toAnnotatedString(), object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int = mapIndexForward(text.text, offset)
+            override fun transformedToOriginal(offset: Int): Int = mapIndexBackward(text.text, offset)
+        })
+    }
+
+    private fun expandTabs(text: String): String {
+        return text.replace("\t", " ".repeat(tabWidth))
+    }
+
+    private fun mapIndexForward(original: String, index: Int): Int {
+        var newIndex = 0
+        for (i in 0 until index) {
+            if (original[i] == '\t') {
+                newIndex += tabWidth
+            } else {
+                newIndex++
+            }
+        }
+        return newIndex
+    }
+
+    private fun mapIndexBackward(original: String, transformedIndex: Int): Int {
+        var originalIndex = 0
+        var currentTransformedIndex = 0
+        while (currentTransformedIndex < transformedIndex && originalIndex < original.length) {
+            if (original[originalIndex] == '\t') {
+                currentTransformedIndex += tabWidth
+            } else {
+                currentTransformedIndex++
+            }
+            originalIndex++
+        }
+        return originalIndex
     }
 }
-
-
 
 @Composable
 fun CustomSelectionColors(content: @Composable () -> Unit) {

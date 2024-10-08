@@ -1,8 +1,6 @@
 # TODO
 
 ## Next release
-- Navigate in Edit shall not trigger repaint nor save
-- Tabsize in Edit set to 4
 - Menu -> New Page business logic
 - Menu -> New Asset business logic
 - Paging as navigation maybe visual paging for book content
