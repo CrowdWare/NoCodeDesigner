@@ -58,13 +58,17 @@ fun RowScope.syntaxEditor(
         )
         SyntaxTextField(
             onValueChange = { newValue ->
-
+                val oldText = textFieldValue.text
                 onTextFieldValueChange(newValue)
                 currentProject?.currentFileContent = newValue
 
                 // Automatically save the content to disk after each change
                 coroutineScope.launch(ioDispatcher()) {
                     delay(500)
+                    currentProject?.saveFileContent()
+                }
+                // dont save if only the cursor has moved (no text has changed)
+                if(oldText != newValue.text) {
                     currentProject?.saveFileContent()
                 }
                 currentProject?.saveFileContent()

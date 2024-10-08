@@ -48,6 +48,7 @@ import at.crowdware.nocodedesigner.theme.ExtendedColors
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 import at.crowdware.nocodedesigner.utils.uiStates
 
+
 @Composable
 fun SyntaxTextField(
     textFieldValue: TextFieldValue,

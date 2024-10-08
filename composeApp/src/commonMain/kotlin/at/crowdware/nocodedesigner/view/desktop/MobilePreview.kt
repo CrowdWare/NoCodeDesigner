@@ -54,6 +54,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.Button
 import androidx.compose.material.Text
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import at.crowdware.nocodelib.YoutubeElement
 import at.crowdware.nocodelib.isQmlRootElement
 import at.crowdware.nocodelib.parsePage
@@ -63,38 +65,45 @@ fun mobilePreview(currentProject: ProjectState?) {
     var parseError = ""
     val qml = currentProject?.currentFileContent?.text ?: ""
     val ext = currentProject?.extension
+    var lastQml = remember { mutableStateOf("") }
+    var lastPage = remember { mutableStateOf(null as Page?) }
 
-    val parsedPage = try {
-        if (ext == "qml") {
-            if (qml.isEmpty()) {
-                parseError = "no page loaded"
-                null
-            }  else {
-                if (isQmlRootElement(qml, "Page")) {
-                    //val pageParser = QmlPageParser()
-                    val page = parsePage(qml)//pageParser.parse(source)
-                    if (page.elements.isEmpty()) {
-                        parseError = "page is empty"
-                        null
-                    } else {
-                        page
-                    }
-                } else if (isQmlRootElement(qml,"App")) {
-                    println("app loaded")
-                    null
-                } else {
+    val parsedPage: Page? = if(qml != lastQml.value) {
+        try {
+            if (ext == "qml") {
+                if (qml.isEmpty()) {
                     parseError = "no page loaded"
                     null
+                } else {
+                    if (isQmlRootElement(qml, "Page")) {
+                        println("parsing page")
+                        val page = parsePage(qml)
+                        if (page.elements.isEmpty()) {
+                            parseError = "page is empty"
+                            null
+                        } else {
+                            lastPage.value = page
+                            lastQml.value = qml
+                            page
+                        }
+                    } else {
+                        parseError = "no page loaded"
+                        null
+                    }
                 }
+            } else {
+                null
             }
-        } else {
+        } catch (e: Exception) {
+            parseError = e.message ?: ""
+            println("Error parsing source: ${e.message}")
             null
         }
-    } catch (e: Exception) {
-        parseError = e.message ?: ""
-        println("Error parsing source: ${e.message}")
-        null
+    } else {
+        lastPage.value
     }
+
+
 
     Column(modifier = Modifier.width(430.dp).fillMaxHeight().background(color = MaterialTheme.colors.primary)) {
         BasicText(
@@ -135,7 +144,6 @@ fun mobilePreview(currentProject: ProjectState?) {
                             .align(Alignment.Center)
                     ) {
                         if (parsedPage != null) {
-
                             Row(
                                 modifier = Modifier
                                     .padding(

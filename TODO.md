@@ -1,18 +1,19 @@
 # TODO
 
 ## Next release
--Tabsize in Edit set to 4
-- App.xml is delivering a list of files including timestamp (caching)
+- Navigate in Edit shall not trigger repaint nor save
+- Tabsize in Edit set to 4
 - Menu -> New Page business logic
 - Menu -> New Asset business logic
-- App.xml -> open splash screen in preview
 - Paging as navigation maybe visual paging for book content
-- Edit menu support for xml editor
-- Undo Redo support for xml editor
+- Edit menu support for qml editor
+- Undo Redo support for qml editor
 - Context menu tree view (new, rename, copy, paste, delete, open)
 - Icon exchange with custom svg 
 
 ## Nice to have
+- App.xml -> open splash screen in preview
+- App.xml is delivering a list of files including timestamp (caching)
 - Expressions in QML
 - Settings page
     - Option to choose between local directory and local webserver via REST

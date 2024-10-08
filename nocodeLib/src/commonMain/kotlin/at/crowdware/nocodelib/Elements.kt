@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 
+
 data class Page(var color: String, var backgroundColor: String, var padding: Padding, val elements: MutableList<UIElement>)
 data class App(val type: String, val items: MutableList<String>)
 sealed class UIElement
