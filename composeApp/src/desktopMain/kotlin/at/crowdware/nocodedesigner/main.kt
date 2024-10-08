@@ -83,7 +83,7 @@ fun main() = application {
     projectState.darkMode = androidx.compose.foundation.isSystemInDarkTheme()
 
     // setup logging, all println are stored in a log file
-    //setupLogging()
+    setupLogging()
 
     // Load the native library
     val macLib = Native.load(getLibraryPath(), MacLib::class.java) as MacLib

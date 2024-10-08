@@ -29,24 +29,6 @@ repositories {
 kotlin {
     jvmToolchain(11) // Wenn Java 11 verwendet werden soll
 
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        moduleName = "composeApp"
-        browser {
-            val projectDirPath = project.projectDir.path
-            commonWebpackConfig {
-                outputFileName = "composeApp.js"
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(projectDirPath)
-                    }
-                }
-            }
-        }
-        binaries.executable()
-    }
-
     jvm("desktop")
     
     sourceSets {
@@ -82,16 +64,6 @@ kotlin {
                 kotlin.srcDir(layout.buildDirectory.dir("generated/version"))
             }
         }
-
-       val wasmJsMain by getting {
-            dependencies {
-
-                implementation(compose.runtime)
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")  // Korrekte Coroutines-Version
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-                kotlin.srcDir(layout.buildDirectory.dir("generated/version"))
-            }
-        }
     }
 }
 
@@ -118,21 +90,6 @@ compose.desktop {
         }
     }
 }
-
-tasks.named("wasmJsProcessResources", Copy::class) {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    from("src/commonMain/resources") {
-        exclude("index.html") // explizit ausschließen
-    }
-    from("src/wasmMain/resources") {
-        exclude("index.html") // explizit ausschließen
-    }
-}
-
-tasks.named("wasmJsJar", Jar::class) {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Verhindert das Kopieren doppelter Manifest-Dateien
-}
-
 
 tasks.register<Copy>("copyDylibToApp") {
     dependsOn("createDistributable")
@@ -189,9 +146,6 @@ tasks.register("generateVersionFile") {
     }
 }
 
-tasks.named("compileKotlinWasmJs") {
-    dependsOn("generateVersionFile") // Stellt sicher, dass die Version-Datei vor dem Kompilieren für Wasm generiert wird
-}
 
 tasks.named("compileKotlinDesktop") {
     dependsOn("generateVersionFile") // Stellt sicher, dass die Version-Datei vor dem Kompilieren generiert wird

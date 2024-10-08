@@ -1,15 +1,14 @@
 # TODO
 
 ## Next release
-- [ ] Parse problems with QmlParser 
-```qml
-  Text { content: "Zeile 1"
-    color:"#ffffff"
-  }
-```
+- [x] Get rid of xml
+- [ ] Support all UIElements
+- [ ] Support double values
+- [x] Eliminate Wasm for now
+- [x] Parse problems with QmlParser
 - [ ] Tabsize in Edit set to 4
-- [ ] Syntax highlight for QML
-- [ ] Domparser in lib fills App / Page objects
+- [x] Syntax highlight for QML
+- [x] Domparser in lib fills App / Page objects
 - [ ] App.xml is delivering a list of files including timestamp (caching)
 - [x] put .dynlib into .app/.dmg
 - [x] Menu -> New Project business logic
@@ -24,10 +23,13 @@
 - [ ] Edit menu support for xml editor
 - [ ] Undo Redo support for xml editor
 - [ ] Context menu tree view (new, rename, copy, paste, delete, open)
-- [ ] TreeView items too much padding
+- [x] TreeView items too much padding
+- [ ] Icons clickable instead of drag and drop
+- [ ] Icon feed is QML
 - [ ] Icon exchange with custom svg 
 
 ## Nice to have
+- [ ] Expressions in QML
 - [ ] Settings page
     - [ ] Option to choose between local directory and local webserver via REST
     - [ ] Todo

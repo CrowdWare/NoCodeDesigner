@@ -48,7 +48,13 @@ fun isQmlRootElement(qmlString: String, root: String): Boolean {
     return regex.containsMatchIn(qmlString)
 }
 
-fun deserializeQml(parsedResult: List<Any>): Page {
+fun deserializeApp(parsedResult: List<Any>): App {
+    val app = App(type = "", items = mutableListOf())
+    // TODO: Implement deserialization logic
+    return app
+}
+
+fun deserializePage(parsedResult: List<Any>): Page {
     val page = Page(color = "", backgroundColor = "", padding = Padding(0, 0, 0, 0), elements = mutableListOf())
     
     parsedResult.forEach { tuple ->
@@ -64,9 +70,6 @@ fun deserializeQml(parsedResult: List<Any>): Page {
                         page.backgroundColor = properties?.get("backgroundColor") ?: ""
                         page.padding = parsePadding(properties?.get("padding").toString())
                         parseNestedElements(tuple.t5 as? List<*>, page.elements as MutableList<UIElement>)
-                    }
-                    "App" -> {
-                        // TODO: parse app
                     }
                 }
             }
@@ -120,8 +123,12 @@ fun parseNestedElements(nestedElements: List<*>?, elements: MutableList<UIElemen
     }
 }
 
-fun parseQmlPage(qml: String): Page {
+fun parsePage(qml: String): Page {
     val result = QmlGrammar.parseToEnd(qml)
-    return deserializeQml(result)
+    return deserializePage(result)
 }
 
+fun parseApp(qml: String): App {
+    val result = QmlGrammar.parseToEnd(qml)
+    return deserializeApp(result)
+}

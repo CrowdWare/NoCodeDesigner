@@ -89,7 +89,6 @@ abstract class ProjectState {
             extension = path.substringAfterLast('.', "")
             if (extension.isEmpty()) {
                 extension = when {
-                    fileExists("$path.xml") -> "xml"
                     fileExists("$path.qml") -> "qml"
                     else -> {
                         println("Keine gültige Datei gefunden.")

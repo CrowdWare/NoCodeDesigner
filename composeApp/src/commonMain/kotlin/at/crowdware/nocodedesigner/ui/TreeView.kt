@@ -66,7 +66,7 @@ fun TreeNodeView(
                         node.expanded.value = !node.expanded.value
                     }
                 } // Toggle expanded state on click
-                .padding(8.dp),
+                .padding(4.dp),
             verticalAlignment = Alignment.CenterVertically // Vertically align icon and text
         ) {
             // Icon for expanding/collapsing child nodes

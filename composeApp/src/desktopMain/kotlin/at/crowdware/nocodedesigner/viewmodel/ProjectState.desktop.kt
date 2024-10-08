@@ -1,10 +1,10 @@
 package at.crowdware.nocodedesigner.viewmodel
 
-import at.crowdware.nocodelib.XmlAppParser
 import java.io.File
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
 import at.crowdware.nocodedesigner.model.extensionToNodeType
+import at.crowdware.nocodelib.parseApp
 import java.io.IOException
 import java.io.InputStream
 import java.nio.file.Files
@@ -84,26 +84,25 @@ class DesktopProjectState : ProjectState() {
 
         // app.xml load and parse
         try {
-            val uiXml = File("$path/app.xml").readText()
-            val appParser = XmlAppParser()
-            app = appParser.parse(uiXml)
-
-            LoadFile("$path/pages/home.xml")
+            val uiXml = File("$path/app.qml").readText()
+            app = parseApp(uiXml)
+            LoadFile("$path/pages/home.qml")
         } catch (e: Exception) {
-            println("Error parsing app.xml: ${e.message}")
+            println("Error parsing app.qml: ${e.message}")
         }
     }
 
     override suspend fun createProjectFiles(path: String, uuid: String, pid: String, name: String, appId:String) {
         // TODO: copy default icon.png into assets
+        // TODO: create qml instead of xml
         val dir = File("$path/$name")
         dir.mkdirs()
-        val app = File("$path/$name/app.xml")
+        val app = File("$path/$name/app.qml")
         val pages = File("$path/$name/pages")
         pages.mkdirs()
         val assets = File("$path/$name/assets")
         assets.mkdirs()
-        val home = File("$path/$name/pages/home.xml")
+        val home = File("$path/$name/pages/home.qml")
         app.writeText("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<app name=\"$name\" id=\"$appId.$name\" icon=\"icon.png\">\n    <navigation type=\"HorizontalPager\">\n        <item page=\"home\"/>\n    </navigation>\n</app>\n")
         home.writeText("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<page>\n    <text>Home</text>\n</page>\n")
         copyResourceToFile("icons/default.icon.png", "$path/$name/assets/icon.png")

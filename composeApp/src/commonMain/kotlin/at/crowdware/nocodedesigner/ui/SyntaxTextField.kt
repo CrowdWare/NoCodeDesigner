@@ -108,7 +108,6 @@ fun SyntaxTextField(
                     textStyle = TextStyle(fontSize = 14.sp, color = extendedColors.attributeNameColor, fontFamily = FontFamily.Monospace),
                     cursorBrush = SolidColor(cursorColor),
                           visualTransformation = when(extension) {
-                        "xml" -> XmlSyntaxHighlighter(extendedColors)
                         "md" -> MarkdownSyntaxHighlighter(extendedColors)
                         "qml" -> QmlSyntaxHighlighter(extendedColors)
                         else -> VisualTransformation.None
@@ -166,88 +165,9 @@ class QmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
         }
         return TransformedText(builder.toAnnotatedString(), OffsetMapping.Identity)
     }
-}class XmlSyntaxHighlighter(extendedColors: ExtendedColors) : VisualTransformation {
-    val colors = extendedColors
-    override fun filter(text: AnnotatedString): TransformedText {
-        val builder = AnnotatedString.Builder(text.text)
-
-        // Regex patterns for XML declarations and regular tags
-        val xmlDeclRegex = Regex("<\\?xml\\s*[^>]*\\?>") // Full valid XML declarations
-        val tagRegex = Regex("</?\\w+\\s*[^>]*>") // Full valid XML tags with or without attributes
-
-        // Handle XML declarations
-        for (match in xmlDeclRegex.findAll(text.text)) {
-            val start = match.range.first
-            val end = match.range.last + 1
-            val tagText = match.value
-
-            // Only render full valid XML declarations in blue
-            if (isValidXmlDeclaration(tagText)) {
-                builder.addStyle(SpanStyle(color = colors.syntaxColor), start, end)
-                styleAttributes(builder, tagText, start)
-            } else {
-                builder.addStyle(SpanStyle(color = colors.attributeNameColor), start, end) // Invalid XML declaration
-            }
-        }
-
-        // Handle regular tags
-        for (match in tagRegex.findAll(text.text)) {
-            val start = match.range.first
-            val end = match.range.last + 1
-            val tagText = match.value
-
-            // Only valid tags are styled blue, invalid tags are left black
-            if (isValidTag(tagText)) {
-                builder.addStyle(SpanStyle(color = colors.syntaxColor), start, end)
-                styleAttributes(builder, tagText, start)
-            } else {
-                builder.addStyle(SpanStyle(color = colors.attributeNameColor), start, end) // Invalid tag
-            }
-        }
-
-        return TransformedText(builder.toAnnotatedString(), OffsetMapping.Identity)
-    }
-
-    // Helper function to style attributes within tags
-    private fun styleAttributes(builder: AnnotatedString.Builder, tagText: String, tagStart: Int) {
-        // Regex to find attributes in the format: name="value"
-        val attributeRegex = Regex("(\\w+)=\"([^\"]*)\"")
-
-        for (attrMatch in attributeRegex.findAll(tagText)) {
-            val attrName = attrMatch.groups[1]?.value ?: ""
-            val attrValue = attrMatch.groups[2]?.value ?: ""
-
-            // Calculate the positions of the attribute name, equals sign, and value within the tag
-            val attrNameStartInTag = attrMatch.range.first
-            val attrNameEndInTag = attrNameStartInTag + attrName.length
-
-            val attrNameStart = tagStart + attrNameStartInTag
-            val attrNameEnd = tagStart + attrNameEndInTag
-
-            val equalsSignStart = attrNameEnd
-            val equalsSignEnd = equalsSignStart + 1 // '=' is 1 character
-
-            val attrValueStart = equalsSignEnd // Include the opening quote
-            val attrValueEnd = attrValueStart + attrValue.length + 2 // Include closing quote
-
-            builder.addStyle(SpanStyle(color = colors.attributeNameColor), attrNameStart, attrNameEnd)
-
-            builder.addStyle(SpanStyle(color = colors.attributeValueColor), equalsSignStart, attrValueEnd)
-        }
-    }
-
-    // Validate if the tag is well-formed (fully valid, with attributes or properly closed)
-    private fun isValidTag(tag: String): Boolean {
-        val validTagRegex = Regex("</?\\w+\\s*(\\w+=\"[^\"]*\"\\s*)*/?>")
-        return tag.matches(validTagRegex)
-    }
-
-    // Validate XML declaration, ensuring the correct format and attributes
-    private fun isValidXmlDeclaration(declaration: String): Boolean {
-        val validXmlDeclRegex = Regex("<\\?xml(\\s+\\w+=\"[^\"]*\")*\\s*\\?>") // Full XML declarations with valid attributes or no attributes
-        return declaration.matches(validXmlDeclRegex)
-    }
 }
+
+
 
 @Composable
 fun CustomSelectionColors(content: @Composable () -> Unit) {
@@ -441,7 +361,7 @@ class MarkdownSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformati
     private fun highlightInlineHtml(builder: AnnotatedString.Builder, text: AnnotatedString) {
         val htmlTagRegex = Regex("<([a-zA-Z]+)(\\s+[a-zA-Z]+=\"[^\"]*\")*\\s*/?>")
         htmlTagRegex.findAll(text.text).forEach { match ->
-            //val tagNameRange = match.groups[1]!!.range // HTML Tag name
+
             val tagName = match.groups[1]?.value ?: ""
             val matchStart = match.range.first
             val tagNameStart = matchStart + match.value.indexOf(tagName)

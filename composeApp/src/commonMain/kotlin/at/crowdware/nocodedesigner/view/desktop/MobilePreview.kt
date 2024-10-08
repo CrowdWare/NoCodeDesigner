@@ -44,7 +44,6 @@ import at.crowdware.nocodelib.SoundElement
 import at.crowdware.nocodelib.SpacerElement
 import at.crowdware.nocodelib.VideoElement
 import at.crowdware.nocodelib.MarkdownElement
-import at.crowdware.nocodelib.XmlPageParser
 import at.crowdware.nocodelib.UIElement
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -57,54 +56,30 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import at.crowdware.nocodelib.YoutubeElement
 import at.crowdware.nocodelib.isQmlRootElement
-import at.crowdware.nocodelib.isXmlRootElement
-import at.crowdware.nocodelib.parseQmlPage
+import at.crowdware.nocodelib.parsePage
 
 @Composable
 fun mobilePreview(currentProject: ProjectState?) {
     var parseError = ""
-    val source = currentProject?.currentFileContent?.text ?: ""
+    val qml = currentProject?.currentFileContent?.text ?: ""
     val ext = currentProject?.extension
 
     val parsedPage = try {
-        if (ext == "xml") {
-            if (source.isEmpty()) {
-                parseError = "no page loaded"
-                null
-            } else {
-                if (isXmlRootElement(source,"page")) {
-                    val pageParser = XmlPageParser()
-                    val page = pageParser.parse(source)
-
-                    if (page.elements.isEmpty()) {
-                        parseError = "page is empty"
-                        null
-                    } else {
-                        page
-                    }
-                } else if (isXmlRootElement(source, "app")) {
-                    println("app loaded")
-                    null
-                } else {
-                    parseError = "no page loaded"
-                    null
-                }
-            }
-        } else if (ext == "qml") {
-            if (source.isEmpty()) {
+        if (ext == "qml") {
+            if (qml.isEmpty()) {
                 parseError = "no page loaded"
                 null
             }  else {
-                if (isQmlRootElement(source, "Page")) {
+                if (isQmlRootElement(qml, "Page")) {
                     //val pageParser = QmlPageParser()
-                    val page = parseQmlPage(source)//pageParser.parse(source)
+                    val page = parsePage(qml)//pageParser.parse(source)
                     if (page.elements.isEmpty()) {
                         parseError = "page is empty"
                         null
                     } else {
                         page
                     }
-                } else if (isQmlRootElement(source,"App")) {
+                } else if (isQmlRootElement(qml,"App")) {
                     println("app loaded")
                     null
                 } else {
