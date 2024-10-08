@@ -79,7 +79,7 @@ fun TreeNodeView(
                         .rotate(rotationAngle)
                         .size(24.dp)
                 )
-                Spacer(modifier = Modifier.width(8.dp)) // Space between arrow icon and node text
+                Spacer(modifier = Modifier.width(6.dp)) // Space between arrow icon and node text
             }
 
             // Display custom icon if provided
@@ -114,18 +114,17 @@ fun TreeView(
     iconProvider: @Composable ((TreeNode) -> Unit)? = null,
     onClick: (TreeNode) -> Unit
 ) {
-    val listState = rememberLazyListState() // Remember the scroll state for LazyColumn
+    val listState = rememberLazyListState()
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        // at.crowdware.NoCodeDesigner.ui.TreeView content with scrollable behavior
         LazyColumn(
-            state = listState, // Pass the scroll state to LazyColumn
+            state = listState,
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f) // Allow LazyColumn to take available vertical space
+                .weight(1f)
                 .background(MaterialTheme.colors.surface)
         ) {
             items(tree.size) { index ->

@@ -29,13 +29,10 @@ val integerLiteral: Token = regexToken("\\d+")
 
 object QmlGrammar : Grammar<List<Any>>() {
     val whitespaceParser = zeroOrMore(whitespace)
-
     val propertyValue = stringLiteral.map { it.text.removeSurrounding("\"") } or integerLiteral.map { it.text }
-
     val property by (whitespaceParser and identifier and whitespaceParser and colon and whitespaceParser and propertyValue).map { (_, id, _, _, _, value) ->
         id.text to value
     }
-
     val elementContent: Parser<List<Any>> = oneOrMore(property or parser { element })
     val element: Parser<Any> by whitespaceParser and identifier and whitespaceParser and lBrace and elementContent and whitespaceParser and rBrace
 
@@ -100,6 +97,11 @@ fun parseNestedElements(nestedElements: List<*>?, elements: MutableList<UIElemen
                         parseNestedElements(element.t5 as? List<*>, col.uiElements as MutableList<UIElement>)
                         elements.add(col)
                     }
+                    "Row" -> {
+                        val row = RowElement(padding = parsePadding(properties?.get("padding") ?: "0"))
+                        parseNestedElements(element.t5 as? List<*>, row.uiElements as MutableList<UIElement>)
+                        elements.add(row)
+                    }
                     "Markdown" -> {
                         val md = (properties?.get("text") ?: "").split("\n").joinToString("\n") { it.trim() }
                         val ele = MarkdownElement(text = md, color = properties?.get("color") ?: "#FFFFFF")
@@ -109,6 +111,10 @@ fun parseNestedElements(nestedElements: List<*>?, elements: MutableList<UIElemen
                         val btn = ButtonElement(label = properties?.get("label") ?: "", link = properties?.get("link") ?: "")
                         elements.add(btn)
                     }
+                    "Sound" -> {
+                        val snd = SoundElement(src = properties?.get("src") ?: "")
+                        elements.add(snd)
+                    }
                     "Image" -> {
                         val img = ImageElement(src = properties?.get("src") ?: "", scale = properties?.get("scale") ?: "1", link = properties?.get("link") ?: "")
                         elements.add(img)
@@ -116,6 +122,20 @@ fun parseNestedElements(nestedElements: List<*>?, elements: MutableList<UIElemen
                     "Spacer" -> {
                         val sp = SpacerElement(height = properties?.get("height")?.toInt() ?: 0)
                         elements.add(sp)
+                    }
+                    "Video" -> {
+                        val vid = VideoElement(
+                            src = properties?.get("src") ?: "",
+                            height = properties?.get("height")?.toInt() ?: 100,
+                        )
+                        elements.add(vid)
+                    }
+                    "Youtube" -> {
+                        val yt = YoutubeElement(
+                            id = properties?.get("id") ?: "",
+                            height = properties?.get("height")?.toInt() ?: 100,
+                        )
+                        elements.add(yt)
                     }
                 }
             }
