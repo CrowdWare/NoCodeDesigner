@@ -19,10 +19,7 @@
 
 package at.crowdware.nocodedesigner.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,39 +34,33 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerMoveFilter
 //import androidx.compose.ui.input.pointer.pointerMoveFilter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import at.crowdware.nocodedesigner.utils.Collisions
+import at.crowdware.nocodedesigner.theme.ExtendedTheme
 import at.crowdware.nocodedesigner.utils.uiStates
 import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
-import at.crowdware.nocodedesigner.viewmodel.projectState
 
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun DraggableIcon(
+fun ClickableIcon(
     imageVector: ImageVector,
     label: String,
-    xml: String
+    qml: String
 ) {
     val currentState = uiStates.current
     val currentProject: ProjectState = GlobalProjectState.projectState!!
-    var localOffset by remember { mutableStateOf(Offset.Zero)}
     var dragShadow by remember { mutableStateOf(1f) }
     var isHovered by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
     val isDarkTheme = MaterialTheme.colors.isLight.not() // Detect if dark mode is enabled
     val iconTint = if (isHovered) {
-        if (isDarkTheme) {
-            MaterialTheme.colors.onSurface.copy(alpha = 0.8f) // Brighten in dark mode when hovered
-        } else {
-            MaterialTheme.colors.onSurface.copy(alpha = 0.6f) // Darken in light mode when hovered
-        }
+        ExtendedTheme.colors.accentColor
     } else {
         if (isDarkTheme) {
             MaterialTheme.colors.onSurface.copy(alpha = 0.6f) // Default dark mode
@@ -87,8 +78,7 @@ fun DraggableIcon(
     }
 
     val borderColor = if (isHovered) {
-        if (isDarkTheme) MaterialTheme.colors.onSurface.copy(alpha = 0.4f) // Lighter border in dark mode
-        else MaterialTheme.colors.onSurface.copy(alpha = 0.7f) // Darker border in light mode
+        ExtendedTheme.colors.accentColor
     } else {
         if (isDarkTheme) MaterialTheme.colors.onSurface.copy(alpha = 0.2f) // Subtle border in dark mode
         else MaterialTheme.colors.onSurface.copy(alpha = 0.4f) // Subtle border in light mode
@@ -96,6 +86,23 @@ fun DraggableIcon(
 
     Box(contentAlignment = Alignment.Center,
         modifier = Modifier
+            .clickable {
+                val cursorPosition =
+                    currentProject.currentFileContent.selection.start  // Get current cursor position
+                val currentText = currentProject.currentFileContent.text
+
+                // Insert new text at the cursor position
+                val newTextValue =
+                    currentText.substring(0, cursorPosition) + qml + currentText.substring(
+                        cursorPosition
+                    )
+                // Update the TextFieldValue with new text and move the cursor after the inserted text
+                currentProject.currentFileContent = currentProject.currentFileContent.copy(
+                    text = newTextValue,
+                    selection = TextRange(cursorPosition + qml.length)  // Move cursor to after the inserted text
+                )
+                currentProject.saveFileContent()
+            }
             .width(95.dp)
             .border(2.dp, borderColor, shape = RoundedCornerShape(8.dp))
             .background(backgroundColor)
@@ -103,66 +110,16 @@ fun DraggableIcon(
             .hoverable(interactionSource = interactionSource) // Detect hover state
             .onGloballyPositioned {
                 currentState.objectLocalPosition = it.localToWindow(Offset.Zero)
-            }
-            /*.pointerMoveHandler(
+            }.pointerMoveFilter(
                 onEnter = {
-                    isHovered = true // Trigger hover effect when the pointer enters the Box
+                    isHovered = true // Trigger hover
                     false
                 },
                 onExit = {
-                    isHovered = false // Reset hover effect when the pointer exits the Box
+                    isHovered = false // Remove hover
                     false
                 }
-            )*/
-            .pointerInput(Unit) {
-                val collisions = Collisions()
-                detectDragGestures(
-                    onDragStart = {
-                        dragShadow = 0.2f
-                    },
-                    onDrag = { _, dragAmount ->
-                        localOffset += dragAmount
-                        var pos = Offset(
-                            currentState.objectLocalPosition.x + localOffset.x,
-                            currentState.objectLocalPosition.y + localOffset.y
-                        )
-
-                        currentState.hasCollided.value =
-                            collisions.detect(pos, currentState.targetLocalPosition, currentState.targetSize)
-                    },
-                    onDragCancel = {
-
-                    },
-                    onDragEnd = {
-                        var pos = Offset(
-                            currentState.objectLocalPosition.x + localOffset.x,
-                            currentState.objectLocalPosition.y + localOffset.y
-                        )
-                        currentState.hasCollided.value =
-                            collisions.detect(pos, currentState.targetLocalPosition, currentState.targetSize)
-                        if (currentState.hasCollided.value) {
-
-                            val cursorPosition =
-                                currentProject.currentFileContent.selection.start  // Get current cursor position
-                            val currentText = currentProject.currentFileContent.text
-
-                            // Insert new text at the cursor position
-                            val newTextValue =
-                                currentText.substring(0, cursorPosition) + xml + currentText.substring(
-                                    cursorPosition
-                                )
-                            // Update the TextFieldValue with new text and move the cursor after the inserted text
-                            currentProject.currentFileContent = currentProject.currentFileContent.copy(
-                                text = newTextValue,
-                                selection = TextRange(cursorPosition + xml.length)  // Move cursor to after the inserted text
-                            )
-                            currentProject.saveFileContent()
-                        }
-                        currentState.hasCollided.value = false
-                        dragShadow = 1f
-                        localOffset = Offset.Zero
-                    })
-            }
+            )
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally, // Center the icon and text horizontally

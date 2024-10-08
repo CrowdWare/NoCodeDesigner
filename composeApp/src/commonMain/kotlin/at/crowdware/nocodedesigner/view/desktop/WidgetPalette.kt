@@ -38,12 +38,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.input.pointer.pointerMoveFilter
 //import androidx.compose.ui.input.pointer.pointerMoveFilter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import at.crowdware.nocodedesigner.ui.DraggableIcon
+import at.crowdware.nocodedesigner.ui.ClickableIcon
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -72,7 +73,7 @@ fun widgetPalette(currentProject: ProjectState?) {
                 .weight(1f - treeViewHeight)
                 .background(MaterialTheme.colors.surface) // Apply surface color here
         ) {
-            LazyColumn(modifier = Modifier/*.width(320.dp)*/.background(color = MaterialTheme.colors.surface)) {
+            LazyColumn(modifier = Modifier.background(color = MaterialTheme.colors.surface)) {
                 item {
                     var expanded by remember { mutableStateOf(true) }
                     val rotationAngle by animateFloatAsState(if (expanded) 180f else 0f)
@@ -84,7 +85,7 @@ fun widgetPalette(currentProject: ProjectState?) {
                                 .fillMaxWidth()
                                 .clickable { expanded = expanded.not() }
                                 .padding(8.dp)
-                                /*.pointerMoveFilter(
+                                .pointerMoveFilter(
                                     onEnter = {
                                         isHovered = true // Trigger hover
                                         false
@@ -93,7 +94,7 @@ fun widgetPalette(currentProject: ProjectState?) {
                                         isHovered = false // Remove hover
                                         false
                                     }
-                                )*/,
+                                ),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween) {
                             BasicText(
@@ -114,16 +115,16 @@ fun widgetPalette(currentProject: ProjectState?) {
                                     modifier = Modifier.wrapContentSize(),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    DraggableIcon(
+                                    ClickableIcon(
                                         imageVector = Icons.Outlined.CheckBox,
                                         label = "Row",
-                                        xml = "<row>\n\n</row>\n"
+                                        qml = "Row {\n\n}\n"
                                     )
 
-                                    DraggableIcon(
+                                    ClickableIcon(
                                         imageVector = Icons.Outlined.TextFields,
                                         label = "Column",
-                                        xml = "<column>\n\n</column>\n"
+                                        qml ="Column {\n\n}\n"
                                     )
                                 }
                             }
@@ -141,7 +142,7 @@ fun widgetPalette(currentProject: ProjectState?) {
                                 .fillMaxWidth()
                                 .clickable { expanded = expanded.not() }
                                 .padding(8.dp)
-                                /*.pointerMoveFilter(
+                                .pointerMoveFilter(
                                     onEnter = {
                                         isHovered = true // Trigger hover
                                         false
@@ -150,7 +151,7 @@ fun widgetPalette(currentProject: ProjectState?) {
                                         isHovered = false // Remove hover
                                         false
                                     }
-                                )*/,
+                                ),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween) {
                             BasicText(
@@ -171,25 +172,25 @@ fun widgetPalette(currentProject: ProjectState?) {
                                     modifier = Modifier.wrapContentSize(),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    DraggableIcon(
+                                    ClickableIcon(
                                         imageVector = Icons.Outlined.CheckBox,
-                                        label = "Label",
-                                        xml = "<text>lorem ipsum dolor</text>\n"
+                                        label = "Text",
+                                        qml ="Text { text: \"Lorem ipsum dolor\" }\n"
                                     )
-                                    DraggableIcon(
+                                    ClickableIcon(
                                         imageVector = Icons.Outlined.CheckBox,
                                         label = "Markdown",
-                                        xml = "<markdown>lorem ipsum dolor</markdown>\n"
+                                        qml ="Markdown { text: \"# Header\" }\n"
                                     )
-                                    DraggableIcon(
+                                    ClickableIcon(
                                         imageVector = Icons.Outlined.TextFields,
                                         label = "Spacer",
-                                        xml = "<spacer height=\"8\"/>\n"
+                                        qml = "Spacer { height: 8 }\n"
                                     )
-                                    DraggableIcon(
+                                    ClickableIcon(
                                         imageVector = Icons.Outlined.TextFields,
                                         label = "Image",
-                                        xml = "<image src=\"image.png\"/>\n"
+                                        qml ="Image { src: \"sample.mp4\" }\n"
                                     )
                                 }
                             }
@@ -207,7 +208,7 @@ fun widgetPalette(currentProject: ProjectState?) {
                                 .fillMaxWidth()
                                 .clickable { expanded = expanded.not() }
                                 .padding(8.dp)
-                                /*.pointerMoveFilter(
+                                .pointerMoveFilter(
                                     onEnter = {
                                         isHovered = true // Trigger hover
                                         false
@@ -216,7 +217,7 @@ fun widgetPalette(currentProject: ProjectState?) {
                                         isHovered = false // Remove hover
                                         false
                                     }
-                                )*/,
+                                ),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween) {
                             BasicText(
@@ -237,20 +238,21 @@ fun widgetPalette(currentProject: ProjectState?) {
                                     modifier = Modifier.wrapContentSize(),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
+                                    /*
                                     DraggableIcon(
                                         imageVector = Icons.Outlined.TextFields,
                                         label = "Textfield",
-                                        xml = "<textfield label=\"Email\" placeholder=\"name@example.com\" value=\"\"/>\n"
+                                        qml = "TextField { placeholderText: \"Enter text\" }\n"
                                     )
                                     DraggableIcon(
                                         imageVector = Icons.Outlined.CheckBox,
                                         label = "Checkbox",
-                                        xml = "<checkbox checked=\"false\"/>\n"
-                                    )
-                                    DraggableIcon(
+                                        qml ="CheckBox { text: \"Check me\" }\n"
+                                    )*/
+                                    ClickableIcon(
                                         imageVector = Icons.Outlined.SmartButton,
                                         label = "Button",
-                                        xml = "<button label=\"click me\" link=\"page2\"/>\n"
+                                        qml = "Button { label: \"Click me\" link: \"page:home\" }\n"
                                     )
                                 }
                             }
