@@ -30,7 +30,6 @@ import java.net.URI
 actual fun dynamicImageFromAssets(filename: String, scale: String, link: String) {
     val ps = GlobalProjectState.projectState
     val path = "${ps?.folder}/assets/$filename"
-    println("path: $path")
 
     val imageFile = File(path)
     var bitmap: ImageBitmap = ImageBitmap(1, 1)
@@ -62,7 +61,6 @@ actual fun dynamicVideofromAssets(filename: String, height: Int) {
     var bitmap: BufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB)
     try {
         val picture: Picture = FrameGrab.getFrameFromFile(File(path), 0)
-        println("${picture}, ${picture.size.width}, ${picture.size.height}")
         bitmap = AWTUtil.toBufferedImage(picture)
     } catch (e: Exception) {
         println("${e.message}")

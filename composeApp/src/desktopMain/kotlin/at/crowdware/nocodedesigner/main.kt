@@ -339,7 +339,7 @@ fun getBundlePath(): String {
     val bundlePathNSString = objc.objc_msgSend(mainBundle, bundlePathSelector)
     val utf8StringSelector = objc.sel_registerName("UTF8String")
     val bundlePathPointer = objc.objc_msgSend(bundlePathNSString, utf8StringSelector)
-    println("Bundle path: ${bundlePathPointer.getString(0)}")
+
     return bundlePathPointer.getString(0)
 }
 

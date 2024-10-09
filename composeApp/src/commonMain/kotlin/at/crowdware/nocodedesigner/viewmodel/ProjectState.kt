@@ -90,7 +90,6 @@ abstract class ProjectState {
     fun ImportFile(path: String) {
         val filename = path.substringAfterLast("/")
         val target  = "$folder/assets/$filename"
-        println(target)
         copyAssetFile(path, target)
         val node = TreeNode(title = mutableStateOf(filename), path = path, type = getNodeType(path))
         assetsNode.children.add(node)

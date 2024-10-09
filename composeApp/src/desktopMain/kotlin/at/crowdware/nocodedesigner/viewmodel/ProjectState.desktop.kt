@@ -154,7 +154,6 @@ actual fun deleteFile(path: String) {
 }
 
 actual fun createPage(path: String) {
-    println("addpage: $path")
     val file = File(path)
     file.createNewFile()
     file.writeText("Page {\n\n}")
