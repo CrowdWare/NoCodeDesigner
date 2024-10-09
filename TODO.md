@@ -6,8 +6,6 @@
 - Edit menu support for qml editor
 - Undo Redo support for qml editor
 - Icon exchange with custom svg
-- Grammar
-  - should recognize /* block comments */
 - Syntax Highlight
   - Closing bracket same color as opening brackets
   - "page:home" has attributeName color

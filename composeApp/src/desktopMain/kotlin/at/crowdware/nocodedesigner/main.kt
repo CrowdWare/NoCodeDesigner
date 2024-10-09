@@ -242,9 +242,16 @@ fun main() = application {
                                 })
                         }
                         if (projectState.isRenameAlertDialogVisible) {
+                            val pageName = projectState.currentTreeNode?.title?.value?.substringBefore(".")
                             AlertDialog(
                                 onDismissRequest = { projectState.isRenameAlertDialogVisible = false },
-                                title = {Text("Page home cannot be renamed!")},
+                                title = {
+                                    if (pageName == "app") {
+                                        Text("The application file cannot be renamed!")
+                                    } else {
+                                        Text("The homepage cannot be renamed!")
+                                    }
+                                        },
                                 text = {
                                     Text(text = "")
                                 },

@@ -130,7 +130,7 @@ fun SyntaxTextField(
 
 class QmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
     private val tabWidth = 4 // Anzahl der Leerzeichen für einen Tab
-
+/*
     override fun filter(text: AnnotatedString): TransformedText {
         // Ersetzen Sie zuerst alle Tabs durch Leerzeichen
         val textWithExpandedTabs = expandTabs(text.text)
@@ -181,6 +181,67 @@ class QmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
             override fun originalToTransformed(offset: Int): Int = mapIndexForward(text.text, offset)
             override fun transformedToOriginal(offset: Int): Int = mapIndexBackward(text.text, offset)
         })
+    }
+*/
+
+    override fun filter(text: AnnotatedString): TransformedText {
+        // Replace all tabs with spaces first
+        val textWithExpandedTabs = expandTabs(text.text)
+
+        val builder = AnnotatedString.Builder(textWithExpandedTabs)
+
+        // Transfer original styles to the new text
+        text.spanStyles.forEach { span ->
+            val newStart = mapIndexForward(text.text, span.start)
+            val newEnd = mapIndexForward(text.text, span.end)
+            builder.addStyle(span.item, newStart, newEnd)
+        }
+
+        // Highlight string values first, including those with colons
+        val stringRegex = Regex("\"[^\"]*\"")
+        stringRegex.findAll(textWithExpandedTabs).forEach { match ->
+            builder.addStyle(SpanStyle(color = colors.attributeValueColor), match.range.first, match.range.last + 1)
+        }
+
+        // Highlight QML elements
+        val elementRegex = Regex("(\\w+)\\s*\\{")
+        elementRegex.findAll(textWithExpandedTabs).forEach { match ->
+            builder.addStyle(SpanStyle(color = colors.syntaxColor), match.range.first, match.range.last + 1)
+        }
+
+        // Highlight properties (excluding the colon)
+        val propertyRegex = Regex("(\\w+)(?=\\s*:)")
+        propertyRegex.findAll(textWithExpandedTabs).forEach { match ->
+            // Check if this property name is not within a string
+            if (!isWithinString(textWithExpandedTabs, match.range.first)) {
+                builder.addStyle(SpanStyle(color = colors.attributeNameColor), match.range.first, match.range.last + 1)
+            }
+        }
+
+        // Highlight colons and closing brackets
+        val colonAndBracketRegex = Regex(":|[}]")
+        colonAndBracketRegex.findAll(textWithExpandedTabs).forEach { match ->
+            // Check if this colon or bracket is not within a string
+            if (!isWithinString(textWithExpandedTabs, match.range.first)) {
+                builder.addStyle(SpanStyle(color = colors.syntaxColor), match.range.first, match.range.last + 1)
+            }
+        }
+
+        return TransformedText(builder.toAnnotatedString(), object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int = mapIndexForward(text.text, offset)
+            override fun transformedToOriginal(offset: Int): Int = mapIndexBackward(text.text, offset)
+        })
+    }
+
+    // Helper function to check if a given index is within a string
+    private fun isWithinString(text: String, index: Int): Boolean {
+        var inString = false
+        for (i in 0 until index) {
+            if (text[i] == '"') {
+                inString = !inString
+            }
+        }
+        return inString
     }
 
     private fun expandTabs(text: String): String {

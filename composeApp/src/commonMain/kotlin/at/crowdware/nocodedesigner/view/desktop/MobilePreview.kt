@@ -203,7 +203,7 @@ fun RenderUIElement(element: UIElement) {
             }
         }
         is ColumnElement -> {
-            Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier.padding(
+            Column(modifier = Modifier.padding(
                 top = element.padding.top.dp,
                 bottom = element.padding.bottom.dp,
                 start = element.padding.left.dp,

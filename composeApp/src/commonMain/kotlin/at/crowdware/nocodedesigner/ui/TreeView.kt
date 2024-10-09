@@ -140,7 +140,8 @@ fun TreeNodeView(
                 if (node.children.isEmpty()) {
                     DropdownMenuItem(onClick = {
                         expanded = false
-                        if (node.title.value == "home.qml") {
+                        if (node.title.value == "home.qml" || node.title.value == "app.qml") {
+                            currentProject?.currentTreeNode = node
                             currentProject?.isRenameAlertDialogVisible = true
                         } else {
                             currentProject?.currentTreeNode = node
