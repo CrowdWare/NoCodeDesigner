@@ -1,6 +1,7 @@
 # TODO
 
 ## Next release
+- NoCodeBrowser should also parse QML 
 - Add page needs dialog for name, and maybe template
 - Menu -> New Page business logic
 - Menu -> New Asset business logic
@@ -10,7 +11,7 @@
 - Icon exchange with custom svg
 - Grammar
   - should recognize /* block comments */
-- Syntax
+- Syntax Highlight
   - Closing bracket same color as opening brackets
   - "page:home" has attributeName color
   - attributeName should have light blue as color
@@ -19,6 +20,21 @@
   - Syntax highligt..errors
   - Grammar tests
     
+## Bugs
+- Cursor movement is bad...goes not up if at the last bracket
+```qml
+Page {
+    backgroundColor: "#00000ff"
+	color: "#FFFFFF"
+	Column {
+	Button { label: "Click me" link: "page:home" }
+	Spacer { height: 8 }
+	Button { label: "Click me" link: "page:home" }
+	}
+
+	
+}
+```
 
 ## Nice to have
 - New Project (Theme chooser)

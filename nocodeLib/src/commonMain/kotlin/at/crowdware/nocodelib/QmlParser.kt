@@ -68,21 +68,14 @@ val whitespace: Token = regexToken("\\s+")
 val integerLiteral: Token = regexToken("\\d+")
 val floatLiteral = regexToken("\\d+\\.\\d+")
 
-// Neue Token für Kommentare
 val lineComment: Token = regexToken("//.*")
-val blockCommentStart: Token = literalToken("/*")
-val blockCommentEnd: Token = literalToken("*/")
-val blockCommentContent: Token = regexToken("[^*]*\\*+([^*/][^*]*\\*+)*")
+val blockComment: Token = regexToken(Regex("/\\*[\\s\\S]*?\\*/", RegexOption.DOT_MATCHES_ALL))
 
 object QmlGrammar : Grammar<List<Any>>() {
     val whitespaceParser = zeroOrMore(whitespace)
 
-    // Parser für Kommentare
-    val lineCommentParser = lineComment
-    val blockCommentParser = (blockCommentStart and zeroOrMore(blockCommentContent) and blockCommentEnd).map { "" }
-    val commentParser = lineCommentParser or blockCommentParser
+    val commentParser = lineComment or blockComment
 
-    // Erweiterter Whitespace-Parser, der auch Kommentare ignoriert
     val ignoredParser = zeroOrMore(whitespace or commentParser)
 
     val stringParser = stringLiteral.map { PropertyValue.StringValue(it.text.removeSurrounding("\"")) }
@@ -99,7 +92,7 @@ object QmlGrammar : Grammar<List<Any>>() {
 
     override val tokens: List<Token> = listOf(
         identifier, lBrace, rBrace, colon, stringLiteral, floatLiteral, integerLiteral,
-        whitespace, lineComment, blockCommentStart, blockCommentEnd, blockCommentContent
+        whitespace, lineComment, blockComment
     )
     override val rootParser: Parser<List<Any>> = (oneOrMore(element) and ignoredParser).map { (elements, _) -> elements }
 }
