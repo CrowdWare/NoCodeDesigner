@@ -10,7 +10,9 @@ import at.crowdware.nocodelib.parseApp
 import java.io.IOException
 import java.io.InputStream
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 
 actual fun getNodeType(path: String): NodeType {
     val file = File(path)
@@ -69,12 +71,18 @@ class DesktopProjectState : ProjectState() {
             val statefulChildren = SnapshotStateList<TreeNode>().apply {
                 addAll(children)
             }
-            return TreeNode(
+            val node = TreeNode(
                 title = mutableStateOf( file.name),
                 path = file.path,
                 type = nodeType,
                 children = statefulChildren
             )
+            if (node.title.value == "pages") {
+                pageNode = node
+            } else if (node.title.value == "assets") {
+                assetsNode = node
+            }
+            return node
         }
 
         val nodes = file.listFiles()
@@ -154,4 +162,10 @@ actual fun createPage(path: String) {
 
 actual fun renameFile(pathBefore: String, pathAfter: String) {
     File(pathBefore).renameTo(File(pathAfter))
+}
+
+actual fun copyAssetFile(path: String, target: String) {
+    val source: Path = Path.of(path)
+    val target: Path = Path.of(target)
+    Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING)
 }

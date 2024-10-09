@@ -84,7 +84,6 @@ fun mobilePreview(currentProject: ProjectState?) {
                     null
                 } else {
                     if (isQmlRootElement(qml, "Page")) {
-                        println("parsing page")
                         val page = parsePage(qml)
                         if (page.elements.isEmpty()) {
                             parseError = "page is empty"

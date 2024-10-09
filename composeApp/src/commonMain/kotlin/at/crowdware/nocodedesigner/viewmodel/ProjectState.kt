@@ -1,9 +1,7 @@
 package at.crowdware.nocodedesigner.viewmodel
 
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.TextFieldValue
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
@@ -13,6 +11,9 @@ import kotlinx.coroutines.launch
 import at.crowdware.nocodelib.App
 import at.crowdware.nocodelib.Page
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 
 
 expect fun getNodeType(path: String): NodeType
@@ -24,6 +25,7 @@ expect fun fileExists(path: String): Boolean
 expect fun deleteFile(path: String)
 expect fun createPage(path: String)
 expect fun renameFile(pathBefore: String, pathAfter: String)
+expect fun copyAssetFile(path: String, target: String)
 
 abstract class ProjectState {
     var currentFileContent by mutableStateOf(TextFieldValue(""))
@@ -42,10 +44,12 @@ abstract class ProjectState {
     var isProjectStructureVisible by mutableStateOf(true)
     var isNewProjectDialogVisible by mutableStateOf(false)
     var isOpenProjectDialogVisible by mutableStateOf(false)
+    var isImportAssetDialogVisible by mutableStateOf(false)
     var isAboutDialogOpen by  mutableStateOf(false)
     var isEditorVisible by mutableStateOf(false)
     var darkMode by mutableStateOf(false)
     var currentTreeNode by mutableStateOf(null as TreeNode?)
+    val focusRequester by mutableStateOf(FocusRequester())
 
     lateinit var pageNode: TreeNode
     lateinit var assetsNode: TreeNode
@@ -81,6 +85,15 @@ abstract class ProjectState {
         CoroutineScope(Dispatchers.Main).launch {
             loadProjectFiles(path, uuid, pid)
         }
+    }
+
+    fun ImportFile(path: String) {
+        val filename = path.substringAfterLast("/")
+        val target  = "$folder/assets/$filename"
+        println(target)
+        copyAssetFile(path, target)
+        val node = TreeNode(title = mutableStateOf(filename), path = path, type = getNodeType(path))
+        assetsNode.children.add(node)
     }
 
     fun LoadFile(filePath: String) {

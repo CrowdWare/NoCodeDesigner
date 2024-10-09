@@ -5,8 +5,6 @@
   - Comments are not grayed out
   - No tabs anymore
   - Cursor management when tabbed
-- Menu -> New Page business logic
-- Menu -> New Asset business logic
 - Edit menu support for qml editor
 - Undo Redo support for qml editor
 - Icon exchange with custom svg
@@ -31,6 +29,7 @@ Page {
 ```
 
 ## Nice to have
+- Import multiple assets
 - New Project (Theme chooser)
 - New page (Template chooser)
 - Paging as navigation maybe visual paging for book content
@@ -44,6 +43,6 @@ Page {
 - put python install into dmg for local webserver
 - Git support
 - Save only when xml is valid or after a period od time
-- Drag and drop tree node to editor (button)
+- Drag and drop tree node to editor (button) 
 - WebService in KTOR also for Desktop
 - Code Generator

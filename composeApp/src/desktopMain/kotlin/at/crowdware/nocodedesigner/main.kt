@@ -67,7 +67,6 @@ val LocalProjectState = compositionLocalOf<ProjectState> { error("No ProjectStat
 fun main() = application {
     val appName = "NoCodeDesigner"
     val version = Version.version
-    var action by remember { mutableStateOf("Last action: None") }
     val loadedState = loadAppState()
     val windowState = rememberWindowState(
         width = (loadedState?.windowWidth ?: 1600).dp,
@@ -129,31 +128,19 @@ fun main() = application {
 
             MenuBar {
                 Menu("File", mnemonic = 'F') {
-                    Menu("New") {
-                        Item("Project", onClick = {
-                            projectState.isNewProjectDialogVisible = true
-                        })
-                        Separator()
-                        Item("Page", onClick = {})
-                        Item("Asset", onClick = {})
-                    }
-                    Item("Open...", onClick = {
+                    Item("Create Project", onClick = {
+                        projectState.isNewProjectDialogVisible = true
+                    })
+                    Item("Create Page", onClick = {
+                        projectState.isPageDialogVisible = true
+                    })
+                    Item("Import Asset", onClick = {
+                        projectState.isImportAssetDialogVisible = true
+                    })
+                    Separator()
+                    Item("Open", onClick = {
                         projectState.isOpenProjectDialogVisible = true
                     })
-                    Item("Close Project", onClick = {})
-                }
-                Menu("Edit", mnemonic = 'E') {
-                    Item("Undo", onClick = {}, shortcut = KeyShortcut(Key.Z, meta = true))
-                    Item("Redo", onClick = {}, shortcut = KeyShortcut(Key.Z, ctrl = true, meta = true))
-                    Separator()
-                    Item("Cut", onClick = {}, shortcut = KeyShortcut(Key.X, meta = true))
-                    Item("Copy", onClick = { action = "Last action: Copy" }, shortcut = KeyShortcut(Key.C, meta = true))
-                    Item(
-                        "Paste",
-                        onClick = { action = "Last action: Paste" },
-                        shortcut = KeyShortcut(Key.V, meta = true)
-                    )
-                    Item("Delete", onClick = {}, shortcut = KeyShortcut(Key.Delete))
                 }
             }
             AppTheme(darkTheme = projectState.darkMode) {
@@ -283,6 +270,26 @@ fun main() = application {
                             }
                             projectState.isOpenProjectDialogVisible = false
                         }
+                        if(projectState.isImportAssetDialogVisible) {
+                            try {
+                                // Call the native Swift method
+                                val filePathPointer = macLib.selectFile(projectState.darkMode)
+
+                                // Check if the pointer is null
+                                if (filePathPointer == null) {
+                                    println("No file selected or an error occurred in the Swift function.")
+                                } else {
+                                    // Convert the result from a Pointer to a String
+                                    val filePath = filePathPointer.getString(0)
+                                    projectState.ImportFile(filePath)
+                                }
+                            } catch (e: Exception) {
+                                // Catch any exceptions that happen during the JNA call
+                                println("Error calling native function: ${e.message}")
+                                e.printStackTrace()
+                            }
+                            projectState.isImportAssetDialogVisible = false
+                        }
                     }
                 }
             }
@@ -306,6 +313,7 @@ fun onAppClose(frame: ComposeWindow, folder: String) {
 // Define the interface for the Swift library
 interface MacLib : Library {
     fun selectFolder(darkMode: Boolean): Pointer?
+    fun selectFile(darkMode: Boolean): Pointer?
 }
 
 // JNA interface to access Objective-C runtime

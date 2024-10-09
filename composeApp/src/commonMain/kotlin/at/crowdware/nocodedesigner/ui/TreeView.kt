@@ -74,11 +74,6 @@ fun TreeNodeView(
                                         if (node.children.isEmpty()) {
                                             onClick(node)
                                         } else {
-                                            if (node.title.value == "pages") {
-                                                currentProject?.pageNode = node
-                                            } else if (node.title.value == "assets") {
-                                                currentProject?.assetsNode = node
-                                            }
                                             node.expanded.value = !node.expanded.value
                                         }
                                     }
