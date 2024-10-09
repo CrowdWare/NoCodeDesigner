@@ -64,15 +64,13 @@ fun SyntaxTextField(
     var isFocused by remember { mutableStateOf(false) }
     var isHovered = currentState.hasCollided.value
 
-    // Default colors
     val backgroundColor = MaterialTheme.colors.surface
     val cursorColor = MaterialTheme.colors.onSurface
     val focusedBorderColor = MaterialTheme.colors.primary
     val unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = 0.4f)
 
-    // Border color changes based on hover, focus, or default state
     val borderColor = when {
-        isHovered -> MaterialTheme.colors.secondary // Use hover border color when hovered
+        isHovered -> MaterialTheme.colors.secondary
         isFocused -> focusedBorderColor
         else -> unfocusedBorderColor
     }
@@ -80,21 +78,20 @@ fun SyntaxTextField(
     CustomSelectionColors {
         Row(
             modifier = modifier
-                .fillMaxSize() // Ensures the whole available area is filled
+                .fillMaxSize()
                 .background(backgroundColor)
-                .border(BorderStroke(1.dp, borderColor)/*, RoundedCornerShape(8.dp)*/)
+                .border(BorderStroke(1.dp, borderColor))
                 .padding(start = 6.dp, top = 4.dp)
-                .onGloballyPositioned{
+                .onGloballyPositioned {
                     pos = it.localToWindow(Offset(0f,0f))
                     currentState.targetLocalPosition = it.localToWindow(Offset(0f,0f))
                     currentState.targetSize = it.size.toSize()
                 }
         ) {
-            // Scrollable Box for the text field
             Box(
                 modifier = Modifier
-                    .weight(1f) // Take up remaining space for the text field
-                    .fillMaxHeight() // Fill the height of the parent
+                    .weight(1f)
+                    .fillMaxHeight()
                     .verticalScroll(scrollState)
                     .padding(6.dp)
             ) {
@@ -102,13 +99,13 @@ fun SyntaxTextField(
                     value = textFieldValue,
                     onValueChange = onValueChange,
                     modifier = Modifier
-                        .fillMaxWidth() // Fill the available width
-                        .fillMaxHeight() // Fill the available height of the box
+                        .fillMaxWidth()
+                        .fillMaxHeight()
                         .heightIn(min = 640.dp)
-                        .background(Color.Transparent), // Make the background transparent for the text field
+                        .background(Color.Transparent),
                     textStyle = TextStyle(fontSize = 14.sp, color = extendedColors.attributeNameColor, fontFamily = FontFamily.Monospace),
                     cursorBrush = SolidColor(cursorColor),
-                          visualTransformation = when(extension) {
+                    visualTransformation = when(extension) {
                         "qml" -> QmlSyntaxHighlighter(extendedColors)
                         else -> VisualTransformation.None
                     },
@@ -116,7 +113,6 @@ fun SyntaxTextField(
                 )
             }
 
-            // Vertical Scrollbar positioned next to the text field
             VerticalScrollbar(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -129,112 +125,43 @@ fun SyntaxTextField(
 }
 
 class QmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
-    private val tabWidth = 4 // Anzahl der Leerzeichen für einen Tab
-/*
     override fun filter(text: AnnotatedString): TransformedText {
-        // Ersetzen Sie zuerst alle Tabs durch Leerzeichen
-        val textWithExpandedTabs = expandTabs(text.text)
-
-        val builder = AnnotatedString.Builder(textWithExpandedTabs)
-
-        // Übertragen Sie die ursprünglichen Stile auf den neuen Text
-        text.spanStyles.forEach { span ->
-            val newStart = mapIndexForward(text.text, span.start)
-            val newEnd = mapIndexForward(text.text, span.end)
-            builder.addStyle(span.item, newStart, newEnd)
-        }
+        val builder = AnnotatedString.Builder(text)
 
         // Highlight QML elements
         val elementRegex = Regex("(\\w+)\\s*\\{")
-        elementRegex.findAll(textWithExpandedTabs).forEach { match ->
+        elementRegex.findAll(text).forEach { match ->
             builder.addStyle(SpanStyle(color = colors.syntaxColor), match.range.first, match.range.last + 1)
         }
 
-        // Highlight properties
-        val propertyRegex = Regex("(\\w+)\\s*:")
-        propertyRegex.findAll(textWithExpandedTabs).forEach { match ->
-            builder.addStyle(SpanStyle(color = colors.attributeNameColor), match.range.first, match.range.last)
-        }
-
-        // Highlight string values and embedded Markdown
-        val stringRegex = Regex("(text:\\s*)?\"([^\"]+)\"")
-        stringRegex.findAll(textWithExpandedTabs).forEach { match ->
-            val isTextProperty = match.groups[1] != null
-            val content = match.groups[2]?.value ?: ""
-            val start = match.range.first
-            val end = match.range.last + 1
-
-            // Highlight the entire string in green
-            builder.addStyle(SpanStyle(color = colors.attributeValueColor), start, end)
-
-            if (isTextProperty) {
-                val markdownHighlighter = MarkdownSyntaxHighlighter(colors)
-                val highlightedMarkdown = markdownHighlighter.filter(AnnotatedString(content))
-                highlightedMarkdown.text.spanStyles.forEach { spanStyle ->
-                    val textPropertyLength = match.groups[1]?.value?.length ?: 0
-                    builder.addStyle(spanStyle.item, start + textPropertyLength + 1 + spanStyle.start, start + textPropertyLength + 1 + spanStyle.end)
-                }
-            }
-        }
-
-        return TransformedText(builder.toAnnotatedString(), object : OffsetMapping {
-            override fun originalToTransformed(offset: Int): Int = mapIndexForward(text.text, offset)
-            override fun transformedToOriginal(offset: Int): Int = mapIndexBackward(text.text, offset)
-        })
-    }
-*/
-
-    override fun filter(text: AnnotatedString): TransformedText {
-        // Replace all tabs with spaces first
-        val textWithExpandedTabs = expandTabs(text.text)
-
-        val builder = AnnotatedString.Builder(textWithExpandedTabs)
-
-        // Transfer original styles to the new text
-        text.spanStyles.forEach { span ->
-            val newStart = mapIndexForward(text.text, span.start)
-            val newEnd = mapIndexForward(text.text, span.end)
-            builder.addStyle(span.item, newStart, newEnd)
-        }
-
-        // Highlight string values first, including those with colons
+        // Highlight string values first (including those with colons)
         val stringRegex = Regex("\"[^\"]*\"")
-        stringRegex.findAll(textWithExpandedTabs).forEach { match ->
+        stringRegex.findAll(text).forEach { match ->
             builder.addStyle(SpanStyle(color = colors.attributeValueColor), match.range.first, match.range.last + 1)
-        }
-
-        // Highlight QML elements
-        val elementRegex = Regex("(\\w+)\\s*\\{")
-        elementRegex.findAll(textWithExpandedTabs).forEach { match ->
-            builder.addStyle(SpanStyle(color = colors.syntaxColor), match.range.first, match.range.last + 1)
         }
 
         // Highlight properties (excluding the colon)
         val propertyRegex = Regex("(\\w+)(?=\\s*:)")
-        propertyRegex.findAll(textWithExpandedTabs).forEach { match ->
+        propertyRegex.findAll(text).forEach { match ->
             // Check if this property name is not within a string
-            if (!isWithinString(textWithExpandedTabs, match.range.first)) {
+            if (!isWithinString(text, match.range.first)) {
                 builder.addStyle(SpanStyle(color = colors.attributeNameColor), match.range.first, match.range.last + 1)
             }
         }
 
         // Highlight colons and closing brackets
         val colonAndBracketRegex = Regex(":|[}]")
-        colonAndBracketRegex.findAll(textWithExpandedTabs).forEach { match ->
+        colonAndBracketRegex.findAll(text).forEach { match ->
             // Check if this colon or bracket is not within a string
-            if (!isWithinString(textWithExpandedTabs, match.range.first)) {
+            if (!isWithinString(text, match.range.first)) {
                 builder.addStyle(SpanStyle(color = colors.syntaxColor), match.range.first, match.range.last + 1)
             }
         }
 
-        return TransformedText(builder.toAnnotatedString(), object : OffsetMapping {
-            override fun originalToTransformed(offset: Int): Int = mapIndexForward(text.text, offset)
-            override fun transformedToOriginal(offset: Int): Int = mapIndexBackward(text.text, offset)
-        })
+        return TransformedText(builder.toAnnotatedString(), OffsetMapping.Identity)
     }
 
-    // Helper function to check if a given index is within a string
-    private fun isWithinString(text: String, index: Int): Boolean {
+    private fun isWithinString(text: CharSequence, index: Int): Boolean {
         var inString = false
         for (i in 0 until index) {
             if (text[i] == '"') {
@@ -242,36 +169,6 @@ class QmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
             }
         }
         return inString
-    }
-
-    private fun expandTabs(text: String): String {
-        return text.replace("\t", " ".repeat(tabWidth))
-    }
-
-    private fun mapIndexForward(original: String, index: Int): Int {
-        var newIndex = 0
-        for (i in 0 until index) {
-            if (original[i] == '\t') {
-                newIndex += tabWidth
-            } else {
-                newIndex++
-            }
-        }
-        return newIndex
-    }
-
-    private fun mapIndexBackward(original: String, transformedIndex: Int): Int {
-        var originalIndex = 0
-        var currentTransformedIndex = 0
-        while (currentTransformedIndex < transformedIndex && originalIndex < original.length) {
-            if (original[originalIndex] == '\t') {
-                currentTransformedIndex += tabWidth
-            } else {
-                currentTransformedIndex++
-            }
-            originalIndex++
-        }
-        return originalIndex
     }
 }
 
