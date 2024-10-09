@@ -59,6 +59,14 @@ import androidx.compose.runtime.remember
 import at.crowdware.nocodelib.YoutubeElement
 import at.crowdware.nocodelib.isQmlRootElement
 import at.crowdware.nocodelib.parsePage
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 
 @Composable
 fun mobilePreview(currentProject: ProjectState?) {
@@ -173,9 +181,12 @@ fun mobilePreview(currentProject: ProjectState?) {
 fun RenderUIElement(element: UIElement) {
     when (element) {
         is TextElement -> {
-            Text(
+            CustomText(
                 text = element.text,
-                style = TextStyle(color = hexToColor(element.color))
+                color = element.color,
+                fontSize = element.fontSize,
+                fontWeight = element.fontWeight,
+                textAlign = element.textAlign
             )
         }
         is MarkdownElement -> {
@@ -192,12 +203,12 @@ fun RenderUIElement(element: UIElement) {
             }
         }
         is ColumnElement -> {
-            Column(modifier = Modifier.padding(
+            Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier.padding(
                 top = element.padding.top.dp,
                 bottom = element.padding.bottom.dp,
                 start = element.padding.left.dp,
                 end = element.padding.right.dp
-            )) {
+            ).fillMaxWidth()) {
                 for (childElement in element.uiElements) {
                     RenderUIElement(childElement)
                 }
@@ -209,7 +220,7 @@ fun RenderUIElement(element: UIElement) {
                 bottom = element.padding.bottom.dp,
                 start = element.padding.left.dp,
                 end = element.padding.right.dp
-            )) {
+            ).fillMaxWidth()) {
                 for (childElement in element.uiElements) {
                     RenderUIElement(childElement)
                 }
@@ -409,6 +420,36 @@ fun handleButtonClick(link: String) {
         else -> {
             println("Unknown link type: $link")
         }
+    }
+}
+
+@Composable
+fun CustomText(
+    text: String,
+    color: Color,
+    fontSize: TextUnit = 16.sp,
+    fontWeight: FontWeight = FontWeight.Normal,
+    textAlign: TextAlign = TextAlign.Start
+) {
+    // Determine the alignment for the Text
+    val alignment = when (textAlign) {
+        TextAlign.Center -> Alignment.TopCenter
+        TextAlign.End -> Alignment.TopEnd
+        else -> Alignment.TopStart
+    }
+
+    println("Align: $textAlign $alignment")
+    // Use a Box to apply the desired alignment
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = alignment as Alignment
+    ) {
+        Text(
+            text = text,
+            color = color,
+            fontSize = fontSize,
+            fontWeight = fontWeight
+        )
     }
 }
 

@@ -18,40 +18,6 @@ import com.github.h0tk3y.betterParse.lexer.regexToken
 import com.github.h0tk3y.betterParse.parser.Parser
 import com.github.h0tk3y.betterParse.utils.Tuple7
 
-/*
-sealed class PropertyValue {
-    data class StringValue(val value: String) : PropertyValue()
-    data class IntValue(val value: Int) : PropertyValue()
-    data class FloatValue(val value: Float) : PropertyValue()
-}
-
-val identifier: Token = regexToken("[a-zA-Z_][a-zA-Z0-9_]*")
-val lBrace: Token = literalToken("{")
-val rBrace: Token = literalToken("}")
-val colon: Token = literalToken(":")
-val stringLiteral: Token = regexToken("\"[^\"]*\"")
-val whitespace: Token = regexToken("\\s+")
-val integerLiteral: Token = regexToken("\\d+")
-val floatLiteral = regexToken("\\d+\\.\\d+")
-
-object QmlGrammar : Grammar<List<Any>>() {
-    val whitespaceParser = zeroOrMore(whitespace)
-    val stringParser = stringLiteral.map { PropertyValue.StringValue(it.text.removeSurrounding("\"")) }
-    val integerParser = integerLiteral.map { PropertyValue.IntValue(it.text.toInt()) }
-    val floatParser = floatLiteral.map { PropertyValue.FloatValue(it.text.toFloat()) }
-    val propertyValue = floatParser or integerParser or stringParser
-    val property by (whitespaceParser and identifier and whitespaceParser and colon and whitespaceParser and propertyValue).map { (_, id, _, _, _, value) ->
-        id.text to value
-    }
-
-    val elementContent: Parser<List<Any>> = zeroOrMore(property or parser { element })
-    val element: Parser<Any> by whitespaceParser and identifier and whitespaceParser and lBrace and elementContent and whitespaceParser and rBrace
-
-
-    override val tokens: List<Token> = listOf(identifier, lBrace, rBrace, colon, stringLiteral, floatLiteral, integerLiteral, whitespace)
-    override val rootParser: Parser<List<Any>> = (oneOrMore(element) and whitespaceParser).map { (elements, _) -> elements }
-}
-*/
 
 sealed class PropertyValue {
     data class StringValue(val value: String) : PropertyValue()
@@ -157,10 +123,27 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
                     "Text" -> {
                         elements.add(TextElement(
                             text = (properties["text"] as? PropertyValue.StringValue)?.value ?: "def",
-                            color = (properties["color"] as? PropertyValue.StringValue)?.value ?: "",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.Left))
+                            color = hexToColor((properties["color"] as? PropertyValue.StringValue)?.value ?: ""),
+                            fontSize = ((properties["fontSize"] as? PropertyValue.IntValue)?.value ?: 14).sp,
+                            fontWeight = when((properties["fontWeight"] as? PropertyValue.StringValue)?.value ?: "") {
+                                "bold" -> { FontWeight.Bold }
+                                "black" -> { FontWeight.Black }
+                                "thin" -> { FontWeight.Thin }
+                                "extrabold" -> { FontWeight.ExtraBold }
+                                "extralight" -> { FontWeight.ExtraLight }
+                                "light" -> { FontWeight.Light }
+                                "medium" -> { FontWeight.Medium }
+                                "semibold" -> { FontWeight.SemiBold }
+                                else -> { FontWeight.Normal }
+                            },
+                            textAlign = when((properties["textAlign"] as? PropertyValue.StringValue)?.value ?: "") {
+                                "left" -> { TextAlign.Start }
+                                "center" -> { TextAlign.Center }
+                                "end" -> { TextAlign.End }
+                                "right" -> { TextAlign.End }
+                                "start" -> { TextAlign.Start }
+                                else -> { TextAlign.Unspecified }
+                            }))
                     }
                     "Column" -> {
                         val col = ColumnElement(padding = parsePadding((properties["padding"] as? PropertyValue.StringValue)?.value ?: "0"))
