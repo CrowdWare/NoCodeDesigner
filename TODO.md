@@ -1,6 +1,7 @@
 # TODO
 
 ## Next release
+- Add page needs dialog for name, and maybe template
 - Grammar should accept empty Page "Page {}"
 - Menu -> New Page business logic
 - Menu -> New Asset business logic
