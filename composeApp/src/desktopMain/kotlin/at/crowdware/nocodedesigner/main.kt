@@ -23,9 +23,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -220,7 +218,7 @@ fun main() = application {
                             pageDialog(
                                 name = pageName,
                                 onNameChange = { pageName = it},
-                                onDismissRequest = { projectState.isNewProjectDialogVisible = false },
+                                onDismissRequest = { projectState.isPageDialogVisible = false },
                                 onCreateRequest = {
                                     projectState.isPageDialogVisible = false
                                     coroutineScope.launch {
@@ -228,7 +226,42 @@ fun main() = application {
                                     }
                                 })
                         }
-                        if(projectState.isNewProjectDialogVisible) {
+                        if (projectState.isRenamePageDialogVisible) {
+                            val coroutineScope = rememberCoroutineScope()
+                            val title = projectState.currentTreeNode?.title?.value?.substringBefore(".")
+                            var pageName by remember { mutableStateOf(title ?: "") }
+                            renamePageDialog(
+                                name = pageName,
+                                onNameChange = { pageName = it},
+                                onDismissRequest = { projectState.isRenamePageDialogVisible = false },
+                                onCreateRequest = {
+                                    projectState.isRenamePageDialogVisible = false
+                                    coroutineScope.launch {
+                                        projectState.renamePage(pageName)
+                                    }
+                                })
+                        }
+                        if (projectState.isRenameAlertDialogVisible) {
+                            AlertDialog(
+                                onDismissRequest = { projectState.isRenameAlertDialogVisible = false },
+                                title = {Text("Page home cannot be renamed!")},
+                                text = {
+                                    Text(text = "")
+                                },
+                                confirmButton = {
+                                    Button(
+                                        onClick = { projectState.isRenameAlertDialogVisible = false },
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = ExtendedTheme.colors.accentColor,
+                                            contentColor = ExtendedTheme.colors.onAccentColor
+                                        )
+                                    ) {
+                                        Text("OK")
+                                    }
+                                },
+                            )
+                        }
+                        if (projectState.isNewProjectDialogVisible) {
                             val coroutineScope = rememberCoroutineScope()
                             var projectName by remember { mutableStateOf("") }
                             var appId by remember { mutableStateOf("com.sample.app") }

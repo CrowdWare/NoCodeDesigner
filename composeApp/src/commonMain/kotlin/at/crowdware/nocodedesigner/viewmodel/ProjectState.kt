@@ -23,6 +23,7 @@ expect fun createProjectState(): ProjectState
 expect fun fileExists(path: String): Boolean
 expect fun deleteFile(path: String)
 expect fun createPage(path: String)
+expect fun renameFile(pathBefore: String, pathAfter: String)
 
 abstract class ProjectState {
     var currentFileContent by mutableStateOf(TextFieldValue(""))
@@ -37,12 +38,15 @@ abstract class ProjectState {
     var extension by mutableStateOf("")
         private set
     var isPageDialogVisible by mutableStateOf(false)
+    var isRenamePageDialogVisible by mutableStateOf(false)
     var isProjectStructureVisible by mutableStateOf(true)
     var isNewProjectDialogVisible by mutableStateOf(false)
     var isOpenProjectDialogVisible by mutableStateOf(false)
+    var isRenameAlertDialogVisible by mutableStateOf(false)
     var isAboutDialogOpen by  mutableStateOf(false)
     var isEditorVisible by mutableStateOf(false)
     var darkMode by mutableStateOf(false)
+    var currentTreeNode by mutableStateOf(null as TreeNode?)
 
     lateinit var pageNode: TreeNode
     lateinit var app: App
@@ -110,12 +114,8 @@ abstract class ProjectState {
         val path = "$folder/pages/$name.qml"
         createPage(path)
 
-        val newNode = TreeNode("$name.qml", path, NodeType.QML)
-        val updatedChildren = if (pageNode.children == null) {
-            listOf(newNode)
-        } else {
-            pageNode.children!! + newNode
-        }
+        val newNode = TreeNode(title = mutableStateOf("${name}.qml"), path, NodeType.QML)
+        val updatedChildren = pageNode.children + newNode
         pageNode.children.clear()
         pageNode.children.addAll(updatedChildren)
         LoadFile(path)
@@ -131,6 +131,13 @@ abstract class ProjectState {
         fileName = ""
         extension = ""
         isEditorVisible = false
+    }
+
+    fun renamePage(name: String) {
+        val newPath = "$folder/pages/$name.qml"
+        renameFile(currentTreeNode?.path!!, newPath)
+        currentTreeNode!!.title.value = "$name.qml"
+        currentTreeNode!!.path = newPath
     }
 }
 

@@ -70,10 +70,10 @@ fun TreeNodeView(
                                 val event = awaitPointerEvent()
                                 when {
                                     event.type == PointerEventType.Press && event.buttons.isPrimaryPressed -> {
-                                        if (node.children == null || node.children!!.isEmpty()) {
+                                        if (node.children.isEmpty()) {
                                             onClick(node)
                                         } else {
-                                            if (node.title == "pages") {
+                                            if (node.title.value == "pages") {
                                                 currentProject?.pageNode = node
                                             }
                                             node.expanded.value = !node.expanded.value
@@ -115,7 +115,7 @@ fun TreeNodeView(
                 }
 
                 Text(
-                    node.title,
+                    node.title.value,
                     fontSize = 12.sp,
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.onSurface
@@ -137,10 +137,15 @@ fun TreeNodeView(
                 offset = contextMenuOffset,
                 properties = PopupProperties(focusable = true)
             ) {
-                if (node.children == null || node.children!!.isEmpty()) {
+                if (node.children.isEmpty()) {
                     DropdownMenuItem(onClick = {
                         expanded = false
-                        println("Clicked on Rename for ${node.title}")
+                        if (node.title.value == "home.qml") {
+                            currentProject?.isRenameAlertDialogVisible = true
+                        } else {
+                            currentProject?.currentTreeNode = node
+                            currentProject?.isRenamePageDialogVisible = true
+                        }
                     }) {
                         Text(text = "Rename", fontSize = 12.sp)
                     }
@@ -153,7 +158,7 @@ fun TreeNodeView(
                     ) {
                         Text(text = "Delete", fontSize = 12.sp)
                     }
-                } else if (node.title == "pages"){
+                } else if (node.title.value == "pages"){
                     DropdownMenuItem(onClick = {
                         expanded = false
                         currentProject?.isPageDialogVisible = true
@@ -168,7 +173,7 @@ fun TreeNodeView(
             Column(
                 modifier = Modifier.padding(start = 16.dp)
             ) {
-                node.children?.forEach { child ->
+                node.children.forEach { child ->
                     TreeNodeView(
                         node = child,
                         level = level + 1,

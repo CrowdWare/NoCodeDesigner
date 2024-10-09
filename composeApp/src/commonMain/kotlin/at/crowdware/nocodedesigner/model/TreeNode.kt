@@ -28,8 +28,8 @@ val extensionToNodeType = mapOf(
 
 // Data model for a tree node
 data class TreeNode(
-    val title: String,
-    val path: String,
+    var title: MutableState<String> = mutableStateOf(""),
+    var path: String,
     val type: NodeType,
     var children: SnapshotStateList<TreeNode> = mutableStateListOf(),
     var expanded: MutableState<Boolean> = mutableStateOf(false)

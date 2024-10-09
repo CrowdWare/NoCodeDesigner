@@ -1,5 +1,6 @@
 package at.crowdware.nocodedesigner.viewmodel
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import java.io.File
 import at.crowdware.nocodedesigner.model.NodeType
@@ -69,19 +70,18 @@ class DesktopProjectState : ProjectState() {
                 addAll(children)
             }
             return TreeNode(
-                title = file.name,
+                title = mutableStateOf( file.name),
                 path = file.path,
                 type = nodeType,
                 children = statefulChildren
             )
         }
 
-        //val nodes = file.listFiles()?.map { mapFileToTreeNode(it) } ?: emptyList()
         val nodes = file.listFiles()
-            ?.filter { it.name != ".DS_Store" } // Filtert .DS_Store Dateien heraus
+            ?.filter { it.name != ".DS_Store" }
             ?.map { mapFileToTreeNode(it) }
             ?: emptyList()
-        val sortedNodes = nodes.sortedWith(compareBy<TreeNode> { it.type != NodeType.DIRECTORY }.thenBy { it.title })
+        val sortedNodes = nodes.sortedWith(compareBy<TreeNode> { it.type != NodeType.DIRECTORY }.thenBy { it.title.value })
         treeData = sortedNodes.toList()
 
         // app.xml load and parse
@@ -150,4 +150,8 @@ actual fun createPage(path: String) {
     val file = File(path)
     file.createNewFile()
     file.writeText("Page {\n\n}")
+}
+
+actual fun renameFile(pathBefore: String, pathAfter: String) {
+    File(pathBefore).renameTo(File(pathAfter))
 }

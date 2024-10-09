@@ -1,12 +1,10 @@
 # TODO
 
-## Next release 
-- Add page needs dialog for name, and maybe template
+## Next release
 - Menu -> New Page business logic
 - Menu -> New Asset business logic
 - Edit menu support for qml editor
 - Undo Redo support for qml editor
-- Context menu tree view (new, rename, delete)
 - Icon exchange with custom svg
 - Grammar
   - should recognize /* block comments */
