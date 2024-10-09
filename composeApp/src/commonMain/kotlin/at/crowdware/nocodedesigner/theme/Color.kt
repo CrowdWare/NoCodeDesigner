@@ -56,7 +56,8 @@ data class ExtendedColors(
     val soundColor: Color,
     val xmlColor: Color,
     val mdHeader: Color,
-    val linkColor: Color
+    val linkColor: Color,
+    val commentColor: Color
 )
 
 // Light Extended Colors
@@ -76,7 +77,8 @@ val LightExtendedColors = ExtendedColors(
     soundColor = Color(0xFFF44336),             // Red for sounds
     xmlColor = Color(0xFF9C27B0),                // Purple for XML files
     mdHeader = Color(0xFFB774B1),
-    linkColor = Color(0xFF5E90E0)
+    linkColor = Color(0xFF5E90E0),
+    commentColor = Color.Gray
 )
 
 // Dark Extended Colors
@@ -96,5 +98,6 @@ val DarkExtendedColors = ExtendedColors(
     soundColor = Color(0xFFF0766E),
     xmlColor = Color(0xFFA9704C),
     mdHeader = Color(0xFFB774B1),
-    linkColor = Color(0xFF5E90E0)
+    linkColor = Color(0xFF5E90E0),
+    commentColor = Color.Gray
 )
