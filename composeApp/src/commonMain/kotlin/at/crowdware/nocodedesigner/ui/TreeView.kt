@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
+import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
 import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
 
@@ -75,6 +76,8 @@ fun TreeNodeView(
                                         } else {
                                             if (node.title.value == "pages") {
                                                 currentProject?.pageNode = node
+                                            } else if (node.title.value == "assets") {
+                                                currentProject?.assetsNode = node
                                             }
                                             node.expanded.value = !node.expanded.value
                                         }
@@ -138,26 +141,26 @@ fun TreeNodeView(
                 properties = PopupProperties(focusable = true)
             ) {
                 if (node.children.isEmpty()) {
-                    DropdownMenuItem(onClick = {
-                        expanded = false
-                        if (node.title.value == "home.qml" || node.title.value == "app.qml") {
-                            currentProject?.currentTreeNode = node
-                            currentProject?.isRenameAlertDialogVisible = true
-                        } else {
-                            currentProject?.currentTreeNode = node
-                            currentProject?.isRenamePageDialogVisible = true
+                    if (node.title.value != "home.qml" && node.title.value != "app.qml") {
+                        if (node.type == NodeType.QML) {
+                            DropdownMenuItem(onClick = {
+                                expanded = false
+                                currentProject?.currentTreeNode = node
+                                currentProject?.isRenamePageDialogVisible = true
+                            }) {
+                                Text(text = "Rename", fontSize = 12.sp)
+                            }
                         }
-                    }) {
-                        Text(text = "Rename", fontSize = 12.sp)
-                    }
-                    DropdownMenuItem(
-                        modifier = Modifier.background(color = Color.DarkGray),
-                        onClick = {
-                            expanded = false
-                            currentProject?.deleteItem(node)
+                        DropdownMenuItem(
+                            modifier = Modifier.background(color = Color.DarkGray),
+                            onClick = {
+                                expanded = false
+                                currentProject?.currentTreeNode = node
+                                currentProject?.deleteItem(node)
+                            }
+                        ) {
+                            Text(text = "Delete", fontSize = 12.sp)
                         }
-                    ) {
-                        Text(text = "Delete", fontSize = 12.sp)
                     }
                 } else if (node.title.value == "pages"){
                     DropdownMenuItem(onClick = {

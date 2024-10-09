@@ -42,13 +42,13 @@ abstract class ProjectState {
     var isProjectStructureVisible by mutableStateOf(true)
     var isNewProjectDialogVisible by mutableStateOf(false)
     var isOpenProjectDialogVisible by mutableStateOf(false)
-    var isRenameAlertDialogVisible by mutableStateOf(false)
     var isAboutDialogOpen by  mutableStateOf(false)
     var isEditorVisible by mutableStateOf(false)
     var darkMode by mutableStateOf(false)
     var currentTreeNode by mutableStateOf(null as TreeNode?)
 
     lateinit var pageNode: TreeNode
+    lateinit var assetsNode: TreeNode
     lateinit var app: App
     lateinit var page: Page
 
@@ -123,14 +123,23 @@ abstract class ProjectState {
 
     fun deleteItem(treeNode: TreeNode) {
         deleteFile(treeNode.path)
-        pageNode.children.remove(treeNode)
 
-        // we have to remove the editor, to not trigger filesave
-        currentFileContent = TextFieldValue("")
-        path = ""
-        fileName = ""
-        extension = ""
-        isEditorVisible = false
+        if (currentTreeNode?.type == NodeType.QML) {
+            val title = currentTreeNode?.title?.value
+            pageNode.children.remove(currentTreeNode)
+
+            if ( title == fileName) {
+                // we have to remove the editor, to not trigger filesave
+                currentFileContent = TextFieldValue("")
+                path = ""
+                fileName = ""
+                extension = ""
+                isEditorVisible = false
+            }
+
+        } else {
+            assetsNode.children.remove(currentTreeNode)
+        }
     }
 
     fun renamePage(name: String) {

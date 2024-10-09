@@ -241,33 +241,7 @@ fun main() = application {
                                     }
                                 })
                         }
-                        if (projectState.isRenameAlertDialogVisible) {
-                            val pageName = projectState.currentTreeNode?.title?.value?.substringBefore(".")
-                            AlertDialog(
-                                onDismissRequest = { projectState.isRenameAlertDialogVisible = false },
-                                title = {
-                                    if (pageName == "app") {
-                                        Text("The application file cannot be renamed!")
-                                    } else {
-                                        Text("The homepage cannot be renamed!")
-                                    }
-                                        },
-                                text = {
-                                    Text(text = "")
-                                },
-                                confirmButton = {
-                                    Button(
-                                        onClick = { projectState.isRenameAlertDialogVisible = false },
-                                        colors = ButtonDefaults.buttonColors(
-                                            backgroundColor = ExtendedTheme.colors.accentColor,
-                                            contentColor = ExtendedTheme.colors.onAccentColor
-                                        )
-                                    ) {
-                                        Text("OK")
-                                    }
-                                },
-                            )
-                        }
+
                         if (projectState.isNewProjectDialogVisible) {
                             val coroutineScope = rememberCoroutineScope()
                             var projectName by remember { mutableStateOf("") }
