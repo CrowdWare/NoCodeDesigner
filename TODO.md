@@ -2,7 +2,6 @@
 
 ## Next release
 - Add page needs dialog for name, and maybe template
-- Grammar should accept empty Page "Page {}"
 - Menu -> New Page business logic
 - Menu -> New Asset business logic
 - Edit menu support for qml editor
@@ -10,11 +9,12 @@
 - Context menu tree view (new, rename, delete)
 - Icon exchange with custom svg
 - Grammar
-  - Empty Page {} gives error
+  - should recognize /* block comments */
 - Syntax
   - Closing bracket same color as opening brackets
   - "page:home" has attributeName color
   - attributeName should have light blue as color
+  - comments should be gray
 - TestCases
   - Syntax highligt..errors
   - Grammar tests

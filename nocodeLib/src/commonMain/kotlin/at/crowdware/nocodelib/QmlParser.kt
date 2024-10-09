@@ -18,6 +18,7 @@ import com.github.h0tk3y.betterParse.lexer.regexToken
 import com.github.h0tk3y.betterParse.parser.Parser
 import com.github.h0tk3y.betterParse.utils.Tuple7
 
+/*
 sealed class PropertyValue {
     data class StringValue(val value: String) : PropertyValue()
     data class IntValue(val value: Int) : PropertyValue()
@@ -49,6 +50,58 @@ object QmlGrammar : Grammar<List<Any>>() {
 
     override val tokens: List<Token> = listOf(identifier, lBrace, rBrace, colon, stringLiteral, floatLiteral, integerLiteral, whitespace)
     override val rootParser: Parser<List<Any>> = (oneOrMore(element) and whitespaceParser).map { (elements, _) -> elements }
+}
+*/
+
+sealed class PropertyValue {
+    data class StringValue(val value: String) : PropertyValue()
+    data class IntValue(val value: Int) : PropertyValue()
+    data class FloatValue(val value: Float) : PropertyValue()
+}
+
+val identifier: Token = regexToken("[a-zA-Z_][a-zA-Z0-9_]*")
+val lBrace: Token = literalToken("{")
+val rBrace: Token = literalToken("}")
+val colon: Token = literalToken(":")
+val stringLiteral: Token = regexToken("\"[^\"]*\"")
+val whitespace: Token = regexToken("\\s+")
+val integerLiteral: Token = regexToken("\\d+")
+val floatLiteral = regexToken("\\d+\\.\\d+")
+
+// Neue Token für Kommentare
+val lineComment: Token = regexToken("//.*")
+val blockCommentStart: Token = literalToken("/*")
+val blockCommentEnd: Token = literalToken("*/")
+val blockCommentContent: Token = regexToken("[^*]*\\*+([^*/][^*]*\\*+)*")
+
+object QmlGrammar : Grammar<List<Any>>() {
+    val whitespaceParser = zeroOrMore(whitespace)
+
+    // Parser für Kommentare
+    val lineCommentParser = lineComment
+    val blockCommentParser = (blockCommentStart and zeroOrMore(blockCommentContent) and blockCommentEnd).map { "" }
+    val commentParser = lineCommentParser or blockCommentParser
+
+    // Erweiterter Whitespace-Parser, der auch Kommentare ignoriert
+    val ignoredParser = zeroOrMore(whitespace or commentParser)
+
+    val stringParser = stringLiteral.map { PropertyValue.StringValue(it.text.removeSurrounding("\"")) }
+    val integerParser = integerLiteral.map { PropertyValue.IntValue(it.text.toInt()) }
+    val floatParser = floatLiteral.map { PropertyValue.FloatValue(it.text.toFloat()) }
+
+    val propertyValue = floatParser or integerParser or stringParser
+
+    val property by (ignoredParser and identifier and ignoredParser and colon and ignoredParser and propertyValue).map { (_, id, _, _, _, value) ->
+        id.text to value
+    }
+    val elementContent: Parser<List<Any>> = zeroOrMore(property or parser { element })
+    val element: Parser<Any> by ignoredParser and identifier and ignoredParser and lBrace and elementContent and ignoredParser and rBrace
+
+    override val tokens: List<Token> = listOf(
+        identifier, lBrace, rBrace, colon, stringLiteral, floatLiteral, integerLiteral,
+        whitespace, lineComment, blockCommentStart, blockCommentEnd, blockCommentContent
+    )
+    override val rootParser: Parser<List<Any>> = (oneOrMore(element) and ignoredParser).map { (elements, _) -> elements }
 }
 
 fun isQmlRootElement(qmlString: String, root: String): Boolean {
