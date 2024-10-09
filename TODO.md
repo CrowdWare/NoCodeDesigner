@@ -5,8 +5,6 @@
   - Comments are not grayed out
   - No tabs anymore
   - Cursor management when tabbed
-- Edit menu support for qml editor
-- Undo Redo support for qml editor
 - Icon exchange with custom svg
 - TestCases
   - Syntax highligt..errors
