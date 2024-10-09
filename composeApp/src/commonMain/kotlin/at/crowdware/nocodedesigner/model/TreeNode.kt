@@ -1,7 +1,9 @@
 package at.crowdware.nocodedesigner.model
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 
 enum class NodeType {
     DIRECTORY, IMAGE, VIDEO, SOUND, XML, MD, OTHER, QML
@@ -29,6 +31,6 @@ data class TreeNode(
     val title: String,
     val path: String,
     val type: NodeType,
-    var children: List<TreeNode>? = null,
-    var expanded: MutableState<Boolean> = mutableStateOf(false) // Use mutableStateOf for the expanded flag
+    var children: SnapshotStateList<TreeNode> = mutableStateListOf(),
+    var expanded: MutableState<Boolean> = mutableStateOf(false)
 )

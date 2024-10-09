@@ -36,13 +36,15 @@ abstract class ProjectState {
     var treeData by mutableStateOf<List<TreeNode>>(emptyList())
     var extension by mutableStateOf("")
         private set
-
+    var isPageDialogVisible by mutableStateOf(false)
     var isProjectStructureVisible by mutableStateOf(true)
     var isNewProjectDialogVisible by mutableStateOf(false)
     var isOpenProjectDialogVisible by mutableStateOf(false)
     var isAboutDialogOpen by  mutableStateOf(false)
+    var isEditorVisible by mutableStateOf(false)
     var darkMode by mutableStateOf(false)
 
+    lateinit var pageNode: TreeNode
     lateinit var app: App
     lateinit var page: Page
 
@@ -95,6 +97,7 @@ abstract class ProjectState {
             }
             val fileText = loadFileContent("$path", "", "")
             currentFileContent = TextFieldValue(fileText)
+            isEditorVisible = true
         }
     }
 
@@ -103,22 +106,31 @@ abstract class ProjectState {
         saveFileContent(path, "", "", currentFileContent.text)
     }
 
-    fun addPage(name: String, node: TreeNode) {
+    fun addPage(name: String) {
         val path = "$folder/pages/$name.qml"
         createPage(path)
 
         val newNode = TreeNode("$name.qml", path, NodeType.QML)
-        val updatedChildren = if (node.children == null) {
+        val updatedChildren = if (pageNode.children == null) {
             listOf(newNode)
         } else {
-            node.children!! + newNode
+            pageNode.children!! + newNode
         }
-        node.children = updatedChildren
+        pageNode.children.clear()
+        pageNode.children.addAll(updatedChildren)
         LoadFile(path)
     }
 
-    fun deleteItem(path: String) {
-        deleteFile(path)
+    fun deleteItem(treeNode: TreeNode) {
+        deleteFile(treeNode.path)
+        pageNode.children.remove(treeNode)
+
+        // we have to remove the editor, to not trigger filesave
+        currentFileContent = TextFieldValue("")
+        path = ""
+        fileName = ""
+        extension = ""
+        isEditorVisible = false
     }
 }
 

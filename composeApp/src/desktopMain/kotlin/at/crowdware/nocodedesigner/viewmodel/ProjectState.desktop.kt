@@ -1,5 +1,6 @@
 package at.crowdware.nocodedesigner.viewmodel
 
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import java.io.File
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
@@ -55,7 +56,6 @@ class DesktopProjectState : ProjectState() {
             }
         }
 
-        // Rekursive Funktion zur Verarbeitung von Dateien und Verzeichnissen
         fun mapFileToTreeNode(file: File): TreeNode {
             val nodeType = getNodeType(file)
             val children = if (file.isDirectory) {
@@ -65,12 +65,14 @@ class DesktopProjectState : ProjectState() {
             } else {
                 emptyList()
             }
-
+            val statefulChildren = SnapshotStateList<TreeNode>().apply {
+                addAll(children)
+            }
             return TreeNode(
                 title = file.name,
                 path = file.path,
                 type = nodeType,
-                children = children
+                children = statefulChildren
             )
         }
 

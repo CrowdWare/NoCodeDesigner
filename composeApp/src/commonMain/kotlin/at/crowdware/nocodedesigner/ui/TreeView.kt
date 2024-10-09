@@ -33,19 +33,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
-import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
 import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
 
@@ -76,6 +73,9 @@ fun TreeNodeView(
                                         if (node.children == null || node.children!!.isEmpty()) {
                                             onClick(node)
                                         } else {
+                                            if (node.title == "pages") {
+                                                currentProject?.pageNode = node
+                                            }
                                             node.expanded.value = !node.expanded.value
                                         }
                                     }
@@ -148,9 +148,7 @@ fun TreeNodeView(
                         modifier = Modifier.background(color = Color.DarkGray),
                         onClick = {
                             expanded = false
-                            currentProject?.deleteItem(node.path)
-                            //val updatedChildren = nodeParent.children?.filter { it != node }
-                            //nodeParent.children = nodeParent.copy(children = updatedChildren)
+                            currentProject?.deleteItem(node)
                         }
                     ) {
                         Text(text = "Delete", fontSize = 12.sp)
@@ -158,8 +156,7 @@ fun TreeNodeView(
                 } else if (node.title == "pages"){
                     DropdownMenuItem(onClick = {
                         expanded = false
-                        println("Clicked on New for ${node.title}")
-                        currentProject?.addPage("test", node)
+                        currentProject?.isPageDialogVisible = true
                     }) {
                         Text(text = "New", fontSize = 12.sp)
                     }

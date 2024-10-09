@@ -139,9 +139,7 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
                             textAlign = when((properties["textAlign"] as? PropertyValue.StringValue)?.value ?: "") {
                                 "left" -> { TextAlign.Start }
                                 "center" -> { TextAlign.Center }
-                                "end" -> { TextAlign.End }
                                 "right" -> { TextAlign.End }
-                                "start" -> { TextAlign.Start }
                                 else -> { TextAlign.Unspecified }
                             }))
                     }

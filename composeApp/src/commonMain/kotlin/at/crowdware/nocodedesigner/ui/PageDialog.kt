@@ -1,30 +1,20 @@
 package at.crowdware.nocodedesigner.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 
 @Composable
-fun projectDialog(
+fun pageDialog(
     name: String,
     onNameChange: (String) -> Unit,
-    folder: String,
-    onFolderChange: (String) -> Unit,
-    id: String,
-    onIdChange: (String) -> Unit,
     onDismissRequest: () -> Unit,
     onCreateRequest: () -> Unit
 ) {
@@ -32,7 +22,7 @@ fun projectDialog(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = {
-            Text(text = "Create Project")
+            Text(text = "Create Page")
         },
         text = {
             Column(modifier = Modifier.padding(16.dp)) {
@@ -41,18 +31,6 @@ fun projectDialog(
                     Text(text = "Name:", modifier = Modifier.align(Alignment.CenterVertically).weight(1F))
                     Spacer(modifier = Modifier.width(16.dp))
                     TextInput(name, onNameChange, modifier = Modifier.weight(3F))
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = "AppId:", modifier = Modifier.align(Alignment.CenterVertically).weight(1F))
-                    Spacer(modifier = Modifier.width(16.dp))
-                    TextInput(id, onIdChange, modifier = Modifier.weight(3F))
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = "Folder:", modifier = Modifier.align(Alignment.CenterVertically).weight(1F))
-                    Spacer(modifier = Modifier.width(16.dp))
-                    TextInput(folder, onFolderChange, modifier = Modifier.weight(3F), hasIcon = true)
                 }
             }
         },
@@ -76,8 +54,3 @@ fun projectDialog(
         }
     )
 }
-
-
-
-expect fun openFolder(): String
-

@@ -438,7 +438,6 @@ fun CustomText(
         else -> Alignment.TopStart
     }
 
-    println("Align: $textAlign $alignment")
     // Use a Box to apply the desired alignment
     Box(
         modifier = Modifier.fillMaxWidth(),

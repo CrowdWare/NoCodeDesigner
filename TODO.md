@@ -1,7 +1,6 @@
 # TODO
 
-## Next release
-- NoCodeBrowser should also parse QML 
+## Next release 
 - Add page needs dialog for name, and maybe template
 - Menu -> New Page business logic
 - Menu -> New Asset business logic

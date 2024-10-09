@@ -42,9 +42,7 @@ import androidx.compose.ui.window.rememberWindowState
 
 import at.crowdware.nocodedesigner.theme.AppTheme
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
-import at.crowdware.nocodedesigner.ui.AboutDialog
-import at.crowdware.nocodedesigner.ui.WindowCaptionArea
-import at.crowdware.nocodedesigner.ui.WindowControlButton
+import at.crowdware.nocodedesigner.ui.*
 import at.crowdware.nocodedesigner.view.desktop.desktop
 import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
@@ -63,7 +61,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
-import at.crowdware.nocodedesigner.ui.projectDialog
 import kotlinx.coroutines.launch
 
 val LocalProjectState = compositionLocalOf<ProjectState> { error("No ProjectState provided") }
@@ -216,6 +213,20 @@ fun main() = application {
                                 version = version,
                                 onDismissRequest = { projectState.isAboutDialogOpen = false }
                             )
+                        }
+                        if(projectState.isPageDialogVisible) {
+                            val coroutineScope = rememberCoroutineScope()
+                            var pageName by remember { mutableStateOf("") }
+                            pageDialog(
+                                name = pageName,
+                                onNameChange = { pageName = it},
+                                onDismissRequest = { projectState.isNewProjectDialogVisible = false },
+                                onCreateRequest = {
+                                    projectState.isPageDialogVisible = false
+                                    coroutineScope.launch {
+                                        projectState.addPage(pageName)
+                                    }
+                                })
                         }
                         if(projectState.isNewProjectDialogVisible) {
                             val coroutineScope = rememberCoroutineScope()
