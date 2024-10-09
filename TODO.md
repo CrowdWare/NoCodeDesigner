@@ -1,16 +1,15 @@
 # TODO
 
 ## Next release
+- Syntaxedit
+  - Comments are not grayed out
+  - No tabs anymore
+  - Cursor management when tabbed
 - Menu -> New Page business logic
 - Menu -> New Asset business logic
 - Edit menu support for qml editor
 - Undo Redo support for qml editor
 - Icon exchange with custom svg
-- Syntax Highlight
-  - Closing bracket same color as opening brackets
-  - "page:home" has attributeName color
-  - attributeName should have light blue as color
-  - comments should be gray
 - TestCases
   - Syntax highligt..errors
   - Grammar tests

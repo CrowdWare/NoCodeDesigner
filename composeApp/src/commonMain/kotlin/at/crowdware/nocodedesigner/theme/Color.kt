@@ -57,7 +57,8 @@ data class ExtendedColors(
     val xmlColor: Color,
     val mdHeader: Color,
     val linkColor: Color,
-    val commentColor: Color
+    val commentColor: Color,
+    val bracketColor: Color
 )
 
 // Light Extended Colors
@@ -78,7 +79,8 @@ val LightExtendedColors = ExtendedColors(
     xmlColor = Color(0xFF9C27B0),                // Purple for XML files
     mdHeader = Color(0xFFB774B1),
     linkColor = Color(0xFF5E90E0),
-    commentColor = Color.Gray
+    commentColor = Color.Gray,
+    bracketColor = Color(0xFFF5D52E)
 )
 
 // Dark Extended Colors
@@ -87,9 +89,9 @@ val DarkExtendedColors = ExtendedColors(
     secondaryHoverColor = Color(0xFF555555),
     accentColor = Color(0xFF4663E9),
     onAccentColor = Color(0xFFFFFFFF),
-    syntaxColor = Color(0xFFDBB965),            // Gold
-    attributeNameColor = Color(0xFF0000FF),     // Grayish
-    attributeValueColor = Color(0xFF60774E),    // Olive green
+    syntaxColor = Color(0xFF61BEA6),            // Gold
+    attributeNameColor = Color(0xFFA0D4FC),     // Grayish
+    attributeValueColor = Color(0xFFBE896F),    // Olive green
     captionColor = Color(0xFF37302F),
     defaultTextColor = Color(0xFFB0B0B0),
     directoryColor = Color(0xFFB0B0B0),
@@ -99,5 +101,6 @@ val DarkExtendedColors = ExtendedColors(
     xmlColor = Color(0xFFA9704C),
     mdHeader = Color(0xFFB774B1),
     linkColor = Color(0xFF5E90E0),
-    commentColor = Color.Gray
+    commentColor = Color.Gray,
+    bracketColor = Color(0xFFF5D52E)
 )

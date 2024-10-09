@@ -131,7 +131,8 @@ class QmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
         // Highlight QML elements
         val elementRegex = Regex("(\\w+)\\s*\\{")
         elementRegex.findAll(text).forEach { match ->
-            builder.addStyle(SpanStyle(color = colors.syntaxColor), match.range.first, match.range.last + 1)
+            builder.addStyle(SpanStyle(color = colors.syntaxColor), match.range.first, match.range.last)
+            builder.addStyle(SpanStyle(color = colors.bracketColor), match.range.last, match.range.last + 1)
         }
 
         // Highlight string values first (including those with colons)
@@ -154,7 +155,7 @@ class QmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
         colonAndBracketRegex.findAll(text).forEach { match ->
             // Check if this colon or bracket is not within a string
             if (!isWithinString(text, match.range.first)) {
-                builder.addStyle(SpanStyle(color = colors.syntaxColor), match.range.first, match.range.last + 1)
+                builder.addStyle(SpanStyle(color = colors.bracketColor), match.range.first, match.range.last + 1)
             }
         }
 
