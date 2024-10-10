@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerMoveFilter
 //import androidx.compose.ui.input.pointer.pointerMoveFilter
@@ -49,7 +50,8 @@ import at.crowdware.nocodedesigner.viewmodel.ProjectState
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ClickableIcon(
-    imageVector: ImageVector,
+    //imageVector: ImageVector,
+    painter: Painter,
     label: String,
     qml: String
 ) {
@@ -128,7 +130,8 @@ fun ClickableIcon(
         ) {
             // Display the icon
             Icon(
-                imageVector = imageVector,
+                //imageVector = imageVector,
+                painter = painter,
                 contentDescription = "",
                 modifier = Modifier
                     .size(48.dp)

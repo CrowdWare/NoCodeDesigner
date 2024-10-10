@@ -29,6 +29,7 @@ import androidx.compose.material.icons.outlined.CheckBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -43,6 +44,7 @@ import compose.icons.fontawesomeicons.brands.Github
 import compose.icons.fontawesomeicons.solid.FolderOpen
 import compose.icons.fontawesomeicons.solid.Palette
 import compose.icons.fontawesomeicons.solid.PlusCircle
+import androidx.compose.ui.res.painterResource
 
 @Composable
 fun toolbar(currentProject: ProjectState?) {
@@ -57,20 +59,20 @@ fun toolbar(currentProject: ProjectState?) {
         Spacer(modifier = Modifier.height(8.dp))
         HoverableIcon(
             onClick = { currentProject?.isNewProjectDialogVisible = true },
-            imageVector = FeatherIcons.FolderPlus,
+            painter = painterResource("drawable/create_folder.xml"),
             tooltipText = "Create new Project",
             isSelected = currentProject?.isNewProjectDialogVisible == true
         )
         HoverableIcon(
             onClick = { currentProject?.isOpenProjectDialogVisible = true },
-            imageVector = FeatherIcons.Folder,
+            painter = painterResource("drawable/open_file.xml"),
             tooltipText = "Open Project",
             isSelected = currentProject?.isOpenProjectDialogVisible == true
         )
         Spacer(modifier = Modifier.height(8.dp))
         HoverableIcon(
             onClick = { currentProject?.isProjectStructureVisible = true },
-            imageVector = FontAwesomeIcons.Solid.FolderOpen,
+            painter = painterResource("drawable/tree.xml"),
             tooltipText = "Project Structure",
             isSelected = currentProject?.isProjectStructureVisible == true
         )
@@ -78,7 +80,7 @@ fun toolbar(currentProject: ProjectState?) {
         currentProject?.isProjectStructureVisible?.let {
             HoverableIcon(
                 onClick = { currentProject.isProjectStructureVisible = false },
-                imageVector = FontAwesomeIcons.Solid.Palette,
+                painter = painterResource("drawable/library.xml"),
                 tooltipText = "Widget Palette",
                 isSelected = !it
             )

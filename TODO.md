@@ -5,7 +5,6 @@
   - Comments are not grayed out
   - No tabs anymore
   - Cursor management when tabbed
-- Icon exchange with custom svg
 - TestCases
   - Syntax highligt..errors
   - Grammar tests

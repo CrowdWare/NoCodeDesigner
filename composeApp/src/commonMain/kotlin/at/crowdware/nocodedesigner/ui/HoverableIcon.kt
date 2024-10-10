@@ -8,13 +8,13 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 //import androidx.compose.ui.input.pointer.pointerMoveFilter
-
+import androidx.compose.ui.graphics.painter.Painter
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HoverableIcon(
     onClick: () -> Unit,
-    imageVector: ImageVector,
+    painter: Painter,
     tooltipText: String,
     isSelected: Boolean
 ) {
@@ -23,7 +23,8 @@ fun HoverableIcon(
     HoverableIconContent(
         isHovered = isHovered,
         onClick = onClick,
-        imageVector = imageVector,
+        //imageVector = imageVector,
+        painter = painter,
         tooltipText = tooltipText,
         isSelected = isSelected,
         onHoverChange = { hover -> isHovered = hover }
@@ -34,7 +35,7 @@ fun HoverableIcon(
 expect fun HoverableIconContent(
     isHovered: Boolean,
     onClick: () -> Unit,
-    imageVector: ImageVector,
+    painter: Painter,
     tooltipText: String,
     isSelected: Boolean,
     onHoverChange: (Boolean) -> Unit

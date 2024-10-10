@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerMoveFilter
 import androidx.compose.ui.text.TextStyle
@@ -30,7 +31,7 @@ import at.crowdware.nocodedesigner.theme.ExtendedTheme
 actual fun HoverableIconContent(
     isHovered: Boolean,
     onClick: () -> Unit,
-    imageVector: ImageVector,
+    painter: Painter,
     tooltipText: String,
     isSelected: Boolean,
     onHoverChange: (Boolean) -> Unit
@@ -51,7 +52,7 @@ actual fun HoverableIconContent(
         ).clickable { onClick() }
     ) {
         Icon(
-            imageVector = imageVector,
+            painter = painter,
             contentDescription = "Hoverable Icon",
             tint = if (isHovered || isSelected) ExtendedTheme.colors.accentColor else MaterialTheme.colors.onPrimary,
             modifier = Modifier.size(32.dp).align(Alignment.Center)

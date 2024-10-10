@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.input.key.Key.Companion.R
 import androidx.compose.ui.input.pointer.pointerMoveFilter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextStyle
@@ -45,6 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import at.crowdware.nocodedesigner.ui.ClickableIcon
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
+import androidx.compose.ui.res.painterResource
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -115,13 +117,13 @@ fun widgetPalette(currentProject: ProjectState?) {
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     ClickableIcon(
-                                        imageVector = Icons.Outlined.CheckBox,
+                                        painter = painterResource("drawable/row.xml"),
                                         label = "Row",
                                         qml = "Row {\n\n}\n"
                                     )
-
                                     ClickableIcon(
-                                        imageVector = Icons.Outlined.TextFields,
+                                        //imageVector = Icons.Outlined.TextFields,
+                                        painter = painterResource("drawable/column.xml"),
                                         label = "Column",
                                         qml ="Column {\n\n}\n"
                                     )
@@ -167,30 +169,55 @@ fun widgetPalette(currentProject: ProjectState?) {
                         }
                         AnimatedVisibility(visible = expanded) {
                             Box(Modifier.fillMaxWidth().padding(8.dp)) {
+                                Column {
                                 Row(
                                     modifier = Modifier.wrapContentSize(),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
+                                    //val buttonPainter = painterResource("drawable/button.xml")
                                     ClickableIcon(
-                                        imageVector = Icons.Outlined.CheckBox,
+                                        //imageVector = Icons.Outlined.CheckBox,
+                                        painter = painterResource("drawable/text.xml"),
                                         label = "Text",
                                         qml ="Text { text: \"Lorem ipsum dolor\" }\n"
                                     )
                                     ClickableIcon(
-                                        imageVector = Icons.Outlined.CheckBox,
+                                        //imageVector = Icons.Outlined.CheckBox,
+                                        painter = painterResource("drawable/markdown.xml"),
                                         label = "Markdown",
                                         qml ="Markdown { text: \"# Header\" }\n"
                                     )
                                     ClickableIcon(
-                                        imageVector = Icons.Outlined.TextFields,
+                                        //imageVector = Icons.Outlined.TextFields,
+                                        painter = painterResource("drawable/spacer.xml"),
                                         label = "Spacer",
                                         qml = "Spacer { height: 8 }\n"
                                     )
-                                    ClickableIcon(
-                                        imageVector = Icons.Outlined.TextFields,
-                                        label = "Image",
-                                        qml ="Image { src: \"sample.mp4\" }\n"
-                                    )
+
+                                }
+                                    Row(
+                                        modifier = Modifier.wrapContentSize(),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        ClickableIcon(
+                                            //imageVector = Icons.Outlined.TextFields,
+                                            painter = painterResource("drawable/image.xml"),
+                                            label = "Image",
+                                            qml ="Image { src: \"sample.png\" }\n"
+                                        )
+                                        ClickableIcon(
+                                            //imageVector = Icons.Outlined.TextFields,
+                                            painter = painterResource("drawable/video.xml"),
+                                            label = "Video",
+                                            qml ="Video { src: \"sample.mp4\" height: 120 }\n"
+                                        )
+                                        ClickableIcon(
+                                            //imageVector = Icons.Outlined.TextFields,
+                                            painter = painterResource("drawable/youtube.xml"),
+                                            label = "Youtube",
+                                            qml ="Youtube { id: \"xyz\" height: 120 }\n"
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -238,7 +265,8 @@ fun widgetPalette(currentProject: ProjectState?) {
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     ClickableIcon(
-                                        imageVector = Icons.Outlined.SmartButton,
+                                        //imageVector = Icons.Outlined.SmartButton,
+                                        painter = painterResource("drawable/button.xml"),
                                         label = "Button",
                                         qml = "Button { label: \"Click me\" link: \"page:home\" }\n"
                                     )
