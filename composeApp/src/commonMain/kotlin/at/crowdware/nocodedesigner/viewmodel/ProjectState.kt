@@ -10,10 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import at.crowdware.nocodelib.App
 import at.crowdware.nocodelib.Page
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.StandardCopyOption
 
 
 expect fun getNodeType(path: String): NodeType
@@ -37,6 +33,7 @@ abstract class ProjectState {
     var path by mutableStateOf("")
         private set
     var treeData by mutableStateOf<List<TreeNode>>(emptyList())
+    var docuData by mutableStateOf<List<TreeNode>>(emptyList())
     var extension by mutableStateOf("")
         private set
     var isPageDialogVisible by mutableStateOf(false)
@@ -78,6 +75,39 @@ abstract class ProjectState {
         }
     }
 
+    fun LoadDoku() {
+        if(docuData.isNotEmpty())
+            return
+
+        val node = TreeNode(
+            title = mutableStateOf( "SML"),
+            path = "https://nocode.crowdware.at/sml.html",
+            type = NodeType.SML,
+        )
+        val nodePage = TreeNode(
+            title = mutableStateOf( "Page"),
+            path = "https://nocode.crowdware.at/page.html",
+            type = NodeType.SML,
+        )
+        val nodeText = TreeNode(
+            title = mutableStateOf( "Text"),
+            path = "https://nocode.crowdware.at/text.html",
+            type = NodeType.SML,
+        )
+        val nodeMd = TreeNode(
+            title = mutableStateOf( "Markdown"),
+            path = "https://nocode.crowdware.at/markdown.html",
+            type = NodeType.SML,
+        )
+        val nodeBasics = TreeNode(
+            title = mutableStateOf( "Basics"),
+            path = "https://nocode.crowdware.at/elements.html",
+            type = NodeType.DIRECTORY,
+            children = mutableStateListOf(nodeText, nodeMd)
+        )
+        docuData = docuData + listOf( node,  nodePage,  nodeBasics)
+    }
+
     fun LoadProject(path: String = folder, uuid: String, pid: String) {
         folder = path
         projectName = getDisplayName(path)
@@ -103,7 +133,7 @@ abstract class ProjectState {
             extension = path.substringAfterLast('.', "")
             if (extension.isEmpty()) {
                 extension = when {
-                    fileExists("$path.qml") -> "qml"
+                    fileExists("$path.sml") -> "sml"
                     else -> {
                         println("Keine gültige Datei gefunden.")
                         return@launch // Wenn keine gültige Datei gefunden wird, breche ab
@@ -111,6 +141,7 @@ abstract class ProjectState {
                 }
                 path = "$filePath.$extension"
             }
+            println("loading: $path")
             val fileText = loadFileContent("$path", "", "")
             currentFileContent = TextFieldValue(fileText)
             isEditorVisible = true
@@ -123,10 +154,10 @@ abstract class ProjectState {
     }
 
     fun addPage(name: String) {
-        val path = "$folder/pages/$name.qml"
+        val path = "$folder/pages/$name.sml"
         createPage(path)
 
-        val newNode = TreeNode(title = mutableStateOf("${name}.qml"), path, NodeType.QML)
+        val newNode = TreeNode(title = mutableStateOf("${name}.sml"), path, NodeType.SML)
         val updatedChildren = pageNode.children + newNode
         pageNode.children.clear()
         pageNode.children.addAll(updatedChildren)
@@ -136,7 +167,7 @@ abstract class ProjectState {
     fun deleteItem(treeNode: TreeNode) {
         deleteFile(treeNode.path)
 
-        if (currentTreeNode?.type == NodeType.QML) {
+        if (currentTreeNode?.type == NodeType.SML) {
             val title = currentTreeNode?.title?.value
 
             pageNode.children.remove(currentTreeNode)
@@ -156,9 +187,9 @@ abstract class ProjectState {
     }
 
     fun renamePage(name: String) {
-        val newPath = "$folder/pages/$name.qml"
+        val newPath = "$folder/pages/$name.sml"
         renameFile(currentTreeNode?.path!!, newPath)
-        currentTreeNode!!.title.value = "$name.qml"
+        currentTreeNode!!.title.value = "$name.sml"
         currentTreeNode!!.path = newPath
     }
 }

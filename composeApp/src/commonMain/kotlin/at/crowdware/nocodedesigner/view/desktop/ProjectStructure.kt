@@ -20,12 +20,16 @@
 package at.crowdware.nocodedesigner.view.desktop
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import at.crowdware.nocodedesigner.ui.TreeView
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
+import java.awt.Cursor
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -64,11 +69,11 @@ fun projectStructure(currentProject: ProjectState) {
                 tree = currentProject.treeData,
                 iconProvider = { node -> fileTreeIconProvider(node) },
                 onClick = { node ->
-                    if (node.type == NodeType.QML)
+                    if (node.type == NodeType.SML)
                         currentProject.LoadFile(node.path)
                 })
         }
-        /*
+
         // Draggable Divider
         Box(
             modifier = Modifier
@@ -85,13 +90,26 @@ fun projectStructure(currentProject: ProjectState) {
                 }
                 .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f)) // Divider color
         )
+        BasicText(
+            text = "Documentation",
+            modifier = Modifier.padding(8.dp),
+            maxLines = 1,
+            style = TextStyle(color = MaterialTheme.colors.onPrimary),
+            overflow = TextOverflow.Ellipsis
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f - treeViewHeight)
                 .background(MaterialTheme.colors.surface) // Apply surface color here
         ) {
-            Text("Todo")
-        }*/
+            TreeView(
+                tree = currentProject.docuData,
+                iconProvider = { node -> fileTreeIconProvider(node) },
+                onClick = { node ->
+                    openWebPage(node.path)
+                }
+            )
+        }
     }
 }

@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
 enum class NodeType {
-    DIRECTORY, IMAGE, VIDEO, SOUND, XML, MD, OTHER, QML
+    DIRECTORY, IMAGE, VIDEO, SOUND, XML, MD, OTHER, SML
 }
 
 val extensionToNodeType = mapOf(
@@ -23,7 +23,7 @@ val extensionToNodeType = mapOf(
     "flac" to NodeType.SOUND,
     "xml" to NodeType.XML,
     "md" to NodeType.MD,
-    "qml" to NodeType.QML
+    "sml" to NodeType.SML
 )
 
 // Data model for a tree node

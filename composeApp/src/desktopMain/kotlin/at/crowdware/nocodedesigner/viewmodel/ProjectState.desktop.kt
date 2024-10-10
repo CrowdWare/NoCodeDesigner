@@ -92,29 +92,28 @@ class DesktopProjectState : ProjectState() {
         val sortedNodes = nodes.sortedWith(compareBy<TreeNode> { it.type != NodeType.DIRECTORY }.thenBy { it.title.value })
         treeData = sortedNodes.toList()
 
-        // app.xml load and parse
+        // app.sml load and parse
         try {
-            val uiQml = File("$path/app.qml").readText()
-            app = parseApp(uiQml)
-            LoadFile("$path/pages/home.qml")
+            val uiSml = File("$path/app.sml").readText()
+            app = parseApp(uiSml)
+            LoadFile("$path/pages/home.sml")
         } catch (e: Exception) {
-            println("Error parsing app.qml: ${e.message}")
+            println("Error parsing app.sml: ${e.message}")
         }
     }
 
     override suspend fun createProjectFiles(path: String, uuid: String, pid: String, name: String, appId:String) {
         // TODO: copy default icon.png into assets
-        // TODO: create qml instead of xml
         val dir = File("$path/$name")
         dir.mkdirs()
-        val app = File("$path/$name/app.qml")
+        val app = File("$path/$name/app.sml")
         val pages = File("$path/$name/pages")
         pages.mkdirs()
         val assets = File("$path/$name/assets")
         assets.mkdirs()
-        val home = File("$path/$name/pages/home.qml")
-        app.writeText("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<app name=\"$name\" id=\"$appId.$name\" icon=\"icon.png\">\n    <navigation type=\"HorizontalPager\">\n        <item page=\"home\"/>\n    </navigation>\n</app>\n")
-        home.writeText("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<page>\n    <text>Home</text>\n</page>\n")
+        val home = File("$path/$name/pages/home.sml")
+        app.writeText("App {\n  name: \"$name\"\n  id: \"$appId.$name\"\n  icon: \"icon.png\"\n\n  Navigation {\n    type: \"HorizontalPager\"\n\n    Item { page: \"home\" }  \n}\n}\n")
+        home.writeText("Page {\n  backgroundColor: \"#FFFFFF\"\n  padding: \"8\"\n\n  Column {\n    padding: \"8\"\n\n    Text { text: \"Home\" }\n  }\n}\n")
         copyResourceToFile("icons/default.icon.png", "$path/$name/assets/icon.png")
         LoadProject("$path/$name", uuid, pid)
     }

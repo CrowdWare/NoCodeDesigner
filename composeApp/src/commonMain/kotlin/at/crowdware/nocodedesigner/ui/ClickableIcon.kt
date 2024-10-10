@@ -53,7 +53,7 @@ fun ClickableIcon(
     //imageVector: ImageVector,
     painter: Painter,
     label: String,
-    qml: String
+    sml: String
 ) {
     val currentState = uiStates.current
     val currentProject: ProjectState = GlobalProjectState.projectState!!
@@ -95,13 +95,13 @@ fun ClickableIcon(
 
                 // Insert new text at the cursor position
                 val newTextValue =
-                    currentText.substring(0, cursorPosition) + qml + currentText.substring(
+                    currentText.substring(0, cursorPosition) + sml + currentText.substring(
                         cursorPosition
                     )
                 // Update the TextFieldValue with new text and move the cursor after the inserted text
                 currentProject.currentFileContent = currentProject.currentFileContent.copy(
                     text = newTextValue,
-                    selection = TextRange(cursorPosition + qml.length)  // Move cursor to after the inserted text
+                    selection = TextRange(cursorPosition + sml.length)  // Move cursor to after the inserted text
                 )
                 currentProject.saveFileContent()
             }

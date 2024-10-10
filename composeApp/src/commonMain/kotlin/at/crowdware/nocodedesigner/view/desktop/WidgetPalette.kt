@@ -119,13 +119,13 @@ fun widgetPalette(currentProject: ProjectState?) {
                                     ClickableIcon(
                                         painter = painterResource("drawable/row.xml"),
                                         label = "Row",
-                                        qml = "Row {\n\n}\n"
+                                        sml = "Row {\n\n}\n"
                                     )
                                     ClickableIcon(
                                         //imageVector = Icons.Outlined.TextFields,
                                         painter = painterResource("drawable/column.xml"),
                                         label = "Column",
-                                        qml ="Column {\n\n}\n"
+                                        sml ="Column {\n\n}\n"
                                     )
                                 }
                             }
@@ -179,19 +179,19 @@ fun widgetPalette(currentProject: ProjectState?) {
                                         //imageVector = Icons.Outlined.CheckBox,
                                         painter = painterResource("drawable/text.xml"),
                                         label = "Text",
-                                        qml ="Text { text: \"Lorem ipsum dolor\" }\n"
+                                        sml ="Text { text: \"Lorem ipsum dolor\" }\n"
                                     )
                                     ClickableIcon(
                                         //imageVector = Icons.Outlined.CheckBox,
                                         painter = painterResource("drawable/markdown.xml"),
                                         label = "Markdown",
-                                        qml ="Markdown { text: \"# Header\" }\n"
+                                        sml ="Markdown { text: \"# Header\" }\n"
                                     )
                                     ClickableIcon(
                                         //imageVector = Icons.Outlined.TextFields,
                                         painter = painterResource("drawable/spacer.xml"),
                                         label = "Spacer",
-                                        qml = "Spacer { height: 8 }\n"
+                                        sml = "Spacer { height: 8 }\n"
                                     )
 
                                 }
@@ -203,19 +203,19 @@ fun widgetPalette(currentProject: ProjectState?) {
                                             //imageVector = Icons.Outlined.TextFields,
                                             painter = painterResource("drawable/image.xml"),
                                             label = "Image",
-                                            qml ="Image { src: \"sample.png\" }\n"
+                                            sml ="Image { src: \"sample.png\" }\n"
                                         )
                                         ClickableIcon(
                                             //imageVector = Icons.Outlined.TextFields,
                                             painter = painterResource("drawable/video.xml"),
                                             label = "Video",
-                                            qml ="Video { src: \"sample.mp4\" height: 120 }\n"
+                                            sml ="Video { src: \"sample.mp4\" height: 120 }\n"
                                         )
                                         ClickableIcon(
                                             //imageVector = Icons.Outlined.TextFields,
                                             painter = painterResource("drawable/youtube.xml"),
                                             label = "Youtube",
-                                            qml ="Youtube { id: \"xyz\" height: 120 }\n"
+                                            sml ="Youtube { id: \"xyz\" height: 120 }\n"
                                         )
                                     }
                                 }
@@ -268,7 +268,7 @@ fun widgetPalette(currentProject: ProjectState?) {
                                         //imageVector = Icons.Outlined.SmartButton,
                                         painter = painterResource("drawable/button.xml"),
                                         label = "Button",
-                                        qml = "Button { label: \"Click me\" link: \"page:home\" }\n"
+                                        sml = "Button { label: \"Click me\" link: \"page:home\" }\n"
                                     )
                                 }
                             }

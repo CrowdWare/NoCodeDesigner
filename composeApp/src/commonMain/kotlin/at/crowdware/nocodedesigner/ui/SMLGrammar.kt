@@ -56,7 +56,7 @@ val floatLiteral = regexToken("\\d+\\.\\d+")
 val lineComment: Token = regexToken("//.*")
 val blockComment: Token = regexToken("/\\*[\\s\\S]*?\\*/")
 
-object MyQmlGrammar : Grammar<List<ParsedElement>>() {
+object MySmlGrammar : Grammar<List<ParsedElement>>() {
     val whitespaceParser: Parser<ParsedElement> = whitespace.map { ParsedElement.Whitespace(it.text) }
     val commentParser: Parser<ParsedElement> = (lineComment or blockComment).map { ParsedElement.Comment(it.text) }
     val ignoredParser: Parser<List<ParsedElement>> = zeroOrMore(whitespaceParser or commentParser)
@@ -111,7 +111,7 @@ object MyQmlGrammar : Grammar<List<ParsedElement>>() {
 }
 
 
-object MyQmlSyntaxHighlighter {
+object MySmlSyntaxHighlighter {
     // Define colors for different syntax elements
     private val commentColor = Color.Gray
     private val stringColor = Color(0xFFBE896F)
@@ -120,9 +120,9 @@ object MyQmlSyntaxHighlighter {
     private val numberColor = Color(0xFFA0B592)
     private const val TAB_SIZE = 4
 
-    fun parseQml(input: String): List<ParsedElement> {
+    fun parseSml(input: String): List<ParsedElement> {
         return try {
-            MyQmlGrammar.parseToEnd(input)
+            MySmlGrammar.parseToEnd(input)
         } catch (e: Exception) {
             // If parsing fails, return the entire input as a single text element
             listOf(ParsedElement.Whitespace(input))
@@ -179,13 +179,13 @@ object MyQmlSyntaxHighlighter {
 // BasicTextField(
 //     value = textState,
 //     onValueChange = { textState = it },
-//     visualTransformation = QmlSyntaxHighlighter.visualTransformation
+//     visualTransformation = SmlSyntaxHighlighter.visualTransformation
 // )
 
-val qml = "Page{/*comment*/}"
+val sml = "Page{/*comment*/}"
 
 fun parsePage() {
-    val result = MyQmlGrammar.parseToEnd(qml)
+    val result = MySmlGrammar.parseToEnd(sml)
     println(result)
 }
 
@@ -203,7 +203,7 @@ fun parsePage() {
 [Element(name=Page, content=[Comment(content=/*comment*/)])]
 */
 
-class QmlOffsetMapping(private val originalText: String, private val parsedElements: List<ParsedElement>) : OffsetMapping {
+class SmlOffsetMapping(private val originalText: String, private val parsedElements: List<ParsedElement>) : OffsetMapping {
     private val TAB_SIZE = 4
 
     private fun expandTabs(text: String): String {
@@ -277,7 +277,7 @@ class QmlOffsetMapping(private val originalText: String, private val parsedEleme
                     currentTransformedOffset += 1
 
                     // Recursively handle the content
-                    val contentMapping = QmlOffsetMapping(originalText.substring(currentOriginalOffset), element.content)
+                    val contentMapping = SmlOffsetMapping(originalText.substring(currentOriginalOffset), element.content)
                     if (offset <= currentOriginalOffset + contentMapping.originalToTransformed(element.content.sumOf { it.totalLength() })) {
                         return currentTransformedOffset + contentMapping.originalToTransformed(offset - currentOriginalOffset)
                     }
@@ -363,7 +363,7 @@ class QmlOffsetMapping(private val originalText: String, private val parsedEleme
                     currentTransformedOffset += 1
 
                     // Recursively handle the content
-                    val contentMapping = QmlOffsetMapping(originalText.substring(currentOriginalOffset), element.content)
+                    val contentMapping = SmlOffsetMapping(originalText.substring(currentOriginalOffset), element.content)
                     val contentLength = contentMapping.originalToTransformed(element.content.sumOf { it.totalLength() })
                     if (offset <= currentTransformedOffset + contentLength) {
                         return currentOriginalOffset + contentMapping.transformedToOriginal(offset - currentTransformedOffset)
@@ -424,9 +424,9 @@ fun MySyntaxTextField(
 
     val highlightTransformation = remember {
         VisualTransformation { text ->
-            val parsedElements = MyQmlSyntaxHighlighter.parseQml(text.text)
-            val highlightedText = MyQmlSyntaxHighlighter.highlightSyntax(parsedElements)
-            val offsetMapping = QmlOffsetMapping(text.text, parsedElements)
+            val parsedElements = MySmlSyntaxHighlighter.parseSml(text.text)
+            val highlightedText = MySmlSyntaxHighlighter.highlightSyntax(parsedElements)
+            val offsetMapping = SmlOffsetMapping(text.text, parsedElements)
             TransformedText(highlightedText, offsetMapping)
         }
     }
@@ -469,7 +469,7 @@ fun MySyntaxTextField(
                     textStyle = TextStyle(fontSize = 14.sp, color = extendedColors.defaultTextColor, fontFamily = FontFamily.Monospace),
                     cursorBrush = SolidColor(cursorColor),
                     visualTransformation = when(extension) {
-                        "qml" -> highlightTransformation
+                        "sml" -> highlightTransformation
                         else -> VisualTransformation.None
                     },
                     maxLines = Int.MAX_VALUE

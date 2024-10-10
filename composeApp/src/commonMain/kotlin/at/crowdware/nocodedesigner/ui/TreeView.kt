@@ -136,8 +136,8 @@ fun TreeNodeView(
                 properties = PopupProperties(focusable = true)
             ) {
                 if (node.children.isEmpty()) {
-                    if (node.title.value != "home.qml" && node.title.value != "app.qml") {
-                        if (node.type == NodeType.QML) {
+                    if (node.title.value != "home.sml" && node.title.value != "app.sml") {
+                        if (node.type == NodeType.SML) {
                             DropdownMenuItem(onClick = {
                                 expanded = false
                                 currentProject?.currentTreeNode = node

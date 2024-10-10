@@ -108,7 +108,7 @@ fun SyntaxTextField(
                     textStyle = TextStyle(fontSize = 14.sp, color = extendedColors.attributeNameColor, fontFamily = FontFamily.Monospace),
                     cursorBrush = SolidColor(cursorColor),
                     visualTransformation = when(extension) {
-                        "qml" -> QmlSyntaxHighlighter(extendedColors)
+                        "sml" -> SmlSyntaxHighlighter(extendedColors)
                         else -> VisualTransformation.None
                     },
                     maxLines = Int.MAX_VALUE
@@ -126,11 +126,11 @@ fun SyntaxTextField(
     }
 }
 
-class QmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
+class SmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val builder = AnnotatedString.Builder(text)
 
-        // Highlight QML elements
+        // Highlight SML elements
         val elementRegex = Regex("(\\w+)\\s*\\{")
         elementRegex.findAll(text).forEach { match ->
             builder.addStyle(SpanStyle(color = colors.syntaxColor), match.range.first, match.range.last)

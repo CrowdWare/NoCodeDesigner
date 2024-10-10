@@ -57,7 +57,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import at.crowdware.nocodelib.YoutubeElement
-import at.crowdware.nocodelib.isQmlRootElement
+import at.crowdware.nocodelib.isSmlRootElement
 import at.crowdware.nocodelib.parsePage
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,26 +71,26 @@ import androidx.compose.ui.unit.TextUnit
 @Composable
 fun mobilePreview(currentProject: ProjectState?) {
     var parseError = ""
-    val qml = currentProject?.currentFileContent?.text ?: ""
+    val sml = currentProject?.currentFileContent?.text ?: ""
     val ext = currentProject?.extension
-    var lastQml = remember { mutableStateOf("") }
+    var lastSml = remember { mutableStateOf("") }
     var lastPage = remember { mutableStateOf(null as Page?) }
 
-    val parsedPage: Page? = if(qml != lastQml.value) {
+    val parsedPage: Page? = if(sml != lastSml.value) {
         try {
-            if (ext == "qml") {
-                if (qml.isEmpty()) {
+            if (ext == "sml") {
+                if (sml.isEmpty()) {
                     parseError = "no page loaded"
                     null
                 } else {
-                    if (isQmlRootElement(qml, "Page")) {
-                        val page = parsePage(qml)
+                    if (isSmlRootElement(sml, "Page")) {
+                        val page = parsePage(sml)
                         if (page.elements.isEmpty()) {
                             parseError = "page is empty"
                             null
                         } else {
                             lastPage.value = page
-                            lastQml.value = qml
+                            lastSml.value = sml
                             page
                         }
                     } else {

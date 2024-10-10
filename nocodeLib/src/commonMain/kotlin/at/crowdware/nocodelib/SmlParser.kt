@@ -37,7 +37,7 @@ val floatLiteral = regexToken("\\d+\\.\\d+")
 val lineComment: Token = regexToken("//.*")
 val blockComment: Token = regexToken(Regex("/\\*[\\s\\S]*?\\*/", RegexOption.DOT_MATCHES_ALL))
 
-object QmlGrammar : Grammar<List<Any>>() {
+object SmlGrammar : Grammar<List<Any>>() {
     val whitespaceParser = zeroOrMore(whitespace)
 
     val commentParser = lineComment or blockComment
@@ -63,9 +63,9 @@ object QmlGrammar : Grammar<List<Any>>() {
     override val rootParser: Parser<List<Any>> = (oneOrMore(element) and ignoredParser).map { (elements, _) -> elements }
 }
 
-fun isQmlRootElement(qmlString: String, root: String): Boolean {
+fun isSmlRootElement(smlString: String, root: String): Boolean {
     val regex = Regex("""^\s*$root\s*\{""")
-    return regex.containsMatchIn(qmlString)
+    return regex.containsMatchIn(smlString)
 }
 
 fun deserializeApp(parsedResult: List<Any>): App {
@@ -201,12 +201,12 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
     }
 }
 
-fun parsePage(qml: String): Page {
-    val result = QmlGrammar.parseToEnd(qml)
+fun parsePage(sml: String): Page {
+    val result = SmlGrammar.parseToEnd(sml)
     return deserializePage(result)
 }
 
-fun parseApp(qml: String): App {
-    val result = QmlGrammar.parseToEnd(qml)
+fun parseApp(sml: String): App {
+    val result = SmlGrammar.parseToEnd(sml)
     return deserializeApp(result)
 }

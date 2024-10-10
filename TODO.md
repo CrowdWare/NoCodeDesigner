@@ -1,22 +1,25 @@
 # TODO
 
 ## Next release
-- Syntaxedit
+- Inline Dokumentation via Webserver SML
+- Mouse pointer on tree view, if clickable
+
+
+## Nice to have
+- Syntax-edit Grammar
   - Comments are not grayed out
   - No tabs anymore
   - Cursor management when tabbed
 - TestCases
   - Syntax highligt..errors
   - Grammar tests
-
-## Nice to have
 - Import multiple assets
 - New Project (Theme chooser)
 - New page (Template chooser)
 - Paging as navigation maybe visual paging for book content
 - App.xml -> open splash screen in preview
 - App.xml is delivering a list of files including timestamp (caching)
-- Expressions in QML
+- Expressions in SML
 - Settings page
     - Option to choose between local directory and local webserver via REST
     - Todo

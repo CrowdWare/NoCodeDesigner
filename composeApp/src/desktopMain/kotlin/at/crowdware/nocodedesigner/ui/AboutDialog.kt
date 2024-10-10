@@ -49,7 +49,7 @@ fun AboutDialog(appName: String, version: String, onDismissRequest: () -> Unit) 
         visible = true,
         undecorated = true,
         transparent = true,
-        alwaysOnTop = true,
+        alwaysOnTop = false,
         resizable = false) {
         AppTheme() {
             Surface(
