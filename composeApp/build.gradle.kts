@@ -44,7 +44,9 @@ kotlin {
                 implementation("org.jetbrains.compose.material:material-icons-extended:1.6.11")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
                 implementation("br.com.devsrsouza.compose.icons:font-awesome:1.1.1")
+                implementation("br.com.devsrsouza.compose.icons:feather:1.1.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3")
+                implementation("com.github.h0tk3y.betterParse:better-parse:0.4.4")
                 implementation(project(":nocodeLib"))
             }
         }

@@ -138,10 +138,11 @@ abstract class ProjectState {
 
         if (currentTreeNode?.type == NodeType.QML) {
             val title = currentTreeNode?.title?.value
+
             pageNode.children.remove(currentTreeNode)
 
             if ( title == fileName) {
-                // we have to remove the editor, to not trigger filesave
+                // we have to remove the editor, because file cannot be edited anymore
                 currentFileContent = TextFieldValue("")
                 path = ""
                 fileName = ""

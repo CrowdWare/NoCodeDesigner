@@ -34,7 +34,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import at.crowdware.nocodedesigner.ui.HoverableIcon
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
+import compose.icons.FeatherIcons
 import compose.icons.FontAwesomeIcons
+import compose.icons.feathericons.*
 import compose.icons.fontawesomeicons.Brands
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.brands.Github
@@ -55,13 +57,13 @@ fun toolbar(currentProject: ProjectState?) {
         Spacer(modifier = Modifier.height(8.dp))
         HoverableIcon(
             onClick = { currentProject?.isNewProjectDialogVisible = true },
-            imageVector = FontAwesomeIcons.Solid.PlusCircle,
+            imageVector = FeatherIcons.FolderPlus,
             tooltipText = "Create new Project",
             isSelected = currentProject?.isNewProjectDialogVisible == true
         )
         HoverableIcon(
             onClick = { currentProject?.isOpenProjectDialogVisible = true },
-            imageVector = Icons.Outlined.AddBusiness,
+            imageVector = FeatherIcons.Folder,
             tooltipText = "Open Project",
             isSelected = currentProject?.isOpenProjectDialogVisible == true
         )

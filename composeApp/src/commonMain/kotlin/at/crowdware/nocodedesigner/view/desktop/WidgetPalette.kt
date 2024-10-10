@@ -39,7 +39,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.pointer.pointerMoveFilter
-//import androidx.compose.ui.input.pointer.pointerMoveFilter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
@@ -238,17 +237,6 @@ fun widgetPalette(currentProject: ProjectState?) {
                                     modifier = Modifier.wrapContentSize(),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    /*
-                                    DraggableIcon(
-                                        imageVector = Icons.Outlined.TextFields,
-                                        label = "Textfield",
-                                        qml = "TextField { placeholderText: \"Enter text\" }\n"
-                                    )
-                                    DraggableIcon(
-                                        imageVector = Icons.Outlined.CheckBox,
-                                        label = "Checkbox",
-                                        qml ="CheckBox { text: \"Check me\" }\n"
-                                    )*/
                                     ClickableIcon(
                                         imageVector = Icons.Outlined.SmartButton,
                                         label = "Button",

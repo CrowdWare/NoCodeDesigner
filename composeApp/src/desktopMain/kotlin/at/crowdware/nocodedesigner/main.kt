@@ -76,6 +76,8 @@ fun main() = application {
     GlobalProjectState.projectState = projectState
     projectState.darkMode = androidx.compose.foundation.isSystemInDarkTheme()
 
+
+    parsePage()
     // setup logging, all println are stored in a log file
     //setupLogging()
 
@@ -345,7 +347,7 @@ fun getBundlePath(): String {
 
 fun getLibraryPath(): String {
     val home = System.getProperty("user.dir")
-    println("Home: $home")
+
     return if (isRunningInProdMode()) {
         val objc = Native.load("objc", ObjCRuntime::class.java) as ObjCRuntime
         val nsBundleClass = objc.objc_getClass("NSBundle")

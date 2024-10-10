@@ -32,5 +32,5 @@ data class TreeNode(
     var path: String,
     val type: NodeType,
     var children: SnapshotStateList<TreeNode> = mutableStateListOf(),
-    var expanded: MutableState<Boolean> = mutableStateOf(false)
+    var expanded: MutableState<Boolean> = mutableStateOf(false),
 )

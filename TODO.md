@@ -9,22 +9,6 @@
 - TestCases
   - Syntax highligt..errors
   - Grammar tests
-    
-## Bugs
-- Cursor movement is bad...goes not up if at the last bracket
-```qml
-Page {
-    backgroundColor: "#00000ff"
-	color: "#FFFFFF"
-	Column {
-	Button { label: "Click me" link: "page:home" }
-	Spacer { height: 8 }
-	Button { label: "Click me" link: "page:home" }
-	}
-
-	
-}
-```
 
 ## Nice to have
 - Import multiple assets

@@ -64,10 +64,6 @@ fun projectStructure(currentProject: ProjectState) {
                 tree = currentProject.treeData,
                 iconProvider = { node -> fileTreeIconProvider(node) },
                 onClick = { node ->
-                    if (node.type == NodeType.XML)
-                        currentProject.LoadFile(node.path)
-                    if (node.type == NodeType.MD)
-                        currentProject.LoadFile(node.path)
                     if (node.type == NodeType.QML)
                         currentProject.LoadFile(node.path)
                 })

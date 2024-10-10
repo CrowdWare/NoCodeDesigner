@@ -65,7 +65,7 @@ fun TreeNodeView(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .pointerInput(Unit) {
+                    .pointerInput(node) {
                         awaitPointerEventScope {
                             while (true) {
                                 val event = awaitPointerEvent()
