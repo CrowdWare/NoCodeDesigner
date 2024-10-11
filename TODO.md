@@ -1,8 +1,8 @@
 # TODO
 
 ## Next release
-- Inline Dokumentation via Webserver SML
-- Mouse pointer on tree view, if clickable
+- Property panel
+- Parse errors show, with line numbers
 
 ## Nice to have
 - Syntax-edit Grammar

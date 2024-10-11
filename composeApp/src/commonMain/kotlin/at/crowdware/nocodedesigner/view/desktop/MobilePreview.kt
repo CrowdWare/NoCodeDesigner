@@ -24,93 +24,41 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import at.crowdware.nocodedesigner.viewmodel.ProjectState
-import at.crowdware.nocodelib.Page
-import at.crowdware.nocodelib.TextElement
-import at.crowdware.nocodelib.ButtonElement
-import at.crowdware.nocodelib.ColumnElement
-import at.crowdware.nocodelib.RowElement
-import at.crowdware.nocodelib.ImageElement
-import at.crowdware.nocodelib.SoundElement
-import at.crowdware.nocodelib.SpacerElement
-import at.crowdware.nocodelib.VideoElement
-import at.crowdware.nocodelib.MarkdownElement
-import at.crowdware.nocodelib.UIElement
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.sp
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import at.crowdware.nocodelib.YoutubeElement
-import at.crowdware.nocodelib.isSmlRootElement
-import at.crowdware.nocodelib.parsePage
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import at.crowdware.nocodedesigner.viewmodel.ProjectState
+import at.crowdware.nocodelib.Page
+import at.crowdware.nocodelib.UIElement
+import at.crowdware.nocodelib.UIElement.*
 
 @Composable
 fun mobilePreview(currentProject: ProjectState?) {
-    var parseError = ""
-    val sml = currentProject?.currentFileContent?.text ?: ""
-    val ext = currentProject?.extension
-    var lastSml = remember { mutableStateOf("") }
-    var lastPage = remember { mutableStateOf(null as Page?) }
+    var page: Page? = if (currentProject?.isPageLoaded == true) currentProject.page else null
 
-    val parsedPage: Page? = if(sml != lastSml.value) {
-        try {
-            if (ext == "sml") {
-                if (sml.isEmpty()) {
-                    parseError = "no page loaded"
-                    null
-                } else {
-                    if (isSmlRootElement(sml, "Page")) {
-                        val page = parsePage(sml)
-                        if (page.elements.isEmpty()) {
-                            parseError = "page is empty"
-                            null
-                        } else {
-                            lastPage.value = page
-                            lastSml.value = sml
-                            page
-                        }
-                    } else {
-                        parseError = "no page loaded"
-                        null
-                    }
-                }
-            } else {
-                null
-            }
-        } catch (e: Exception) {
-            parseError = e.message ?: ""
-            println("Error parsing source: ${e.message}")
-            null
-        }
-    } else {
-        lastPage.value
+    if(page == null && currentProject != null) {
+        page = currentProject.cachedPage
     }
-
-
 
     Column(modifier = Modifier.width(430.dp).fillMaxHeight().background(color = MaterialTheme.colors.primary)) {
         BasicText(
@@ -143,30 +91,25 @@ fun mobilePreview(currentProject: ProjectState?) {
                         .fillMaxHeight(0.9f) // Height of the screen relative to the phone body
                         .align(Alignment.Center) // Center the screen inside the phone
                         .background(Color.Black)
-                    //.clip(RoundedCornerShape(16.dp))
                 ) {
                     // Scalable content inside the screen
                     Box(
                         modifier = Modifier
                             .align(Alignment.Center)
                     ) {
-                        if (parsedPage != null) {
+                        if (page != null) {
                             Row(
                                 modifier = Modifier
                                     .padding(
-                                        start = parsedPage.padding.left.dp,
-                                        top = parsedPage.padding.top.dp,
-                                        bottom = parsedPage.padding.bottom.dp,
-                                        end = parsedPage.padding.right.dp
+                                        start = page.padding.left.dp,
+                                        top = page.padding.top.dp,
+                                        bottom = page.padding.bottom.dp,
+                                        end = page.padding.right.dp
                                     )
                                     .fillMaxSize()
-                                    .background(color = hexToColor(parsedPage.backgroundColor))
+                                    .background(color = hexToColor(page.backgroundColor))
                             ) {
-                                RenderPage(parsedPage)
-                            }
-                        } else {
-                            Row {
-                                Text(text = parseError, color = Color.Red)
+                                RenderPage(page)
                             }
                         }
                     }

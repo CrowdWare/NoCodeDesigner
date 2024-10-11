@@ -163,7 +163,7 @@ fun TreeNodeView(
                     )
                     //Spacer(modifier = Modifier.width(6.dp))
                 } else if (level == 0) {
-                    Spacer(modifier = Modifier.width(24.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
                 } else {
                     Spacer(modifier = Modifier.width(8.dp))
                 }

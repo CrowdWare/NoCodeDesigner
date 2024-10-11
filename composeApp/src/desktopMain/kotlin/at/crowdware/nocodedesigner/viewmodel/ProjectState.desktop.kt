@@ -2,10 +2,8 @@ package at.crowdware.nocodedesigner.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import at.crowdware.nocodedesigner.model.*
 import java.io.File
-import at.crowdware.nocodedesigner.model.NodeType
-import at.crowdware.nocodedesigner.model.TreeNode
-import at.crowdware.nocodedesigner.model.extensionToNodeType
 import at.crowdware.nocodelib.parseApp
 import java.io.IOException
 import java.io.InputStream
@@ -49,7 +47,6 @@ class DesktopProjectState : ProjectState() {
     override suspend fun loadProjectFiles(path: String, uuid: String, pid: String) {
         val file = File(path)
 
-        // Funktion zur Ermittlung des NodeType basierend auf der Dateiendung
         fun getNodeType(file: File): NodeType {
             return if (file.isDirectory) {
                 NodeType.DIRECTORY

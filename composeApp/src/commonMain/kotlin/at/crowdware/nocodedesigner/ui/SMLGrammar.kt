@@ -186,7 +186,6 @@ val sml = "Page{/*comment*/}"
 
 fun parsePage() {
     val result = MySmlGrammar.parseToEnd(sml)
-    println(result)
 }
 
 

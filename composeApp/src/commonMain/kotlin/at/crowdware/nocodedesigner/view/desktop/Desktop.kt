@@ -62,7 +62,6 @@ fun desktop() {
     LaunchedEffect(currentProject?.currentFileContent) {
         textFieldValue = currentProject?.currentFileContent ?: ""
     }
-    currentProject?.LoadDoku()
 
     Row(modifier = Modifier
         .fillMaxWidth()
@@ -80,5 +79,6 @@ fun desktop() {
             currentProject?.currentFileContent = newValue
         }
         mobilePreview(currentProject)
+        propertyPanel(currentProject)
     }
 }

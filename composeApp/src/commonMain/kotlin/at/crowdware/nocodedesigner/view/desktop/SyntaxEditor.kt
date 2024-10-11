@@ -61,17 +61,15 @@ fun RowScope.syntaxEditor(
                     val oldText = textFieldValue.text
                     onTextFieldValueChange(newValue)
                     currentProject.currentFileContent = newValue
-
-                    // Automatically save the content to disk after each change
-                    coroutineScope.launch(ioDispatcher()) {
-                        delay(500)
-                        currentProject.saveFileContent()
-                    }
-                    // dont save if only the cursor has moved (no text has changed)
+                    // don't save if only the cursor has moved (no text has changed)
                     if (oldText != newValue.text) {
-                        currentProject.saveFileContent()
+                        // Automatically save the content to disk after each change
+                        coroutineScope.launch(ioDispatcher()) {
+                            delay(500)
+                            currentProject.saveFileContent()
+                            currentProject.reloadPage()
+                        }
                     }
-                    currentProject.saveFileContent()
                 },
                 extension = currentProject.extension ?: "",
                 textFieldValue = textFieldValue

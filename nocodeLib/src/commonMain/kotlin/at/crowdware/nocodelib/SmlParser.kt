@@ -140,42 +140,58 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
 
                 when (elementName) {
                     "Text" -> {
-                        elements.add(TextElement(
-                            text = (properties["text"] as? PropertyValue.StringValue)?.value ?: "",
-                            color = hexToColor((properties["color"] as? PropertyValue.StringValue)?.value ?: ""),
-                            fontSize = ((properties["fontSize"] as? PropertyValue.IntValue)?.value ?: 14).sp,
-                            fontWeight = fontWeightMap[(properties["fontWeight"] as? PropertyValue.StringValue)?.value ?: ""] ?: FontWeight.Normal,
-                            textAlign = textAlignMap[(properties["textAlign"] as? PropertyValue.StringValue)?.value ?: ""] ?: TextAlign.Unspecified
-                        ))
+                        elements.add(
+                            UIElement.TextElement(
+                                text = (properties["text"] as? PropertyValue.StringValue)?.value ?: "",
+                                color = hexToColor((properties["color"] as? PropertyValue.StringValue)?.value ?: ""),
+                                fontSize = ((properties["fontSize"] as? PropertyValue.IntValue)?.value ?: 14).sp,
+                                fontWeight = fontWeightMap[(properties["fontWeight"] as? PropertyValue.StringValue)?.value
+                                    ?: ""] ?: FontWeight.Normal,
+                                textAlign = textAlignMap[(properties["textAlign"] as? PropertyValue.StringValue)?.value
+                                    ?: ""] ?: TextAlign.Unspecified
+                            )
+                        )
                     }
                     "Column" -> {
-                        val col = ColumnElement(padding = parsePadding((properties["padding"] as? PropertyValue.StringValue)?.value ?: "0"))
+                        val col = UIElement.ColumnElement(
+                            padding = parsePadding(
+                                (properties["padding"] as? PropertyValue.StringValue)?.value ?: "0"
+                            )
+                        )
                         parseNestedElements(extractChildElements(element), col.uiElements as MutableList<UIElement>)
                         elements.add(col)
                     }
                     "Row" -> {
-                        val row = RowElement(padding = parsePadding((properties["padding"] as? PropertyValue.StringValue)?.value ?: "0"))
+                        val row = UIElement.RowElement(
+                            padding = parsePadding(
+                                (properties["padding"] as? PropertyValue.StringValue)?.value ?: "0"
+                            )
+                        )
                         parseNestedElements(extractChildElements(element), row.uiElements as MutableList<UIElement>)
                         elements.add(row)
                     }
                     "Markdown" -> {
                         val md = ((properties["text"] as? PropertyValue.StringValue)?.value ?: "").split("\n").joinToString("\n") { it.trim() }
-                        val ele = MarkdownElement(text = md, color = (properties["color"] as? PropertyValue.StringValue)?.value ?: "#FFFFFF")
+                        val ele = UIElement.MarkdownElement(
+                            text = md,
+                            color = (properties["color"] as? PropertyValue.StringValue)?.value ?: "#FFFFFF"
+                        )
                         elements.add(ele)
                     }
                     "Button" -> {
-                        val btn = ButtonElement(
+                        val btn = UIElement.ButtonElement(
                             label = (properties["label"] as? PropertyValue.StringValue)?.value ?: "",
                             link = (properties["link"] as? PropertyValue.StringValue)?.value ?: ""
                         )
                         elements.add(btn)
                     }
                     "Sound" -> {
-                        val snd = SoundElement(src = (properties["src"] as? PropertyValue.StringValue)?.value ?: "")
+                        val snd =
+                            UIElement.SoundElement(src = (properties["src"] as? PropertyValue.StringValue)?.value ?: "")
                         elements.add(snd)
                     }
                     "Image" -> {
-                        val img = ImageElement(
+                        val img = UIElement.ImageElement(
                             src = (properties["src"] as? PropertyValue.StringValue)?.value ?: "",
                             scale = (properties["scale"] as? PropertyValue.StringValue)?.value ?: "1",
                             link = (properties["link"] as? PropertyValue.StringValue)?.value ?: ""
@@ -183,18 +199,20 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
                         elements.add(img)
                     }
                     "Spacer" -> {
-                        val sp = SpacerElement(height = (properties["height"] as? PropertyValue.IntValue)?.value ?: 0)
+                        val sp = UIElement.SpacerElement(
+                            height = (properties["height"] as? PropertyValue.IntValue)?.value ?: 0
+                        )
                         elements.add(sp)
                     }
                     "Video" -> {
-                        val vid = VideoElement(
+                        val vid = UIElement.VideoElement(
                             src = (properties["src"] as? PropertyValue.StringValue)?.value ?: "",
                             height = (properties["height"] as? PropertyValue.IntValue)?.value ?: 100
                         )
                         elements.add(vid)
                     }
                     "Youtube" -> {
-                        val yt = YoutubeElement(
+                        val yt = UIElement.YoutubeElement(
                             id = (properties["id"] as? PropertyValue.StringValue)?.value ?: "",
                             height = (properties["height"] as? PropertyValue.IntValue)?.value ?: 100
                         )
@@ -206,12 +224,20 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
     }
 }
 
-fun parsePage(sml: String): Page {
-    val result = SmlGrammar.parseToEnd(sml)
-    return deserializePage(result)
+fun parsePage(sml: String): Page? {
+    try {
+        val result = SmlGrammar.parseToEnd(sml)
+        return deserializePage(result)
+    } catch(e: Exception) {
+        return null
+    }
 }
 
-fun parseApp(sml: String): App {
-    val result = SmlGrammar.parseToEnd(sml)
-    return deserializeApp(result)
+fun parseApp(sml: String): App? {
+    try {
+        val result = SmlGrammar.parseToEnd(sml)
+        return deserializeApp(result)
+    } catch(e: Exception) {
+        return null
+    }
 }

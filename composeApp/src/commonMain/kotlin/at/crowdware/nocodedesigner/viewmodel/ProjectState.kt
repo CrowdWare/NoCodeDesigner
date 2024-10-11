@@ -1,7 +1,6 @@
 package at.crowdware.nocodedesigner.viewmodel
 
 import androidx.compose.runtime.*
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.TextFieldValue
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
@@ -10,6 +9,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import at.crowdware.nocodelib.App
 import at.crowdware.nocodelib.Page
+import at.crowdware.nocodelib.UIElement
+import at.crowdware.nocodelib.parsePage
+import com.sun.source.tree.Tree
 
 
 expect fun getNodeType(path: String): NodeType
@@ -33,7 +35,7 @@ abstract class ProjectState {
     var path by mutableStateOf("")
         private set
     var treeData by mutableStateOf<List<TreeNode>>(emptyList())
-    var docuData by mutableStateOf<List<TreeNode>>(emptyList())
+    var elementData by mutableStateOf<List<TreeNode>>(emptyList())
     var extension by mutableStateOf("")
         private set
     var isPageDialogVisible by mutableStateOf(false)
@@ -46,67 +48,17 @@ abstract class ProjectState {
     var isEditorVisible by mutableStateOf(false)
     var darkMode by mutableStateOf(false)
     var currentTreeNode by mutableStateOf(null as TreeNode?)
-    val focusRequester by mutableStateOf(FocusRequester())
+    var isPageLoaded by mutableStateOf(false)
 
     lateinit var pageNode: TreeNode
     lateinit var assetsNode: TreeNode
-    lateinit var app: App
-    lateinit var page: Page
+    var app: App? by mutableStateOf(null)
+    var page: Page? by mutableStateOf(null)
+    var cachedPage: Page? by mutableStateOf(null)
 
     abstract suspend fun loadProjectFiles(path: String, uuid: String, pid: String)
     abstract suspend fun createProjectFiles(path: String, uuid: String, pid: String, name: String, appId:String)
 
-    fun isDialogOpen(): Boolean {
-        return when {
-            isNewProjectDialogVisible -> true
-            isAboutDialogOpen -> true
-            else -> false
-        }
-    }
-
-    fun CreateProject(path: String, uuid: String, pid: String) {
-        val projectState = at.crowdware.nocodedesigner.viewmodel.GlobalProjectState.projectState
-        if (projectState != null) {
-            CoroutineScope(Dispatchers.Main).launch {
-                projectState.createProjectFiles(path = path, uuid = uuid, pid = pid, name="", appId = "")
-            }
-        } else {
-            println("Error: ProjectState is null. Make sure GlobalProjectState.projectState is initialized.")
-        }
-    }
-
-    fun LoadDoku() {
-        if(docuData.isNotEmpty())
-            return
-
-        val node = TreeNode(
-            title = mutableStateOf( "SML"),
-            path = "https://nocode.crowdware.at/sml.html",
-            type = NodeType.SML,
-        )
-        val nodePage = TreeNode(
-            title = mutableStateOf( "Page"),
-            path = "https://nocode.crowdware.at/page.html",
-            type = NodeType.SML,
-        )
-        val nodeText = TreeNode(
-            title = mutableStateOf( "Text"),
-            path = "https://nocode.crowdware.at/text.html",
-            type = NodeType.SML,
-        )
-        val nodeMd = TreeNode(
-            title = mutableStateOf( "Markdown"),
-            path = "https://nocode.crowdware.at/markdown.html",
-            type = NodeType.SML,
-        )
-        val nodeBasics = TreeNode(
-            title = mutableStateOf( "Basics"),
-            path = "https://nocode.crowdware.at/elements.html",
-            type = NodeType.DIRECTORY,
-            children = mutableStateListOf(nodeText, nodeMd)
-        )
-        docuData = docuData + listOf( node,  nodePage,  nodeBasics)
-    }
 
     fun LoadProject(path: String = folder, uuid: String, pid: String) {
         folder = path
@@ -141,10 +93,133 @@ abstract class ProjectState {
                 }
                 path = "$filePath.$extension"
             }
-            val fileText = loadFileContent("$path", "", "")
+            val fileText = loadFileContent(path, "", "")
+            page = parsePage(fileText)
+            if (page != null) {
+                cachedPage = page
+                isPageLoaded = true
+                loadElementData()
+            }
             currentFileContent = TextFieldValue(fileText)
             isEditorVisible = true
         }
+    }
+
+    fun reloadPage() {
+        page = parsePage(currentFileContent.text)
+        if(page != null) {
+            cachedPage = page
+            isPageLoaded = true
+            loadElementData()
+        }
+    }
+
+    private fun loadElementData() {
+        elementData = listOf(mapPageToTreeNodes(page!!))
+    }
+
+    fun mapUIElementToTreeNode(uiElement: UIElement): TreeNode {
+        // Create a TreeNode based on the type of the UIElement
+        return when (uiElement) {
+            is UIElement.TextElement -> TreeNode(
+                title = mutableStateOf("Text"),
+                type = NodeType.OTHER,
+                path = "",
+                children = mutableStateListOf(),
+                expanded = mutableStateOf(false)
+            )
+            is UIElement.ButtonElement -> TreeNode(
+                title = mutableStateOf("Button"),
+                type = NodeType.OTHER,
+                path = "",
+                children = mutableStateListOf(),
+                expanded = mutableStateOf(false)
+            )
+            is UIElement.ImageElement -> TreeNode(
+                title = mutableStateOf("Image"),
+                type = NodeType.OTHER,
+                path = "",
+                children = mutableStateListOf(),
+                expanded = mutableStateOf(false)
+            )
+            is UIElement.SpacerElement -> TreeNode(
+                title = mutableStateOf("Spacer"),
+                type = NodeType.OTHER,
+                path = "",
+                children = mutableStateListOf(),
+                expanded = mutableStateOf(false)
+            )
+            is UIElement.VideoElement -> TreeNode(
+                title = mutableStateOf("Video"),
+                type = NodeType.OTHER,
+                path = "",
+                children = mutableStateListOf(),
+                expanded = mutableStateOf(false)
+            )
+            is UIElement.YoutubeElement -> TreeNode(
+                title = mutableStateOf("Youtube"),
+                type = NodeType.OTHER,
+                path = "",
+                children = mutableStateListOf(),
+                expanded = mutableStateOf(false)
+            )
+            is UIElement.SoundElement -> TreeNode(
+                title = mutableStateOf("Sound"),
+                type = NodeType.OTHER,
+                path = "",
+                children = mutableStateListOf(),
+                expanded = mutableStateOf(false)
+            )
+            is UIElement.MarkdownElement -> TreeNode(
+                title = mutableStateOf("Markdown"),
+                type = NodeType.OTHER,
+                path = "",
+                children = mutableStateListOf(),
+                expanded = mutableStateOf(false)
+            )
+            is UIElement.RowElement -> TreeNode(
+                title = mutableStateOf("Row"),
+                type = NodeType.DIRECTORY,
+                path = "",
+                children = mutableStateListOf(
+                    *uiElement.uiElements.map { mapUIElementToTreeNode(it) }.toTypedArray()
+                ),
+                expanded = mutableStateOf(true)
+            )
+            is UIElement.ColumnElement -> TreeNode(
+                title = mutableStateOf("Column"),
+                type = NodeType.DIRECTORY,
+                path = "",
+                children = mutableStateListOf(
+                    *uiElement.uiElements.map { mapUIElementToTreeNode(it) }.toTypedArray()
+                ),
+                expanded = mutableStateOf(true)
+            )
+            UIElement.Zero -> TreeNode(
+                title = mutableStateOf("Zero Element"),
+                type = NodeType.OTHER,
+                path = "",
+                children = mutableStateListOf(),
+                expanded = mutableStateOf(false)
+            )
+        }
+    }
+
+    // Function to map a Page to TreeNode as the root, with all its elements as children
+    fun mapPageToTreeNodes(page: Page): TreeNode {
+        // Create the root node for the Page
+        val rootNode = TreeNode(
+            title = mutableStateOf("Page"),
+            type = NodeType.DIRECTORY,
+            path = "",
+            children = mutableStateListOf(),
+            expanded = mutableStateOf(true)  // Root is expanded by default
+        )
+
+        // Map each UIElement in the Page to a child TreeNode and add to rootNode
+        rootNode.children.addAll(page.elements.map { mapUIElementToTreeNode(it) })
+
+        return rootNode
     }
 
     fun saveFileContent() {
@@ -156,7 +231,7 @@ abstract class ProjectState {
         val path = "$folder/pages/$name.sml"
         createPage(path)
 
-        val newNode = TreeNode(title = mutableStateOf("${name}.sml"), path, NodeType.SML)
+        val newNode = TreeNode(title = mutableStateOf( "${name}.sml"), path = path, type= NodeType.SML)
         val updatedChildren = pageNode.children + newNode
         pageNode.children.clear()
         pageNode.children.addAll(updatedChildren)
@@ -169,7 +244,7 @@ abstract class ProjectState {
         if (currentTreeNode?.type == NodeType.SML) {
             val title = currentTreeNode?.title?.value
 
-            pageNode.children.remove(currentTreeNode)
+            pageNode.children.remove(currentTreeNode as TreeNode)
 
             if ( title == fileName) {
                 // we have to remove the editor, because file cannot be edited anymore
@@ -181,7 +256,7 @@ abstract class ProjectState {
             }
 
         } else {
-            assetsNode.children.remove(currentTreeNode)
+            assetsNode.children.remove(currentTreeNode as TreeNode)
         }
     }
 

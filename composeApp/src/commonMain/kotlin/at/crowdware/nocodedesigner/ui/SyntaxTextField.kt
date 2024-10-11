@@ -22,6 +22,7 @@ package at.crowdware.nocodedesigner.ui
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.MaterialTheme
@@ -32,6 +33,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -104,7 +106,20 @@ fun SyntaxTextField(
                         .fillMaxWidth()
                         .fillMaxHeight()
                         .heightIn(min = 640.dp)
-                        .background(Color.Transparent),
+                        .background(Color.Transparent)
+                        .onKeyEvent { keyEvent ->
+                        when {
+                            keyEvent.key == Key.DirectionUp && keyEvent.type == KeyEventType.KeyUp -> {
+                                println("Pfeiltaste nach oben gedrückt")
+                                true
+                            }
+                            keyEvent.key == Key.DirectionDown && keyEvent.type == KeyEventType.KeyUp -> {
+                                println("Pfeiltaste nach unten gedrückt")
+                                true
+                            }
+                            else -> false
+                        }
+                    },
                     textStyle = TextStyle(fontSize = 14.sp, color = extendedColors.attributeNameColor, fontFamily = FontFamily.Monospace),
                     cursorBrush = SolidColor(cursorColor),
                     visualTransformation = when(extension) {

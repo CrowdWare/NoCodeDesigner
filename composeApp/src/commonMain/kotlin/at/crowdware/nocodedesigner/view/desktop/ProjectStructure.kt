@@ -61,7 +61,7 @@ import java.awt.Cursor
 fun projectStructure(currentProject: ProjectState) {
     var totalHeight by remember { mutableStateOf(0f) }
     var expanded by remember { mutableStateOf(false) }
-    var treeNode by remember { mutableStateOf(TreeNode(mutableStateOf(""), "", NodeType.OTHER)) }
+    var treeNode by remember { mutableStateOf(TreeNode(mutableStateOf(""), NodeType.OTHER)) }
     var treeNodeOffset by remember { mutableStateOf(Offset.Zero) }
     var pointerOffset by remember { mutableStateOf(Offset.Zero) }
     var treeViewHeight by remember { mutableStateOf(0.5f) }
@@ -70,7 +70,6 @@ fun projectStructure(currentProject: ProjectState) {
     Column(
         modifier = Modifier.width(320.dp).fillMaxHeight().background(color = MaterialTheme.colors.primary)
             .onGloballyPositioned { coordinates ->
-                // Capture the full height of the Column containing TreeView and Accordion
                 totalHeight = coordinates.size.height.toFloat()
             }) {
         BasicText(
@@ -95,12 +94,15 @@ fun projectStructure(currentProject: ProjectState) {
                 tree = currentProject.treeData,
                 iconProvider = { node -> fileTreeIconProvider(node) },
                 onNodeDoubleClick = { node ->
-                    if (node.type == NodeType.SML)
-                        currentProject.LoadFile(node.path)
+                    val pNode = node as? TreeNode
+                    if (pNode != null) {
+                        if (pNode.type == NodeType.SML)
+                            currentProject.LoadFile(pNode.path)
+                    }
                 },
                 onNodeRightClick = { node, offset, pOffset ->
                     expanded = true
-                    treeNode = node
+                    treeNode = (node as? TreeNode)!!
                     treeNodeOffset = offset
                     pointerOffset = pOffset
                 },
@@ -110,7 +112,6 @@ fun projectStructure(currentProject: ProjectState) {
                 val dpOffset = with(density) {
                     DpOffset((treeNodeOffset.x + pointerOffset.x - 40).toDp(), (treeNodeOffset.y - treeViewSize.height - 60).toDp())
                 }
-                println("$treeNodeOffset")
                 DropdownMenu(
                     modifier = Modifier
                         .background(
@@ -184,7 +185,7 @@ fun projectStructure(currentProject: ProjectState) {
                 .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f)) // Divider color
         )
         BasicText(
-            text = "Documentation",
+            text = "Page Structure",
             modifier = Modifier.padding(8.dp),
             maxLines = 1,
             style = TextStyle(color = MaterialTheme.colors.onPrimary),
@@ -197,10 +198,13 @@ fun projectStructure(currentProject: ProjectState) {
                 .background(MaterialTheme.colors.surface) // Apply surface color here
         ) {
             TreeView(
-                tree = currentProject.docuData,
+                tree = currentProject.elementData,
                 iconProvider = { node -> fileTreeIconProvider(node) },
                 onNodeDoubleClick = { node ->
-                    openWebPage(node.path)
+                    val pNode = node as? TreeNode
+                    if (pNode != null) {
+                        openWebPage(pNode.path)
+                    }
                 },
                 onNodeRightClick = { _,_,_->
 

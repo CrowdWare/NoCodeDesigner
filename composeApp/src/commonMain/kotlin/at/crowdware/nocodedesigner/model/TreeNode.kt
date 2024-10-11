@@ -4,9 +4,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import at.crowdware.nocodelib.UIElement
 
 enum class NodeType {
-    DIRECTORY, IMAGE, VIDEO, SOUND, XML, MD, OTHER, SML
+    DIRECTORY, OTHER, IMAGE, VIDEO, SOUND, XML, MD, SML
 }
 
 val extensionToNodeType = mapOf(
@@ -21,16 +22,23 @@ val extensionToNodeType = mapOf(
     "mp3" to NodeType.SOUND,
     "wav" to NodeType.SOUND,
     "flac" to NodeType.SOUND,
-    "xml" to NodeType.XML,
-    "md" to NodeType.MD,
     "sml" to NodeType.SML
 )
 
-// Data model for a tree node
-data class TreeNode(
+open class TreeNode(
     var title: MutableState<String> = mutableStateOf(""),
-    var path: String,
-    val type: NodeType,
+    val type: Any,
+    var path: String = "",
     var children: SnapshotStateList<TreeNode> = mutableStateListOf(),
     var expanded: MutableState<Boolean> = mutableStateOf(false),
 )
+
+
+class ElementTreeNode(
+    title: MutableState<String> = mutableStateOf(""),
+    type: NodeType,
+    path: String,
+    children: SnapshotStateList<TreeNode> = mutableStateListOf(),
+    expanded: MutableState<Boolean> = mutableStateOf(false),
+    element: UIElement = UIElement.Zero
+) : TreeNode(title, type, path, children, expanded)
