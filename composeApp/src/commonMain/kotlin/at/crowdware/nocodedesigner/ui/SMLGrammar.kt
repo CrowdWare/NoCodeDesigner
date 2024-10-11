@@ -189,19 +189,6 @@ fun parsePage() {
     println(result)
 }
 
-/*
-"Page{Button{label:\"click\"}}"
-[Element(name=Page, content=[Element(name=Button, content=[Property(name=label, value=StringValue(value=click))])])]
-
-"\tPage{Button{label:\"click\"}}"
-[Whitespace(content=	), Element(name=Page, content=[Element(name=Button, content=[Property(name=label, value=StringValue(value=click))])])]
-
-"\tPage{Button{label:\"click\"} }"
-[Whitespace(content=	), Element(name=Page, content=[Element(name=Button, content=[Property(name=label, value=StringValue(value=click))]), Whitespace(content= )])]
-
-"Page{/*comment*/}}"
-[Element(name=Page, content=[Comment(content=/*comment*/)])]
-*/
 
 class SmlOffsetMapping(private val originalText: String, private val parsedElements: List<ParsedElement>) : OffsetMapping {
     private val TAB_SIZE = 4

@@ -112,6 +112,25 @@ fun deserializePage(parsedResult: List<Any>): Page {
     return page
 }
 
+val fontWeightMap = mapOf(
+    "bold" to FontWeight.Bold,
+    "black" to FontWeight.Black,
+    "thin" to FontWeight.Thin,
+    "extrabold" to FontWeight.ExtraBold,
+    "extralight" to FontWeight.ExtraLight,
+    "light" to FontWeight.Light,
+    "medium" to FontWeight.Medium,
+    "semibold" to FontWeight.SemiBold,
+    "" to FontWeight.Normal
+)
+
+val textAlignMap = mapOf(
+    "left" to TextAlign.Start,
+    "center" to TextAlign.Center,
+    "right" to TextAlign.End,
+    "" to TextAlign.Unspecified
+)
+
 fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIElement>) {
     nestedElements.forEach { element ->
         when (element) {
@@ -122,26 +141,12 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
                 when (elementName) {
                     "Text" -> {
                         elements.add(TextElement(
-                            text = (properties["text"] as? PropertyValue.StringValue)?.value ?: "def",
+                            text = (properties["text"] as? PropertyValue.StringValue)?.value ?: "",
                             color = hexToColor((properties["color"] as? PropertyValue.StringValue)?.value ?: ""),
                             fontSize = ((properties["fontSize"] as? PropertyValue.IntValue)?.value ?: 14).sp,
-                            fontWeight = when((properties["fontWeight"] as? PropertyValue.StringValue)?.value ?: "") {
-                                "bold" -> { FontWeight.Bold }
-                                "black" -> { FontWeight.Black }
-                                "thin" -> { FontWeight.Thin }
-                                "extrabold" -> { FontWeight.ExtraBold }
-                                "extralight" -> { FontWeight.ExtraLight }
-                                "light" -> { FontWeight.Light }
-                                "medium" -> { FontWeight.Medium }
-                                "semibold" -> { FontWeight.SemiBold }
-                                else -> { FontWeight.Normal }
-                            },
-                            textAlign = when((properties["textAlign"] as? PropertyValue.StringValue)?.value ?: "") {
-                                "left" -> { TextAlign.Start }
-                                "center" -> { TextAlign.Center }
-                                "right" -> { TextAlign.End }
-                                else -> { TextAlign.Unspecified }
-                            }))
+                            fontWeight = fontWeightMap[(properties["fontWeight"] as? PropertyValue.StringValue)?.value ?: ""] ?: FontWeight.Normal,
+                            textAlign = textAlignMap[(properties["textAlign"] as? PropertyValue.StringValue)?.value ?: ""] ?: TextAlign.Unspecified
+                        ))
                     }
                     "Column" -> {
                         val col = ColumnElement(padding = parsePadding((properties["padding"] as? PropertyValue.StringValue)?.value ?: "0"))

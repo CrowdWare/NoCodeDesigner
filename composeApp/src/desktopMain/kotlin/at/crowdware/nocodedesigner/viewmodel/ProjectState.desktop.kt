@@ -86,7 +86,8 @@ class DesktopProjectState : ProjectState() {
         }
 
         val nodes = file.listFiles()
-            ?.filter { it.name != ".DS_Store" }
+            // python3 server.py runs the webserver for NoCodeBrowser testing
+            ?.filter { it.name != ".DS_Store" && it.name != "server.py"}
             ?.map { mapFileToTreeNode(it) }
             ?: emptyList()
         val sortedNodes = nodes.sortedWith(compareBy<TreeNode> { it.type != NodeType.DIRECTORY }.thenBy { it.title.value })
@@ -112,9 +113,10 @@ class DesktopProjectState : ProjectState() {
         val assets = File("$path/$name/assets")
         assets.mkdirs()
         val home = File("$path/$name/pages/home.sml")
-        app.writeText("App {\n  name: \"$name\"\n  id: \"$appId.$name\"\n  icon: \"icon.png\"\n\n  Navigation {\n    type: \"HorizontalPager\"\n\n    Item { page: \"home\" }  \n}\n}\n")
+        app.writeText("App {\n  smlVersion: \"1.0\"\n  name: \"$name\"\n  version: \"1.0\"\n  id: \"$appId.$name\"\n  icon: \"icon.png\"\n\n  Navigation {\n    type: \"HorizontalPager\"\n\n    Item { page: \"home\" }  \n  }\n// deployment start - don't edit here\n\n// deployment end\n}\n")
         home.writeText("Page {\n  backgroundColor: \"#FFFFFF\"\n  padding: \"8\"\n\n  Column {\n    padding: \"8\"\n\n    Text { text: \"Home\" }\n  }\n}\n")
         copyResourceToFile("icons/default.icon.png", "$path/$name/assets/icon.png")
+        copyResourceToFile("python/server.py", "$path/$name/server.py")
         LoadProject("$path/$name", uuid, pid)
     }
 }
