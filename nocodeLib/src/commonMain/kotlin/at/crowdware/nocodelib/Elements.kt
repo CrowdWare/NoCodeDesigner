@@ -23,10 +23,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.sp
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 
+data class Page(
+    @HexColorAnnotation
+    var color: String,
 
-data class Page(var color: String, var backgroundColor: String, var padding: Padding, val elements: MutableList<UIElement>)
+    @HexColorAnnotation
+    var backgroundColor: String,
+
+    @PaddingAnnotation
+    var padding: Padding,
+
+   @IgnoreForDocumentation
+    val elements: MutableList<UIElement>)
 data class App(val type: String, val items: MutableList<String>)
 
 sealed class UIElement {
@@ -46,7 +57,44 @@ sealed class UIElement {
     data class SoundElement(val src: String) : UIElement()
     data class RowElement(val padding: Padding, val uiElements: MutableList<UIElement> = mutableListOf()) : UIElement()
     data class ColumnElement(val padding: Padding, val uiElements: MutableList<UIElement> = mutableListOf()) : UIElement()
-    data class MarkdownElement(val text: String, val color: String) : UIElement()
+    data class MarkdownElement(
+        @MarkdownAnnotation
+        val text: String,
+        @HexColorAnnotation
+        val color: String) : UIElement()
 }
 
 data class Padding(val top: Int, val right: Int, val bottom: Int, val left: Int)
+
+
+fun generateDokuForClass(kClass: KClass<*>) {
+
+    println("Class Name: ${kClass.simpleName}")
+
+    kClass.members.forEach { member ->
+        if (member is KProperty<*>) {
+            if (member.annotations.any { it is IgnoreForDocumentation }) {
+                return@forEach
+            }
+
+            member.annotations.forEach { annotation ->
+                when (annotation) {
+                    is HexColorAnnotation -> {
+                        println("Property: ${member.name}, Description: ${annotation.description}")
+                    }
+                    is PaddingAnnotation -> {
+                        println("Property: ${member.name}, Description: ${annotation.description}")
+                    }
+                    is MarkdownAnnotation ->{
+                        println("Property: ${member.name}, Description: ${annotation.description}")
+                    }
+                }
+            }
+        }
+    }
+}
+
+fun generateDoku() {
+    generateDokuForClass(Page::class)
+    generateDokuForClass(UIElement.MarkdownElement::class)
+}

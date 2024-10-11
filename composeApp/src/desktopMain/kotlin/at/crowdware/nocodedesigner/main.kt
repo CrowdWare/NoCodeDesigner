@@ -76,8 +76,6 @@ fun main() = application {
     GlobalProjectState.projectState = projectState
     projectState.darkMode = androidx.compose.foundation.isSystemInDarkTheme()
 
-
-    parsePage()
     // setup logging, all println are stored in a log file
     //setupLogging()
 

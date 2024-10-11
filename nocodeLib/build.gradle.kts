@@ -36,6 +36,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation("com.github.h0tk3y.betterParse:better-parse:0.4.4")
+            implementation("org.reflections:reflections:0.10.2")
         }
         val commonTest by getting {
             dependencies {
@@ -63,6 +64,11 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
+        }
+        getByName("commonMain") {
+            dependencies {
+                implementation(kotlin("reflect"))
+            }
         }
     }
 }

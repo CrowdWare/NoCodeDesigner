@@ -49,6 +49,7 @@ abstract class ProjectState {
     var darkMode by mutableStateOf(false)
     var currentTreeNode by mutableStateOf(null as TreeNode?)
     var isPageLoaded by mutableStateOf(false)
+    var actualElement: Class<*>? by mutableStateOf(null)
 
     lateinit var pageNode: TreeNode
     lateinit var assetsNode: TreeNode

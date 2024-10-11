@@ -53,7 +53,8 @@ fun TreeView(
     tree: List<TreeNode>,
     iconProvider: @Composable ((TreeNode) -> Unit)? = null,
     onNodeDoubleClick: (TreeNode) -> Unit,
-    onNodeRightClick: (TreeNode, Offset, Offset) -> Unit
+    onNodeRightClick: (TreeNode, Offset, Offset) -> Unit,
+    onClick: (TreeNode) -> Unit
 ) {
     val listState = rememberLazyListState()
 
@@ -74,6 +75,7 @@ fun TreeView(
                     iconProvider = iconProvider,
                     onDoubleClick = onNodeDoubleClick,
                     onRightClick = onNodeRightClick,
+                    onClick = onClick,
                 )
             }
         }
@@ -98,7 +100,8 @@ fun TreeNodeView(
     level: Int = 0,
     iconProvider: @Composable ((TreeNode) -> Unit)? = null,
     onDoubleClick: (TreeNode) -> Unit,
-    onRightClick: (TreeNode, Offset, Offset) -> Unit
+    onRightClick: (TreeNode, Offset, Offset) -> Unit,
+    onClick: (TreeNode) -> Unit
 ) {
     val rotationAngle by animateFloatAsState(if (node.expanded.value) 0f else -90f)
     var isHovered by remember { mutableStateOf(false) }
@@ -140,6 +143,7 @@ fun TreeNodeView(
                                         onDoubleClick(node)
                                     }
                                     lastClickTime = currentClickTime
+                                    onClick(node)
 
                                     // Expand directory on left-click
                                     if (node.type == NodeType.DIRECTORY) {
@@ -187,7 +191,8 @@ fun TreeNodeView(
                         level = level + 1,
                         iconProvider = iconProvider,
                         onDoubleClick = onDoubleClick,
-                        onRightClick = onRightClick
+                        onRightClick = onRightClick,
+                        onClick = onClick
                     )
                 }
             }

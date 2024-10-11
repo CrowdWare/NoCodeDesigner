@@ -106,6 +106,7 @@ fun projectStructure(currentProject: ProjectState) {
                     treeNodeOffset = offset
                     pointerOffset = pOffset
                 },
+                onClick = {}
             )
             if (expanded) {
                 val density = LocalDensity.current
@@ -200,15 +201,19 @@ fun projectStructure(currentProject: ProjectState) {
             TreeView(
                 tree = currentProject.elementData,
                 iconProvider = { node -> fileTreeIconProvider(node) },
-                onNodeDoubleClick = { node ->
-                    val pNode = node as? TreeNode
-                    if (pNode != null) {
-                        openWebPage(pNode.path)
+                onNodeDoubleClick = { node -> },
+                onNodeRightClick = { _,_,_-> },
+                onClick = { node ->
+                    var clsName = ""
+                    if (node.title.value == "Page") {
+                        clsName = "at.crowdware.nocodelib.Page"
+                    } else {
+                        clsName = "at.crowdware.nocodelib.UIElement\$${node.title.value}Element"
                     }
-                },
-                onNodeRightClick = { _,_,_->
 
-                },
+                    val clazz = Class.forName(clsName)
+                    currentProject.actualElement = clazz
+                }
             )
         }
     }
