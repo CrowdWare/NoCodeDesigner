@@ -141,7 +141,6 @@ abstract class ProjectState {
                 }
                 path = "$filePath.$extension"
             }
-            println("loading: $path")
             val fileText = loadFileContent("$path", "", "")
             currentFileContent = TextFieldValue(fileText)
             isEditorVisible = true

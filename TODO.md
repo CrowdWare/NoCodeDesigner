@@ -3,8 +3,6 @@
 ## Next release
 - Inline Dokumentation via Webserver SML
 - Mouse pointer on tree view, if clickable
-- Import asset via context menu
-- Deployment descriptor fill on file save and asset import
 
 ## Nice to have
 - Syntax-edit Grammar

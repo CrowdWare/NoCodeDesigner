@@ -19,23 +19,39 @@
 
 package at.crowdware.nocodedesigner.view.desktop
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import at.crowdware.nocodedesigner.ui.TreeView
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
 import at.crowdware.nocodedesigner.model.NodeType
+import at.crowdware.nocodedesigner.model.TreeNode
+import at.crowdware.nocodedesigner.ui.TreeView
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import java.awt.Cursor
 
@@ -44,14 +60,19 @@ import java.awt.Cursor
 @Composable
 fun projectStructure(currentProject: ProjectState) {
     var totalHeight by remember { mutableStateOf(0f) }
+    var expanded by remember { mutableStateOf(false) }
+    var treeNode by remember { mutableStateOf(TreeNode(mutableStateOf(""), "", NodeType.OTHER)) }
+    var treeNodeOffset by remember { mutableStateOf(Offset.Zero) }
+    var pointerOffset by remember { mutableStateOf(Offset.Zero) }
+    var treeViewHeight by remember { mutableStateOf(0.5f) }
+    var treeViewSize by remember { mutableStateOf(IntSize.Zero) }
+
     Column(
         modifier = Modifier.width(320.dp).fillMaxHeight().background(color = MaterialTheme.colors.primary)
             .onGloballyPositioned { coordinates ->
                 // Capture the full height of the Column containing TreeView and Accordion
                 totalHeight = coordinates.size.height.toFloat()
             }) {
-        var treeViewHeight by remember { mutableStateOf(0.5f) }
-
         BasicText(
             text = "Project Structure",
             modifier = Modifier.padding(8.dp),
@@ -59,19 +80,91 @@ fun projectStructure(currentProject: ProjectState) {
             style = TextStyle(color = MaterialTheme.colors.onPrimary),
             overflow = TextOverflow.Ellipsis
         )
-        Column(
+
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(treeViewHeight)
                 .background(MaterialTheme.colors.surface)
+                .onGloballyPositioned { layoutCoordinates ->
+                    treeViewSize = layoutCoordinates.size
+                }
         ) {
+
             TreeView(
                 tree = currentProject.treeData,
                 iconProvider = { node -> fileTreeIconProvider(node) },
-                onClick = { node ->
+                onNodeDoubleClick = { node ->
                     if (node.type == NodeType.SML)
                         currentProject.LoadFile(node.path)
-                })
+                },
+                onNodeRightClick = { node, offset, pOffset ->
+                    expanded = true
+                    treeNode = node
+                    treeNodeOffset = offset
+                    pointerOffset = pOffset
+                },
+            )
+            if (expanded) {
+                val density = LocalDensity.current
+                val dpOffset = with(density) {
+                    DpOffset((treeNodeOffset.x + pointerOffset.x - 40).toDp(), (treeNodeOffset.y - treeViewSize.height - 60).toDp())
+                }
+                println("$treeNodeOffset")
+                DropdownMenu(
+                    modifier = Modifier
+                        .background(
+                            color = Color.DarkGray,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .border(
+                            border = BorderStroke(1.dp, color = Color.Gray),
+                            shape = RoundedCornerShape(8.dp)
+                        ),
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    offset = dpOffset,
+                    properties = PopupProperties(focusable = true)
+                ) {
+                    if (treeNode.children.isEmpty()) {
+                        if (treeNode.title.value != "home.sml" && treeNode.title.value != "app.sml") {
+                            if (treeNode.type == NodeType.SML) {
+                                DropdownMenuItem(onClick = {
+                                    expanded = false
+                                    currentProject.currentTreeNode = treeNode
+                                    currentProject.isRenamePageDialogVisible = true
+                                }) {
+                                    Text(text = "Rename", fontSize = 12.sp)
+                                }
+                            }
+                            DropdownMenuItem(
+                                modifier = Modifier.background(color = Color.DarkGray),
+                                onClick = {
+                                    expanded = false
+                                    currentProject.currentTreeNode = treeNode
+                                    currentProject.deleteItem(treeNode)
+                                }
+                            ) {
+                                Text(text = "Delete", fontSize = 12.sp)
+                            }
+                        }
+                    } else if (treeNode.title.value == "pages") {
+                        DropdownMenuItem(onClick = {
+                            expanded = false
+                            currentProject.isPageDialogVisible = true
+                        }) {
+                            Text(text = "New", fontSize = 12.sp)
+                        }
+                    } else if (treeNode.title.value == "assets") {
+                        DropdownMenuItem(onClick = {
+                            expanded = false
+                            currentProject.isImportAssetDialogVisible = true
+                        }) {
+                            Text(text = "Import", fontSize = 12.sp)
+                        }
+                    }
+                }
+            }
         }
 
         // Draggable Divider
@@ -106,9 +199,12 @@ fun projectStructure(currentProject: ProjectState) {
             TreeView(
                 tree = currentProject.docuData,
                 iconProvider = { node -> fileTreeIconProvider(node) },
-                onClick = { node ->
+                onNodeDoubleClick = { node ->
                     openWebPage(node.path)
-                }
+                },
+                onNodeRightClick = { _,_,_->
+
+                },
             )
         }
     }

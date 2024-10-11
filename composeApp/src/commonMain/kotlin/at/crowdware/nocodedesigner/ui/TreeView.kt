@@ -21,175 +21,39 @@ package at.crowdware.nocodedesigner.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.*
+import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.isPrimaryPressed
-import androidx.compose.ui.input.pointer.isSecondaryPressed
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.PopupProperties
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
-import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
 
-@Composable
-fun TreeNodeView(
-    node: TreeNode,
-    level: Int = 0,
-    iconProvider: @Composable ((TreeNode) -> Unit)? = null,
-    onClick: (TreeNode) -> Unit
-) {
-    val rotationAngle by animateFloatAsState(if (node.expanded.value) 0f else -90f)
-    var expanded by remember { mutableStateOf(false) }
-    var contextMenuOffset by remember { mutableStateOf(DpOffset.Zero) }
-    val density = LocalDensity.current
-    val currentProject = GlobalProjectState.projectState
 
-    Column {
-        Box {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .pointerInput(node) {
-                        awaitPointerEventScope {
-                            while (true) {
-                                val event = awaitPointerEvent()
-                                when {
-                                    event.type == PointerEventType.Press && event.buttons.isPrimaryPressed -> {
-                                        if (node.children.isEmpty()) {
-                                            onClick(node)
-                                        } else {
-                                            node.expanded.value = !node.expanded.value
-                                        }
-                                    }
-                                    event.type == PointerEventType.Press && event.buttons.isSecondaryPressed -> {
-                                        val position = event.changes.first().position
-                                        contextMenuOffset = with(density) {
-                                            DpOffset(
-                                                position.x.toDp() + 5.dp,
-                                                position.y.toDp() - 25.dp // Adjusted to move menu 20.dp higher
-                                            )
-                                        }
-                                        expanded = true
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    .padding(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(modifier = Modifier.width((level * 16).dp))
-                if (node.children?.isEmpty() == false) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = null,
-                        tint = Color(0xFFB0B0B0),
-                        modifier = Modifier
-                            .rotate(rotationAngle)
-                            .size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                }
-
-                iconProvider?.let {
-                    it(node)
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
-
-                Text(
-                    node.title.value,
-                    fontSize = 12.sp,
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.onSurface
-                )
-            }
-
-            DropdownMenu(
-                modifier = Modifier
-                    .background(
-                        color = Color.DarkGray,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .border(
-                        border = BorderStroke(1.dp, color = Color.Gray),
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                offset = contextMenuOffset,
-                properties = PopupProperties(focusable = true)
-            ) {
-                if (node.children.isEmpty()) {
-                    if (node.title.value != "home.sml" && node.title.value != "app.sml") {
-                        if (node.type == NodeType.SML) {
-                            DropdownMenuItem(onClick = {
-                                expanded = false
-                                currentProject?.currentTreeNode = node
-                                currentProject?.isRenamePageDialogVisible = true
-                            }) {
-                                Text(text = "Rename", fontSize = 12.sp)
-                            }
-                        }
-                        DropdownMenuItem(
-                            modifier = Modifier.background(color = Color.DarkGray),
-                            onClick = {
-                                expanded = false
-                                currentProject?.currentTreeNode = node
-                                currentProject?.deleteItem(node)
-                            }
-                        ) {
-                            Text(text = "Delete", fontSize = 12.sp)
-                        }
-                    }
-                } else if (node.title.value == "pages"){
-                    DropdownMenuItem(onClick = {
-                        expanded = false
-                        currentProject?.isPageDialogVisible = true
-                    }) {
-                        Text(text = "New", fontSize = 12.sp)
-                    }
-                }
-            }
-        }
-
-        AnimatedVisibility(visible = node.expanded.value) {
-            Column(
-                modifier = Modifier.padding(start = 16.dp)
-            ) {
-                node.children.forEach { child ->
-                    TreeNodeView(
-                        node = child,
-                        level = level + 1,
-                        iconProvider = iconProvider,
-                        onClick = onClick
-                    )
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun TreeView(
     tree: List<TreeNode>,
     iconProvider: @Composable ((TreeNode) -> Unit)? = null,
-    onClick: (TreeNode) -> Unit
+    onNodeDoubleClick: (TreeNode) -> Unit,
+    onNodeRightClick: (TreeNode, Offset, Offset) -> Unit
 ) {
     val listState = rememberLazyListState()
 
@@ -208,7 +72,9 @@ fun TreeView(
                 TreeNodeView(
                     node = tree[index],
                     iconProvider = iconProvider,
-                    onClick = onClick)
+                    onDoubleClick = onNodeDoubleClick,
+                    onRightClick = onNodeRightClick,
+                )
             }
         }
 
@@ -223,3 +89,111 @@ fun TreeView(
         }
     }
 }
+
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun TreeNodeView(
+    node: TreeNode,
+    level: Int = 0,
+    iconProvider: @Composable ((TreeNode) -> Unit)? = null,
+    onDoubleClick: (TreeNode) -> Unit,
+    onRightClick: (TreeNode, Offset, Offset) -> Unit
+) {
+    val rotationAngle by animateFloatAsState(if (node.expanded.value) 0f else -90f)
+    var isHovered by remember { mutableStateOf(false) }
+    var lastClickTime by remember { mutableStateOf(0L) }
+    val doubleClickInterval = 300L
+    var treeNodeOffset by remember { mutableStateOf(Offset.Zero) }
+
+    Column(
+        modifier = Modifier
+            .onGloballyPositioned { coordinates ->
+                treeNodeOffset = coordinates.positionInWindow()
+            }
+    ) {
+        Box {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .pointerMoveFilter(
+                        onEnter = {
+                            isHovered = true
+                            false
+                        },
+                        onExit = {
+                            isHovered = false
+                            false
+                        }
+                    )
+                    .pointerHoverIcon(if (isHovered) PointerIcon.Hand else PointerIcon.Default)
+                    .pointerInput(node) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                val position = event.changes.first().position
+                                if (event.buttons.isSecondaryPressed) {
+                                    onRightClick(node, treeNodeOffset, position)
+                                } else if (event.buttons.isPrimaryPressed) {
+                                    val currentClickTime = System.currentTimeMillis()
+                                    if (currentClickTime - lastClickTime < doubleClickInterval) {
+                                        onDoubleClick(node)
+                                    }
+                                    lastClickTime = currentClickTime
+
+                                    // Expand directory on left-click
+                                    if (node.type == NodeType.DIRECTORY) {
+                                        node.expanded.value = !node.expanded.value
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(start = (level * 16).dp, top = 4.dp, bottom = 4.dp)
+            ) {
+                Spacer(modifier = Modifier.width((level * 16).dp))
+                if (node.type == NodeType.DIRECTORY) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = null,
+                        tint = Color(0xFFB0B0B0),
+                        modifier = Modifier
+                            .rotate(rotationAngle)
+                            .size(16.dp)
+                    )
+                    //Spacer(modifier = Modifier.width(6.dp))
+                } else if (level == 0) {
+                    Spacer(modifier = Modifier.width(24.dp))
+                } else {
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                iconProvider?.let {
+                    it(node)
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                Text(
+                    node.title.value,
+                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.onSurface
+                )
+            }
+        }
+        AnimatedVisibility(visible = node.expanded.value) {
+            Column {
+                node.children.forEach { childNode ->
+                    TreeNodeView(
+                        node = childNode,
+                        level = level + 1,
+                        iconProvider = iconProvider,
+                        onDoubleClick = onDoubleClick,
+                        onRightClick = onRightClick
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+
