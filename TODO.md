@@ -1,7 +1,6 @@
 # TODO
 
 ## Next release
-- Parse errors show, with line numbers
 
 ## Nice to have
 - Syntax-edit Grammar

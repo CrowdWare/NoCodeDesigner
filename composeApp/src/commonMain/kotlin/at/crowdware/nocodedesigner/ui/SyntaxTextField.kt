@@ -21,6 +21,7 @@ package at.crowdware.nocodedesigner.ui
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+//import androidx.compose.foundation.layout.RowScopeInstance.weight
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
@@ -65,8 +66,8 @@ fun SyntaxTextField(
     val extendedColors = ExtendedTheme.colors
     var pos by remember { mutableStateOf(Offset(0f,0f)) }
 
-    var isFocused by remember { mutableStateOf(false) }
-    var isHovered = currentState.hasCollided.value
+    val isFocused by remember { mutableStateOf(false) }
+    val isHovered = currentState.hasCollided.value
 
     val backgroundColor = MaterialTheme.colors.surface
     val cursorColor = MaterialTheme.colors.onSurface
@@ -120,7 +121,7 @@ fun SyntaxTextField(
                             else -> false
                         }
                     },
-                    textStyle = TextStyle(fontSize = 14.sp, color = extendedColors.attributeNameColor, fontFamily = FontFamily.Monospace),
+                    textStyle = TextStyle(fontSize = 14.sp, color = MaterialTheme.colors.onSurface, fontFamily = FontFamily.Monospace),
                     cursorBrush = SolidColor(cursorColor),
                     visualTransformation = when(extension) {
                         "sml" -> SmlSyntaxHighlighter(extendedColors)

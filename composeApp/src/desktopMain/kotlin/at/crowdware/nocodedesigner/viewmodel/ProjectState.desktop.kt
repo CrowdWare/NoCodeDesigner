@@ -93,7 +93,8 @@ class DesktopProjectState : ProjectState() {
         // app.sml load and parse
         try {
             val uiSml = File("$path/app.sml").readText()
-            app = parseApp(uiSml)
+            val result = parseApp(uiSml)
+            app = result.first
             LoadFile("$path/pages/home.sml")
         } catch (e: Exception) {
             println("Error parsing app.sml: ${e.message}")

@@ -51,6 +51,7 @@ abstract class ProjectState {
     var currentTreeNode by mutableStateOf(null as TreeNode?)
     var isPageLoaded by mutableStateOf(false)
     var actualElement: KClass<*>? by mutableStateOf(null)
+    var parseError: String? by mutableStateOf(null)
 
     lateinit var pageNode: TreeNode
     lateinit var assetsNode: TreeNode
@@ -96,7 +97,9 @@ abstract class ProjectState {
                 path = "$filePath.$extension"
             }
             val fileText = loadFileContent(path, "", "")
-            page = parsePage(fileText)
+            val result = parsePage(fileText)
+            page = result.first
+            parseError = result.second
             if (page != null) {
                 cachedPage = page
                 isPageLoaded = true
@@ -108,7 +111,10 @@ abstract class ProjectState {
     }
 
     fun reloadPage() {
-        page = parsePage(currentFileContent.text)
+        val result = parsePage(currentFileContent.text)
+        page = result.first
+        parseError = result.second
+        println("parseError: $parseError")
         if(page != null) {
             cachedPage = page
             isPageLoaded = true

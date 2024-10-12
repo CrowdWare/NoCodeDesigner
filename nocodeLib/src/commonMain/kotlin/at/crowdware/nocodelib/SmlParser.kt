@@ -224,20 +224,20 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
     }
 }
 
-fun parsePage(sml: String): Page? {
+fun parsePage(sml: String): Pair<Page?, String?> {
     try {
         val result = SmlGrammar.parseToEnd(sml)
-        return deserializePage(result)
+        return Pair(deserializePage(result), null)
     } catch(e: Exception) {
-        return null
+        return Pair(null, e.message)
     }
 }
 
-fun parseApp(sml: String): App? {
+fun parseApp(sml: String, ): Pair<App?, String?> {
     try {
         val result = SmlGrammar.parseToEnd(sml)
-        return deserializeApp(result)
+        return Pair(deserializeApp(result), null)
     } catch(e: Exception) {
-        return null
+        return Pair(null, e.message)
     }
 }
