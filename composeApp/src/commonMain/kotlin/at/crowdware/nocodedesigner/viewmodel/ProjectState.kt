@@ -12,6 +12,7 @@ import at.crowdware.nocodelib.Page
 import at.crowdware.nocodelib.UIElement
 import at.crowdware.nocodelib.parsePage
 import com.sun.source.tree.Tree
+import kotlin.reflect.KClass
 
 
 expect fun getNodeType(path: String): NodeType
@@ -49,7 +50,7 @@ abstract class ProjectState {
     var darkMode by mutableStateOf(false)
     var currentTreeNode by mutableStateOf(null as TreeNode?)
     var isPageLoaded by mutableStateOf(false)
-    var actualElement: Class<*>? by mutableStateOf(null)
+    var actualElement: KClass<*>? by mutableStateOf(null)
 
     lateinit var pageNode: TreeNode
     lateinit var assetsNode: TreeNode

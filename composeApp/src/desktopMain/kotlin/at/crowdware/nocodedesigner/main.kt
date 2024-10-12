@@ -46,6 +46,7 @@ import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import at.crowdware.nocodedesigner.viewmodel.createProjectState
 
+
 import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.Pointer
@@ -75,6 +76,7 @@ fun main() = application {
     val projectState = createProjectState()
     GlobalProjectState.projectState = projectState
     projectState.darkMode = androidx.compose.foundation.isSystemInDarkTheme()
+
 
     // setup logging, all println are stored in a log file
     //setupLogging()

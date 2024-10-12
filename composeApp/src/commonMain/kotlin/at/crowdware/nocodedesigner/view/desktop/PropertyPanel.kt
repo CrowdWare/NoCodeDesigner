@@ -1,26 +1,22 @@
 package at.crowdware.nocodedesigner.view.desktop
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import at.crowdware.nocodedesigner.theme.ExtendedTheme
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
-import at.crowdware.nocodelib.HexColorAnnotation
-import at.crowdware.nocodelib.IgnoreForDocumentation
-import at.crowdware.nocodelib.MarkdownAnnotation
-import at.crowdware.nocodelib.PaddingAnnotation
+import at.crowdware.nocodelib.*
 import kotlin.reflect.KProperty
-import kotlin.reflect.KClass
 
 @Composable
 fun propertyPanel(currentProject: ProjectState?) {
@@ -34,43 +30,150 @@ fun propertyPanel(currentProject: ProjectState?) {
             style = TextStyle(color = MaterialTheme.colors.onPrimary),
             overflow = TextOverflow.Ellipsis
         )
+        val scrollState = rememberScrollState()
+        val element = currentProject?.actualElement
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colors.surface)
+                .padding(4.dp)
         ) {
-            val element = currentProject?.actualElement
-            Row(modifier = Modifier.background(MaterialTheme.colors.primary).fillMaxWidth().padding(8.dp)) {
-                Column() {
-                    if (element != null) {
-                        Text(
-                            text = element.simpleName.substringBefore("Element"),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colors.onPrimary
-                        )
-                        element.fields.forEach { field ->
-                            // TODO: find the properties
-                            field.annotations.forEach { annotation ->
-                                when (annotation) {
-                                    is HexColorAnnotation -> {
-                                        println("Property: Description: ${annotation.description}")
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(end = 10.dp)
+            ) {
+                Row(modifier = Modifier.background(MaterialTheme.colors.primary).fillMaxWidth().padding(8.dp)) {
+                    Column() {
+                        if (element != null) {
+                            element.simpleName?.let {
+                                Text(
+                                    text = it.substringBefore("Element"),
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = ExtendedTheme.colors.syntaxColor
+                                )
+                            }
+                            element.members.forEach { member ->
+                                if (member is KProperty<*>) {
+                                    if (member.annotations.any { it is IgnoreForDocumentation }) {
+                                        return@forEach
                                     }
 
-                                    is PaddingAnnotation -> {
-                                        println("Property: Description: ${annotation.description}")
-                                    }
+                                    member.annotations.forEach { annotation ->
+                                        when (annotation) {
+                                            is HexColorAnnotation -> {
+                                                Text(
+                                                    text = member.name,
+                                                    fontSize = 14.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = ExtendedTheme.colors.attributeNameColor
+                                                )
+                                                val md = parseMarkdown(annotation.description)
+                                                Text(
+                                                    text = md,
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Normal,
+                                                    color = MaterialTheme.colors.onPrimary
+                                                )
+                                                Spacer(modifier = Modifier.height(8.dp))
+                                            }
 
-                                    is MarkdownAnnotation -> {
-                                        println("Property:  Description: ${annotation.description}")
+                                            is PaddingAnnotation -> {
+                                                Text(
+                                                    text = member.name,
+                                                    fontSize = 14.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = ExtendedTheme.colors.attributeNameColor
+                                                )
+                                                val md = parseMarkdown(annotation.description)
+                                                Text(
+                                                    text = md,
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Normal,
+                                                    color = MaterialTheme.colors.onPrimary
+                                                )
+                                                Spacer(modifier = Modifier.height(8.dp))
+                                            }
+
+                                            is MarkdownAnnotation -> {
+                                                Text(
+                                                    text = member.name,
+                                                    fontSize = 14.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = ExtendedTheme.colors.attributeNameColor
+                                                )
+                                                val md = parseMarkdown(annotation.description)
+                                                Text(
+                                                    text = md,
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Normal,
+                                                    color = MaterialTheme.colors.onPrimary
+                                                )
+                                                Spacer(modifier = Modifier.height(8.dp))
+                                            }
+                                            is IntAnnotation -> {
+                                                Text(
+                                                    text = member.name,
+                                                    fontSize = 14.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = ExtendedTheme.colors.attributeNameColor
+                                                )
+                                                val md = parseMarkdown(annotation.description)
+                                                Text(
+                                                    text = md,
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Normal,
+                                                    color = MaterialTheme.colors.onPrimary
+                                                )
+                                                Spacer(modifier = Modifier.height(8.dp))
+                                            }
+                                            is StringAnnotation -> {
+                                                Text(
+                                                    text = member.name,
+                                                    fontSize = 14.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = ExtendedTheme.colors.attributeNameColor
+                                                )
+                                                val md = parseMarkdown(annotation.description)
+                                                Text(
+                                                    text = md,
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Normal,
+                                                    color = MaterialTheme.colors.onPrimary
+                                                )
+                                                Spacer(modifier = Modifier.height(8.dp))
+                                            }
+                                            is LinkAnnotation -> {
+                                                Text(
+                                                    text = member.name,
+                                                    fontSize = 14.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = ExtendedTheme.colors.attributeNameColor
+                                                )
+                                                val md = parseMarkdown(annotation.description)
+                                                Text(
+                                                    text = md,
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Normal,
+                                                    color = MaterialTheme.colors.onPrimary
+                                                )
+                                                Spacer(modifier = Modifier.height(8.dp))
+                                            }
+                                        }
                                     }
                                 }
-
                             }
                         }
                     }
                 }
             }
+            VerticalScrollbar(
+                adapter = rememberScrollbarAdapter(scrollState),
+                Modifier.align(Alignment.CenterEnd)
+            )
         }
     }
 }

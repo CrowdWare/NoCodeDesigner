@@ -43,23 +43,67 @@ data class App(val type: String, val items: MutableList<String>)
 sealed class UIElement {
     data object Zero : UIElement()
     data class TextElement(
+        @StringAnnotation
         val text: String,
+
+        @HexColorAnnotation
         val color: Color,
+
+       @IntAnnotation
         val fontSize: TextUnit,
+
+        @StringAnnotation("Enter one of the following weights normal, extralight, thin, medium, bold, semibold, extrabold, black like **fontWeight: \"bold\"**")
         val fontWeight: FontWeight,
+
+        @StringAnnotation("Enter one of the following alignments left, center, right like **textAlign: \"center\"**")
         val textAlign: TextAlign
     ) : UIElement()
-    data class ButtonElement(val label: String, val link: String) : UIElement()
-    data class ImageElement(val src: String, val scale: String, val link: String) : UIElement()
-    data class SpacerElement(val height: Int) : UIElement()
-    data class VideoElement(val src: String, val height: Int) : UIElement()
-    data class YoutubeElement(val id: String, val height: Int) : UIElement()
-    data class SoundElement(val src: String) : UIElement()
-    data class RowElement(val padding: Padding, val uiElements: MutableList<UIElement> = mutableListOf()) : UIElement()
-    data class ColumnElement(val padding: Padding, val uiElements: MutableList<UIElement> = mutableListOf()) : UIElement()
+    data class ButtonElement(
+        @StringAnnotation
+        val label: String,
+        @LinkAnnotation
+        val link: String) : UIElement()
+    data class ImageElement(
+        @StringAnnotation("Enter the name of the image file like **src: \"sample.png\"**.\nThe image file should be imported into assets first.")
+        val src: String,
+
+        @StringAnnotation("Enter the value for scale like crop, fit, inside, none **scale: \"fit\"**")
+        val scale: String,
+
+        @LinkAnnotation
+        val link: String) : UIElement()
+    data class SpacerElement(
+        @IntAnnotation
+        val height: Int) : UIElement()
+    data class VideoElement(
+        @StringAnnotation("Enter the name of the video file like **src: \"sample.mp4\"**.\nThe video file should be imported into assets first.")
+        val src: String,
+
+        @IntAnnotation
+        val height: Int) : UIElement()
+    data class YoutubeElement(
+        @StringAnnotation("Enter the YouTube video id in quotes like **id:\"FCyiuG\"**")
+        val id: String,
+
+        @IntAnnotation
+        val height: Int) : UIElement()
+    data class SoundElement(
+        @StringAnnotation("Enter the name of the sound file like **src: \"sample.mp3\"**.\nThe sound file should be imported into assets first.")
+        val src: String) : UIElement()
+    data class RowElement(
+        @PaddingAnnotation
+        val padding: Padding,
+
+        val uiElements: MutableList<UIElement> = mutableListOf()) : UIElement()
+    data class ColumnElement(
+        @PaddingAnnotation
+        val padding: Padding,
+
+        val uiElements: MutableList<UIElement> = mutableListOf()) : UIElement()
     data class MarkdownElement(
         @MarkdownAnnotation
         val text: String,
+
         @HexColorAnnotation
         val color: String) : UIElement()
 }
@@ -93,8 +137,9 @@ fun generateDokuForClass(kClass: KClass<*>) {
         }
     }
 }
-
+/*
 fun generateDoku() {
     generateDokuForClass(Page::class)
     generateDokuForClass(UIElement.MarkdownElement::class)
 }
+*/

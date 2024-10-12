@@ -1,7 +1,6 @@
 # TODO
 
 ## Next release
-- Property panel
 - Parse errors show, with line numbers
 
 ## Nice to have

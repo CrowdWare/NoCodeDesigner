@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -42,6 +43,13 @@ actual fun dynamicImageFromAssets(filename: String, scale: String, link: String)
         Image(
             bitmap = bitmap,
             contentDescription = null,
+            contentScale = when(scale) {
+                "crop" -> ContentScale.Crop
+                "fit" -> ContentScale.Fit
+                "inside" -> ContentScale.Inside
+                "none" -> ContentScale.None
+                else -> ContentScale.Fit
+            },
             modifier = Modifier.fillMaxWidth()
         )
     } else {

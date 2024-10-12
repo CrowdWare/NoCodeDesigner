@@ -211,7 +211,7 @@ fun projectStructure(currentProject: ProjectState) {
                         clsName = "at.crowdware.nocodelib.UIElement\$${node.title.value}Element"
                     }
 
-                    val clazz = Class.forName(clsName)
+                    val clazz = Class.forName(clsName).kotlin
                     currentProject.actualElement = clazz
                 }
             )
