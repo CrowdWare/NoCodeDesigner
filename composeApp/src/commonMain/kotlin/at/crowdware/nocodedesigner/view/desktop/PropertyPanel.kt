@@ -62,6 +62,7 @@ fun propertyPanel(currentProject: ProjectState?) {
                                         return@forEach
                                     }
 
+
                                     member.annotations.forEach { annotation ->
                                         when (annotation) {
                                             is WeightAnnotation -> {
