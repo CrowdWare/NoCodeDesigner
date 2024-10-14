@@ -47,6 +47,9 @@ actual fun dynamicImageFromAssets(filename: String, scale: String, link: String)
                 "crop" -> ContentScale.Crop
                 "fit" -> ContentScale.Fit
                 "inside" -> ContentScale.Inside
+                "fillwidth" -> ContentScale.FillWidth
+                "fillbounds" -> ContentScale.FillBounds
+                "fillheight" -> ContentScale.FillHeight
                 "none" -> ContentScale.None
                 else -> ContentScale.Fit
             },
@@ -63,7 +66,7 @@ actual fun dynamicSoundfromAssets(filename: String) {
 }
 
 @Composable
-actual fun dynamicVideofromAssets(filename: String, height: Int) {
+actual fun dynamicVideofromAssets(filename: String) {
     val ps = GlobalProjectState.projectState
     val path = "${ps?.folder}/assets/$filename"
     var bitmap: BufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB)
@@ -77,7 +80,7 @@ actual fun dynamicVideofromAssets(filename: String, height: Int) {
     Image(
         bitmap = bitmap.toComposeImageBitmap(),
         contentDescription = "Video Thumbnail",
-        modifier = Modifier.fillMaxWidth().height(height.dp)
+        modifier = Modifier.fillMaxWidth()
     )
 }
 
@@ -95,10 +98,10 @@ actual fun openWebPage(url: String) {
 }
 
 @Composable
-actual fun dynamicYoutube(height: Int) {
+actual fun dynamicYoutube() {
     Image(
         painter = painterResource("icons/youtube.png"),
         contentDescription = "Description of the image",
-        modifier = Modifier.fillMaxWidth().height(height.dp)
+        modifier = Modifier.fillMaxWidth()
     )
 }

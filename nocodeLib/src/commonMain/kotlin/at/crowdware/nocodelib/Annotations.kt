@@ -52,7 +52,11 @@ Example: For '8 16 32 48', padding will be set as:
 
 @Target(AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class IntAnnotation(val description: String = "Enter a number without putting it in quotes like **height: 56**")
+annotation class WeightAnnotation(val description: String = "Enter a weight value as a number. This value represents the relative size or space that the component will occupy within its parent layout. For example, a weight of **1** means the component will take one part of the available space. If you set another component with a weight of **2**, it will take twice as much space as this component.")
+
+@Target(AnnotationTarget.PROPERTY)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class IntAnnotation(val description: String = "Enter a number without putting it in quotes like **amount: 16**")
 
 @Target(AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.RUNTIME)

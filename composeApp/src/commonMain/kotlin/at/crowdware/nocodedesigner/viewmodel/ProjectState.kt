@@ -16,7 +16,6 @@ import kotlin.reflect.KClass
 
 
 expect fun getNodeType(path: String): NodeType
-expect fun getDisplayName(path: String): String
 expect suspend fun loadFileContent(path: String, uuid: String, pid: String): String
 expect fun saveFileContent(path: String, uuid: String, pid: String, content: String)
 expect fun createProjectState(): ProjectState
@@ -65,7 +64,7 @@ abstract class ProjectState {
 
     fun LoadProject(path: String = folder, uuid: String, pid: String) {
         folder = path
-        projectName = getDisplayName(path)
+        projectName = path
 
         CoroutineScope(Dispatchers.Main).launch {
             loadProjectFiles(path, uuid, pid)
@@ -114,7 +113,6 @@ abstract class ProjectState {
         val result = parsePage(currentFileContent.text)
         page = result.first
         parseError = result.second
-        println("parseError: $parseError")
         if(page != null) {
             cachedPage = page
             isPageLoaded = true

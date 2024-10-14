@@ -69,7 +69,7 @@ fun isSmlRootElement(smlString: String, root: String): Boolean {
 }
 
 fun deserializeApp(parsedResult: List<Any>): App {
-    val app = App(type = "", items = mutableListOf())
+    val app = App()
     // TODO: Implement deserialization logic
     return app
 }
@@ -200,21 +200,22 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
                     }
                     "Spacer" -> {
                         val sp = UIElement.SpacerElement(
-                            height = (properties["height"] as? PropertyValue.IntValue)?.value ?: 0
+                            amount = (properties["amount"] as? PropertyValue.IntValue)?.value ?: 0,
+                            weight = (properties["weight"] as? PropertyValue.IntValue)?.value ?: 0
                         )
                         elements.add(sp)
                     }
                     "Video" -> {
                         val vid = UIElement.VideoElement(
                             src = (properties["src"] as? PropertyValue.StringValue)?.value ?: "",
-                            height = (properties["height"] as? PropertyValue.IntValue)?.value ?: 100
+                            //height = (properties["height"] as? PropertyValue.IntValue)?.value ?: 100
                         )
                         elements.add(vid)
                     }
                     "Youtube" -> {
                         val yt = UIElement.YoutubeElement(
                             id = (properties["id"] as? PropertyValue.StringValue)?.value ?: "",
-                            height = (properties["height"] as? PropertyValue.IntValue)?.value ?: 100
+                            //height = (properties["height"] as? PropertyValue.IntValue)?.value ?: 100
                         )
                         elements.add(yt)
                     }

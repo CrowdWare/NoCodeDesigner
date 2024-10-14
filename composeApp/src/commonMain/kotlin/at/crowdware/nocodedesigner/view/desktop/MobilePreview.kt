@@ -22,19 +22,20 @@ package at.crowdware.nocodedesigner.view.desktop
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -51,7 +52,11 @@ import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import at.crowdware.nocodelib.Page
 import at.crowdware.nocodelib.UIElement
 import at.crowdware.nocodelib.UIElement.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.ui.unit.*
+import androidx.compose.ui.platform.*
 
+/*
 @Composable
 fun mobilePreview(currentProject: ProjectState?) {
     var page: Page? = if (currentProject?.isPageLoaded == true) currentProject.page else null
@@ -93,23 +98,29 @@ fun mobilePreview(currentProject: ProjectState?) {
                         .background(Color.Black)
                 ) {
                     // Scalable content inside the screen
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.Center)
+                    CompositionLocalProvider(
+                        LocalDensity provides LocalDensity.current.copy(density = LocalDensity.current.density * 0.7f)
                     ) {
-                        if (page != null) {
-                            Row(
-                                modifier = Modifier
-                                    .padding(
-                                        start = page.padding.left.dp,
-                                        top = page.padding.top.dp,
-                                        bottom = page.padding.bottom.dp,
-                                        end = page.padding.right.dp
-                                    )
-                                    .fillMaxSize()
-                                    .background(color = hexToColor(page.backgroundColor))
-                            ) {
-                                RenderPage(page)
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(360.dp, 640.dp)
+                        ) {
+                            if (page != null) {
+                                Row(
+                                    modifier = Modifier
+                                        .padding(
+                                            start = page.padding.left.dp,
+                                            top = page.padding.top.dp,
+                                            bottom = page.padding.bottom.dp,
+                                            end = page.padding.right.dp
+                                        )
+                                        //.fillMaxSize()
+                                        .size(360.dp, 640.dp)
+                                        .background(color = hexToColor(page.backgroundColor))
+                                ) {
+                                    RenderPage(page)
+                                }
                             }
                         }
                     }
@@ -118,55 +129,193 @@ fun mobilePreview(currentProject: ProjectState?) {
         }
     }
 }
+*/
+
+@Composable
+fun mobilePreview(currentProject: ProjectState?) {
+    var page: Page? = if (currentProject?.isPageLoaded == true) currentProject.page else null
+
+    if(page == null && currentProject != null) {
+        page = currentProject.cachedPage
+    }
+
+    Column(modifier = Modifier.width(430.dp).fillMaxHeight().background(color = MaterialTheme.colors.primary)) {
+        BasicText(
+            text = "Mobile Preview",
+            modifier = Modifier.padding(8.dp),
+            maxLines = 1,
+            style = TextStyle(color = MaterialTheme.colors.onPrimary),
+            overflow = TextOverflow.Ellipsis
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.surface),
+            contentAlignment = Alignment.Center
+        ) {
+            // Outer phone box with fixed aspect ratio (9:16) that scales dynamically
+            Box(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(360.dp, 640.dp)
+                    .aspectRatio(9f / 16f)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(Color(0xFF353739))
+                    .border(2.dp, Color.Gray, RoundedCornerShape(24.dp))
+            ) {
+                // Inner screen with relative size
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.85f)
+                        .fillMaxHeight(0.9f)
+                        .align(Alignment.Center)
+                        .background(Color.Black)
+                ) {
+                    val density = LocalDensity.current
+                    val fontScale = LocalDensity.current.fontScale
+
+                    val scale = 0.8f
+                    CompositionLocalProvider(
+                        LocalDensity provides Density(
+                            density = density.density * scale,
+                            fontScale = fontScale
+                        ),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size((1.0/scale*360.0).dp, (1.0/scale*640).dp)
+                                .background(Color.White)
+                        ) {
+                            if (page != null) {
+                                Row(
+                                    modifier = Modifier
+                                        .padding(
+                                            start = page.padding.left.dp,
+                                            top = page.padding.top.dp,
+                                            bottom = page.padding.bottom.dp,
+                                            end = page.padding.right.dp
+                                        )
+                                        .fillMaxSize()
+                                        .background(color = hexToColor(page.backgroundColor))
+                                ) {
+                                    RenderPage(page)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+@Composable
+fun renderText(element: TextElement) {
+    CustomText(
+        text = element.text,
+        color = element.color,
+        fontSize = element.fontSize,
+        fontWeight = element.fontWeight,
+        textAlign = element.textAlign
+    )
+}
+
+@Composable
+fun renderMarkdown(element: MarkdownElement) {
+    val parsedMarkdown = parseMarkdown(element.text)
+    Text(
+        text = parsedMarkdown,
+        style = TextStyle(color = hexToColor(element.color))
+    )
+}
+
+@Composable
+fun renderButton(element: ButtonElement) {
+    Button(modifier = Modifier.fillMaxWidth(), onClick =  { handleButtonClick(element.link) }) {
+        Text(text = element.label)
+    }
+}
+
+@Composable
+fun renderColumn(element: ColumnElement) {
+    Column(modifier = Modifier.padding(
+        top = element.padding.top.dp,
+        bottom = element.padding.bottom.dp,
+        start = element.padding.left.dp,
+        end = element.padding.right.dp
+    ).fillMaxWidth()) {
+        for (childElement in element.uiElements) {
+            RenderUIElement(childElement)
+        }
+    }
+}
+
+@Composable
+fun renderRow(element: RowElement) {
+    Row(modifier = Modifier.padding(
+        top = element.padding.top.dp,
+        bottom = element.padding.bottom.dp,
+        start = element.padding.left.dp,
+        end = element.padding.right.dp
+    ).fillMaxWidth()) {
+        for (childElement in element.uiElements) {
+            RenderUIElement(childElement)
+        }
+    }
+}
 
 @Composable
 fun RenderUIElement(element: UIElement) {
     when (element) {
         is TextElement -> {
-            CustomText(
-                text = element.text,
-                color = element.color,
-                fontSize = element.fontSize,
-                fontWeight = element.fontWeight,
-                textAlign = element.textAlign
-            )
+            renderText(element)
         }
         is MarkdownElement -> {
-            val parsedMarkdown = parseMarkdown(element.text)
-
-            Text(
-                text = parsedMarkdown,
-                style = TextStyle(color = hexToColor(element.color))
-            )
+            renderMarkdown(element)
         }
         is ButtonElement -> {
-            Button(modifier = Modifier.fillMaxWidth(), onClick =  { handleButtonClick(element.link) }) {
-                Text(text = element.label)
-            }
+            renderButton(element)
         }
         is ColumnElement -> {
-            Column(modifier = Modifier.padding(
-                top = element.padding.top.dp,
-                bottom = element.padding.bottom.dp,
-                start = element.padding.left.dp,
-                end = element.padding.right.dp
-            ).fillMaxWidth()) {
-                for (childElement in element.uiElements) {
-                    RenderUIElement(childElement)
-                }
-            }
+            renderColumn(element)
         }
         is RowElement -> {
-            Row(modifier = Modifier.padding(
-                top = element.padding.top.dp,
-                bottom = element.padding.bottom.dp,
-                start = element.padding.left.dp,
-                end = element.padding.right.dp
-            ).fillMaxWidth()) {
-                for (childElement in element.uiElements) {
-                    RenderUIElement(childElement)
-                }
-            }
+            renderRow(element)
+        }
+        is ImageElement -> {
+            dynamicImageFromAssets(filename = element.src, element.scale, element.link)
+        }
+        is SoundElement -> {
+            dynamicSoundfromAssets(element.src)
+        }
+        is VideoElement -> {
+            dynamicVideofromAssets(element.src)
+        }
+        is YoutubeElement -> {
+            dynamicYoutube()
+        }
+        else -> {
+            println("Unknown element: $element")
+        }
+    }
+}
+
+@Composable
+fun RowScope.RenderUIElement(element: UIElement) {
+    when (element) {
+        is TextElement -> {
+            renderText(element)
+        }
+        is MarkdownElement -> {
+            renderMarkdown(element)
+        }
+        is ButtonElement -> {
+            renderButton(element)
+        }
+        is ColumnElement -> {
+            renderColumn(element)
+        }
+        is RowElement -> {
+            renderRow(element)
         }
         is ImageElement -> {
             dynamicImageFromAssets(filename = element.src, element.scale, element.link)
@@ -175,17 +324,69 @@ fun RenderUIElement(element: UIElement) {
             dynamicSoundfromAssets(element.src)
         }
         is SpacerElement -> {
-            Spacer(modifier = Modifier.height(element.height.dp))
+            var mod = Modifier as Modifier
+
+            if (element.amount > 0 )
+                mod = mod.then(Modifier.width(element.amount.dp))
+            if (element.weight > 0.0)
+                mod = mod.then(Modifier.weight(element.weight.toFloat()))
+
+            Spacer(modifier = mod)
         }
         is VideoElement -> {
-            dynamicVideofromAssets(element.src, element.height)
+            dynamicVideofromAssets(element.src)
         }
         is YoutubeElement -> {
-            dynamicYoutube(element.height)
+            dynamicYoutube()
         }
         else -> {
-            // Hier können andere Elemente behandelt werden
-            println("Unknown element: $element")
+            println("Unsupported element: $element")
+        }
+    }
+}
+
+@Composable
+fun ColumnScope.RenderUIElement(element: UIElement) {
+    when (element) {
+        is TextElement -> {
+           renderText(element)
+        }
+        is MarkdownElement -> {
+            renderMarkdown(element)
+        }
+        is ButtonElement -> {
+            renderButton(element)
+        }
+        is ColumnElement -> {
+            renderColumn(element)
+        }
+        is RowElement -> {
+            renderRow(element)
+        }
+        is ImageElement -> {
+            dynamicImageFromAssets(filename = element.src, element.scale, element.link)
+        }
+        is SoundElement -> {
+            dynamicSoundfromAssets(element.src)
+        }
+        is SpacerElement -> {
+            var mod = Modifier as Modifier
+
+            if (element.amount >0 )
+                mod = mod.then(Modifier.height(element.amount.dp))
+            if (element.weight > 0.0)
+                mod = mod.then(Modifier.weight(element.weight.toFloat()))
+
+            Spacer(modifier = mod)
+        }
+        is VideoElement -> {
+            dynamicVideofromAssets(element.src)
+        }
+        is YoutubeElement -> {
+            dynamicYoutube()
+        }
+        else -> {
+            println("Unsupported element: $element")
         }
     }
 }
@@ -345,9 +546,9 @@ expect fun dynamicImageFromAssets(filename: String, scale: String, link: String)
 @Composable
 expect fun dynamicSoundfromAssets(filename: String)
 @Composable
-expect fun dynamicVideofromAssets(filename: String, height: Int)
+expect fun dynamicVideofromAssets(filename: String)
 @Composable
-expect fun dynamicYoutube(height: Int)
+expect fun dynamicYoutube()
 
 fun handleButtonClick(link: String) {
     when {

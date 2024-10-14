@@ -20,11 +20,6 @@ actual fun getNodeType(path: String): NodeType {
     }
 }
 
-actual fun getDisplayName(path: String): String {
-    val file = File(path)
-    return if (file.isDirectory) file.name else file.nameWithoutExtension
-}
-
 actual suspend fun loadFileContent(path: String, uuid: String, pid: String): String {
     val file = File(path)
     return try {
@@ -38,6 +33,7 @@ actual fun saveFileContent(path: String, uuid: String, pid: String, content: Str
     val file = File(path)
     try {
         file.writeText(content)
+        file.setLastModified(System.currentTimeMillis())
     } catch (e: IOException) {
         throw IOException("Error writing to file: ${e.message}", e)
     }
@@ -84,7 +80,7 @@ class DesktopProjectState : ProjectState() {
 
         val nodes = file.listFiles()
             // python3 server.py runs the webserver for NoCodeBrowser testing
-            ?.filter { it.name != ".DS_Store" && it.name != "server.py"}
+            ?.filter { it.name != ".DS_Store" && !it.name.endsWith(".py")}
             ?.map { mapFileToTreeNode(it) }
             ?: emptyList()
         val sortedNodes = nodes.sortedWith(compareBy<TreeNode> { it.type != NodeType.DIRECTORY }.thenBy { it.title.value })
@@ -115,6 +111,7 @@ class DesktopProjectState : ProjectState() {
         home.writeText("Page {\n  backgroundColor: \"#FFFFFF\"\n  padding: \"8\"\n\n  Column {\n    padding: \"8\"\n\n    Text { text: \"Home\" }\n  }\n}\n")
         copyResourceToFile("icons/default.icon.png", "$path/$name/assets/icon.png")
         copyResourceToFile("python/server.py", "$path/$name/server.py")
+        copyResourceToFile("python/upd_deploy.py", "$path/$name/upd_deploy.py")
         LoadProject("$path/$name", uuid, pid)
     }
 }
@@ -124,23 +121,17 @@ actual fun createProjectState(): ProjectState {
 }
 
 fun copyResourceToFile(resourcePath: String, outputPath: String) {
-    // Lade die Datei aus den Ressourcen (im Klassenpfad)
     val classLoader = Thread.currentThread().contextClassLoader
     val inputStream: InputStream? = classLoader.getResourceAsStream(resourcePath)
 
     if (inputStream != null) {
-        // Zielpfad, wo die Datei gespeichert werden soll
         val targetPath = Paths.get(outputPath)
 
-        // Stelle sicher, dass das Zielverzeichnis existiert
         Files.createDirectories(targetPath.parent)
 
-        // Kopiere die Datei von inputStream in das Zielverzeichnis
         Files.copy(inputStream, targetPath)
-
-        println("Datei wurde nach $outputPath kopiert.")
     } else {
-        println("Ressource $resourcePath konnte nicht gefunden werden.")
+        println("Ressource $resourcePath could not be found.")
     }
 }
 
