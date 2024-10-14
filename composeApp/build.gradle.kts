@@ -29,8 +29,10 @@ kotlin {
     jvmToolchain(11) // Wenn Java 11 verwendet werden soll
 
     jvm("desktop")
-    
+    macosX64("macOS")
+
     sourceSets {
+        val macOSMain by getting
         val commonMain by getting {
             dependencies {
                 implementation(compose.runtime)
