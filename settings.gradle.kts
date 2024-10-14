@@ -16,5 +16,5 @@ dependencyResolutionManagement {
 }
 
 include(":composeApp")
-include(":nocodeLib")
+
 

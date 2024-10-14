@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import at.crowdware.nocodedesigner.model.*
 import java.io.File
-import at.crowdware.nocodelib.parseApp
+import at.crowdware.nocodedesigner.utils.parseApp
 import java.io.IOException
 import java.io.InputStream
 import java.nio.file.Files

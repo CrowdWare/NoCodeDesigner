@@ -14,8 +14,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
+import at.crowdware.nocodedesigner.utils.*
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
-import at.crowdware.nocodelib.*
 import kotlin.reflect.KProperty
 
 @Composable

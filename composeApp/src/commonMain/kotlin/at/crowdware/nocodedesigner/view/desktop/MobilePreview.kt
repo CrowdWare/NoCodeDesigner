@@ -32,9 +32,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -49,12 +47,10 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
-import at.crowdware.nocodelib.Page
-import at.crowdware.nocodelib.UIElement
-import at.crowdware.nocodelib.UIElement.*
-import androidx.compose.foundation.layout.*
+import at.crowdware.nocodedesigner.utils.Page
+import at.crowdware.nocodedesigner.utils.UIElement
+import at.crowdware.nocodedesigner.utils.UIElement.*
 import androidx.compose.ui.unit.*
-import androidx.compose.ui.platform.*
 
 /*
 @Composable
