@@ -71,7 +71,7 @@ sealed class UIElement {
         @HexColorAnnotation
         val color: Color,
 
-       @IntAnnotation
+        @IntAnnotation
         val fontSize: TextUnit,
 
         @StringAnnotation("Enter one of the following weights normal, extralight, thin, medium, bold, semibold, extrabold, black like **fontWeight: \"bold\"**")
@@ -125,7 +125,18 @@ sealed class UIElement {
         val text: String,
 
         @HexColorAnnotation
-        val color: String) : UIElement()
+        val color: String,
+
+        @IntAnnotation
+        val fontSize: TextUnit,
+
+        @StringAnnotation("Enter one of the following weights normal, extralight, thin, medium, bold, semibold, extrabold, black like **fontWeight: \"bold\"**")
+        val fontWeight: FontWeight,
+
+        @StringAnnotation("Enter one of the following alignments left, center, right like **textAlign: \"center\"**")
+        val textAlign: TextAlign
+
+        ) : UIElement()
 }
 
 data class Padding(val top: Int, val right: Int, val bottom: Int, val left: Int)

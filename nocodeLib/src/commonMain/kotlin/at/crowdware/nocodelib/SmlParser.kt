@@ -145,10 +145,8 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
                                 text = (properties["text"] as? PropertyValue.StringValue)?.value ?: "",
                                 color = hexToColor((properties["color"] as? PropertyValue.StringValue)?.value ?: ""),
                                 fontSize = ((properties["fontSize"] as? PropertyValue.IntValue)?.value ?: 14).sp,
-                                fontWeight = fontWeightMap[(properties["fontWeight"] as? PropertyValue.StringValue)?.value
-                                    ?: ""] ?: FontWeight.Normal,
-                                textAlign = textAlignMap[(properties["textAlign"] as? PropertyValue.StringValue)?.value
-                                    ?: ""] ?: TextAlign.Unspecified
+                                fontWeight = fontWeightMap[(properties["fontWeight"] as? PropertyValue.StringValue)?.value ?: ""] ?: FontWeight.Normal,
+                                textAlign = textAlignMap[(properties["textAlign"] as? PropertyValue.StringValue)?.value ?: ""] ?: TextAlign.Unspecified
                             )
                         )
                     }
@@ -174,7 +172,10 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
                         val md = ((properties["text"] as? PropertyValue.StringValue)?.value ?: "").split("\n").joinToString("\n") { it.trim() }
                         val ele = UIElement.MarkdownElement(
                             text = md,
-                            color = (properties["color"] as? PropertyValue.StringValue)?.value ?: "#FFFFFF"
+                            color = (properties["color"] as? PropertyValue.StringValue)?.value ?: "#FFFFFF",
+                            fontSize = ((properties["fontSize"] as? PropertyValue.IntValue)?.value ?: 14).sp,
+                            fontWeight = fontWeightMap[(properties["fontWeight"] as? PropertyValue.StringValue)?.value ?: ""] ?: FontWeight.Normal,
+                            textAlign = textAlignMap[(properties["textAlign"] as? PropertyValue.StringValue)?.value ?: ""] ?: TextAlign.Unspecified
                         )
                         elements.add(ele)
                     }

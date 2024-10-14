@@ -224,7 +224,10 @@ fun renderMarkdown(element: MarkdownElement) {
     val parsedMarkdown = parseMarkdown(element.text)
     Text(
         text = parsedMarkdown,
-        style = TextStyle(color = hexToColor(element.color))
+        style = TextStyle(color = hexToColor(element.color)),
+        fontSize = element.fontSize,
+        fontWeight = element.fontWeight,
+        textAlign = element.textAlign
     )
 }
 
