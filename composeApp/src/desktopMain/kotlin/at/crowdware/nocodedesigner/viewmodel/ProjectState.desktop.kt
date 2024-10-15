@@ -98,7 +98,6 @@ class DesktopProjectState : ProjectState() {
     }
 
     override suspend fun createProjectFiles(path: String, uuid: String, pid: String, name: String, appId:String) {
-        // TODO: copy default icon.png into assets
         val dir = File("$path/$name")
         dir.mkdirs()
         val app = File("$path/$name/app.sml")
@@ -107,13 +106,94 @@ class DesktopProjectState : ProjectState() {
         val assets = File("$path/$name/assets")
         assets.mkdirs()
         val home = File("$path/$name/pages/home.sml")
-        app.writeText("App {\n  smlVersion: \"1.0\"\n  name: \"$name\"\n  version: \"1.0\"\n  id: \"$appId.$name\"\n  icon: \"icon.png\"\n\n  Navigation {\n    type: \"HorizontalPager\"\n\n    Item { page: \"home\" }  \n  }\n// deployment start - don't edit here\n\n// deployment end\n}\n")
+
         home.writeText("Page {\n  backgroundColor: \"#FFFFFF\"\n  padding: \"8\"\n\n  Column {\n    padding: \"8\"\n\n    Text { text: \"Home\" }\n  }\n}\n")
         copyResourceToFile("icons/default.icon.png", "$path/$name/assets/icon.png")
         copyResourceToFile("python/server.py", "$path/$name/server.py")
         copyResourceToFile("python/upd_deploy.py", "$path/$name/upd_deploy.py")
+        var appContent = "App {\n  smlVersion: \"1.0\"\n  name: \"$name\"\n  version: \"1.0\"\n  id: \"$appId.$name\"\n  icon: \"icon.png\"\n\n  Navigation {\n    type: \"HorizontalPager\"\n\n    Item { page: \"home\" }  \n  }\n"
+        appContent += writeDarkTheme()
+        appContent += "// deployment start - don't edit here\n\n// deployment end\n}\n\n"
+        app.writeText(appContent)
         LoadProject("$path/$name", uuid, pid)
     }
+}
+
+fun writeDarkTheme(): String {
+    var content = "\n"
+    content += "  Theme {\n"
+    content += "    primary: \"#FFB951\"\n"
+    content += "    onPrimary: \"#452B00\"\n"
+    content += "    primaryContainer: \"#633F00\"\n"
+    content += "    onPrimaryContainer: \"#FFDDB3\"\n"
+    content += "    secondary: \"#DDC2A1\"\n"
+    content += "    onSecondary: \"#3E2D16\"\n"
+    content += "    secondaryContainer: \"#56442A\"\n"
+    content += "    onSecondaryContainer: \"#FBDEBC\"\n"
+    content += "    tertiary: \"#B8CEA1\"\n"
+    content += "    onTertiary: \"#243515\"\n"
+    content += "    tertiaryContainer: \"#3A4C2A\"\n"
+    content += "    onTertiaryContainer: \"#D4EABB\"\n"
+    content += "    error: \"#FFB4AB\"\n"
+    content += "    errorContainer: \"#93000A\"\n"
+    content += "    onError: \"#690005\"\n"
+    content += "    onErrorContainer: \"#FFDAD6\"\n"
+    content += "    background: \"#1F1B16\"\n"
+    content += "    onBackground: \"#EAE1D9\"\n"
+    content += "    surface: \"#1F1B16\"\n"
+    content += "    onSurface: \"#EAE1D9\"\n"
+    content += "    surfaceVariant: \"#4F4539\"\n"
+    content += "    onSurfaceVariant: \"#D3C4B4\"\n"
+    content += "    outline: \"#9C8F80\"\n"
+    content += "    inverseOnSurface: \"#1F1B16\"\n"
+    content += "    inverseSurface: \"#EAE1D9\"\n"
+    content += "    inversePrimary: \"#825500\"\n"
+    content += "    shadow: \"#000000\"\n"
+    content += "    surfaceTint: \"#FFB951\"\n"
+    content += "    outlineVariant: \"#4F4539\"\n"
+    content += "    scrim: \"#000000\"\n"
+    content += "    seed: \"#825500\"\n"
+    content += "  }\n\n"
+    return content
+}
+
+fun writeLightTheme(): String {
+    var content = "\n"
+    content += "  Theme {\n"
+    content += "    primary: \"#FFB951\"\n"
+    content += "    primary: \"#825500\"\n"
+    content += "    onPrimary: \"#FFFFFF\"\n"
+    content += "    primaryContainer: \"#FFDDB3\"\n"
+    content += "    onPrimaryContainer: \"#291800\"\n"
+    content += "    secondary: \"#6F5B40\"\n"
+    content += "    onSecondary: \"#FFFFFF\"\n"
+    content += "    secondaryContainer: \"#FBDEBC\"\n"
+    content += "    onSecondaryContainer: \"#271904\"\n"
+    content += "    tertiary: \"#51643F\"\n"
+    content += "    onTertiary: \"#FFFFFF\"\n"
+    content += "    tertiaryContainer: \"#D4EABB\"\n"
+    content += "    onTertiaryContainer: \"#102004\"\n"
+    content += "    error: \"#BA1A1A\"\n"
+    content += "    errorContainer: \"#FFDAD6\"\n"
+    content += "    onError: \"#FFFFFF\"\n"
+    content += "    onErrorContainer: \"#410002\"\n"
+    content += "    background: \"#FFFBFF\"\n"
+    content += "    onBackground: \"#1F1B16\"\n"
+    content += "    surface: \"#FFFBFF\"\n"
+    content += "    onSurface: \"#1F1B16\"\n"
+    content += "    surfaceVariant: \"#F0E0CF\"\n"
+    content += "    onSurfaceVariant: \"#4F4539\"\n"
+    content += "    outline: \"#817567\"\n"
+    content += "    inverseOnSurface: \"#F9EFE7\"\n"
+    content += "    inverseSurface: \"#34302A\"\n"
+    content += "    inversePrimary: \"#FFB951\"\n"
+    content += "    shadow: \"#000000\"\n"
+    content += "    surfaceTint: \"#825500\"\n"
+    content += "    utlineVariant: \"#D3C4B4\"\n"
+    content += "    scrim: \"#000000\"\n"
+    content += "    seed:\"#825500\"\n"
+    content += "  }\n\n"
+    return content
 }
 
 actual fun createProjectState(): ProjectState {

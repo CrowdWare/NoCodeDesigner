@@ -25,9 +25,7 @@ import androidx.compose.foundation.layout.*
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,81 +49,6 @@ import at.crowdware.nocodedesigner.utils.Page
 import at.crowdware.nocodedesigner.utils.UIElement
 import at.crowdware.nocodedesigner.utils.UIElement.*
 import androidx.compose.ui.unit.*
-
-/*
-@Composable
-fun mobilePreview(currentProject: ProjectState?) {
-    var page: Page? = if (currentProject?.isPageLoaded == true) currentProject.page else null
-
-    if(page == null && currentProject != null) {
-        page = currentProject.cachedPage
-    }
-
-    Column(modifier = Modifier.width(430.dp).fillMaxHeight().background(color = MaterialTheme.colors.primary)) {
-        BasicText(
-            text = "Mobile Preview",
-            modifier = Modifier.padding(8.dp),
-            maxLines = 1,
-            style = TextStyle(color = MaterialTheme.colors.onPrimary),
-            overflow = TextOverflow.Ellipsis
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.surface), // Fills the entire available space
-            contentAlignment = Alignment.Center
-        ) {
-            // Outer phone box with fixed aspect ratio (9:16) that scales dynamically
-            Box(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .size(360.dp, 640.dp)
-                    .aspectRatio(9f / 16f)
-                    .clip(RoundedCornerShape(24.dp)) // Rounded corners for the phone shape
-                    .background(Color(0xFF353739)) // Outer phone background color
-                    .border(2.dp, Color.Gray, RoundedCornerShape(24.dp)) // Optional border
-            ) {
-                // Inner screen with relative size (not aspect ratio)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.85f) // Width of the screen relative to the phone body
-                        .fillMaxHeight(0.9f) // Height of the screen relative to the phone body
-                        .align(Alignment.Center) // Center the screen inside the phone
-                        .background(Color.Black)
-                ) {
-                    // Scalable content inside the screen
-                    CompositionLocalProvider(
-                        LocalDensity provides LocalDensity.current.copy(density = LocalDensity.current.density * 0.7f)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .size(360.dp, 640.dp)
-                        ) {
-                            if (page != null) {
-                                Row(
-                                    modifier = Modifier
-                                        .padding(
-                                            start = page.padding.left.dp,
-                                            top = page.padding.top.dp,
-                                            bottom = page.padding.bottom.dp,
-                                            end = page.padding.right.dp
-                                        )
-                                        //.fillMaxSize()
-                                        .size(360.dp, 640.dp)
-                                        .background(color = hexToColor(page.backgroundColor))
-                                ) {
-                                    RenderPage(page)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-*/
 
 @Composable
 fun mobilePreview(currentProject: ProjectState?) {
@@ -229,7 +152,10 @@ fun renderMarkdown(element: MarkdownElement) {
 
 @Composable
 fun renderButton(element: ButtonElement) {
-    Button(modifier = Modifier.fillMaxWidth(), onClick =  { handleButtonClick(element.link) }) {
+    Button(
+        modifier = Modifier.fillMaxWidth(),
+        onClick =  { handleButtonClick(element.link) }
+    ) {
         Text(text = element.label)
     }
 }

@@ -29,8 +29,14 @@ data class App(
     val icon: String = "",
     val id: String = "",
     val smlVersion: String = "",
+    val theme: ThemeElement = ThemeElement(),
     val navigation: NavigationElement = NavigationElement(),
     val deployment: DeploymentElement = DeploymentElement()
+)
+
+data class ThemeElement(
+    val primary: String = "",
+    val onPrimary: String = ""
 )
 
 data class NavigationElement(
