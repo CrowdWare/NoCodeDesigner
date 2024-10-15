@@ -52,7 +52,15 @@ The color should be in the format '#RRGGBB' or '#RGB':
             
 Ensure the hex string starts with '#' and contains valid hexadecimal characters (0-9, A-F).
 Example: For a vibrant orange color, use '#FF5733'.
+
+You can also use one of these predefined colors. 
+**primary, onPrimary, primaryContainer, onPrimaryContainer, surface, onSurface, secondary, onSecondary, secondaryContainer, onSecondaryContainer, tertiary, onTertiary, tertiaryContainer, onTertiaryContainer, outline, outlineVariant, onErrorContainer, onError, inverseSurface, inversePrimary, inverseOnSurface, background, seed, shadow, error, scrim**
 """)
+
+
+
+
+
 
 @Target(AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.RUNTIME)

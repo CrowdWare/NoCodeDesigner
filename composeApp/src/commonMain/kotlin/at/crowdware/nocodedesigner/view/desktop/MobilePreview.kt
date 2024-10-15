@@ -49,6 +49,7 @@ import at.crowdware.nocodedesigner.utils.Page
 import at.crowdware.nocodedesigner.utils.UIElement
 import at.crowdware.nocodedesigner.utils.UIElement.*
 import androidx.compose.ui.unit.*
+import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
 
 @Composable
 fun mobilePreview(currentProject: ProjectState?) {
@@ -100,12 +101,12 @@ fun mobilePreview(currentProject: ProjectState?) {
                             fontScale = fontScale
                         ),
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size((1.0/scale*360.0).dp, (1.0/scale*640).dp)
-                                .background(Color.White)
-                        ) {
-                            if (page != null) {
+                        if (page != null) {
+                            Box(
+                                modifier = Modifier
+                                    .size((1.0/scale*360.0).dp, (1.0/scale*640).dp)
+                                    .background(hexToColor(page.backgroundColor))
+                            ) {
                                 Row(
                                     modifier = Modifier
                                         .padding(
@@ -131,7 +132,7 @@ fun mobilePreview(currentProject: ProjectState?) {
 fun renderText(element: TextElement) {
     CustomText(
         text = element.text,
-        color = element.color,
+        color = hexToColor( element.color),
         fontSize = element.fontSize,
         fontWeight = element.fontWeight,
         textAlign = element.textAlign
@@ -152,8 +153,16 @@ fun renderMarkdown(element: MarkdownElement) {
 
 @Composable
 fun renderButton(element: ButtonElement) {
+    var colors = ButtonDefaults.buttonColors()
+    if(element.color.isNotEmpty() && element.backgroundColor.isNotEmpty())
+        colors = ButtonDefaults.buttonColors(backgroundColor = hexToColor(element.backgroundColor), contentColor = hexToColor(element.color))
+    else if(element.color.isNotEmpty())
+        colors = ButtonDefaults.buttonColors(contentColor = hexToColor(element.color))
+    else if(element.backgroundColor.isNotEmpty())
+        colors = ButtonDefaults.buttonColors(backgroundColor = hexToColor(element.backgroundColor))
     Button(
         modifier = Modifier.fillMaxWidth(),
+        colors = colors,
         onClick =  { handleButtonClick(element.link) }
     ) {
         Text(text = element.label)
@@ -317,7 +326,42 @@ fun ColumnScope.RenderUIElement(element: UIElement) {
 }
 
 fun hexToColor(hex: String): Color {
-    val color = hex.trimStart('#')
+    val currentProject = GlobalProjectState.projectState
+    var value = hex
+
+    if(!hex.startsWith("#") && currentProject!= null) {
+        when(hex) {
+            "primary" -> {value = currentProject.app?.theme?.primary ?: "" }
+            "onPrimary" -> {value = currentProject.app?.theme?.onPrimary ?: "" }
+            "primaryContainer" -> {value = currentProject.app?.theme?.primaryContainer ?: "" }
+            "onPrimaryContainer" -> {value = currentProject.app?.theme?.onPrimaryContainer ?: "" }
+            "surface" -> {value = currentProject.app?.theme?.surface ?: "" }
+            "onSurface" -> {value = currentProject.app?.theme?.onSurface ?: "" }
+            "secondary" -> {value = currentProject.app?.theme?.secondary ?: "" }
+            "onSecondary" -> {value = currentProject.app?.theme?.onSecondary ?: "" }
+            "secondaryContainer" -> {value = currentProject.app?.theme?.secondaryContainer ?: "" }
+            "onSecondaryContainer" -> {value = currentProject.app?.theme?.onSecondaryContainer ?: "" }
+            "tertiary" -> {value = currentProject.app?.theme?.tertiary ?: "" }
+            "onTertiary" -> {value = currentProject.app?.theme?.onTertiary ?: "" }
+            "tertiaryContainer" -> {value = currentProject.app?.theme?.tertiaryContainer ?: "" }
+            "onTertiaryContainer" -> {value = currentProject.app?.theme?.onTertiaryContainer ?: "" }
+            "outline" -> {value = currentProject.app?.theme?.outline ?: "" }
+            "outlineVariant" -> {value = currentProject.app?.theme?.outlineVariant ?: "" }
+            "onErrorContainer" -> {value = currentProject.app?.theme?.onErrorContainer ?: "" }
+            "onError" -> {value = currentProject.app?.theme?.onError ?: "" }
+            "inverseSurface" -> {value = currentProject.app?.theme?.inverseSurface ?: "" }
+            "inversePrimary" -> {value = currentProject.app?.theme?.inversePrimary ?: "" }
+            "inverseOnSurface" -> {value = currentProject.app?.theme?.inverseOnSurface ?: "" }
+            "background" -> {value = currentProject.app?.theme?.background ?: "" }
+            "seed" -> {value = currentProject.app?.theme?.seed ?: "" }
+            "shadow" -> {value = currentProject.app?.theme?.shadow ?: "" }
+            "error" -> {value = currentProject.app?.theme?.error ?: "" }
+            "scrim" -> {value = currentProject.app?.theme?.scrim ?: "" }
+            else -> {}
+        }
+    }
+
+    val color = value.trimStart('#')
     return when (color.length) {
         6 -> {
             // Hex without alpha (e.g., "RRGGBB")

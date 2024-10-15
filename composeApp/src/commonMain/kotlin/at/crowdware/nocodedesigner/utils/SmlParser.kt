@@ -18,10 +18,12 @@
  */
 package at.crowdware.nocodedesigner.utils
 
+import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
 import com.github.h0tk3y.betterParse.combinators.and
 import com.github.h0tk3y.betterParse.combinators.map
 import com.github.h0tk3y.betterParse.combinators.or
@@ -36,6 +38,8 @@ import com.github.h0tk3y.betterParse.lexer.literalToken
 import com.github.h0tk3y.betterParse.lexer.regexToken
 import com.github.h0tk3y.betterParse.parser.Parser
 import com.github.h0tk3y.betterParse.utils.Tuple7
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 sealed class PropertyValue {
@@ -82,14 +86,27 @@ object SmlGrammar : Grammar<List<Any>>() {
     override val rootParser: Parser<List<Any>> = (oneOrMore(element) and ignoredParser).map { (elements, _) -> elements }
 }
 
-fun isSmlRootElement(smlString: String, root: String): Boolean {
-    val regex = Regex("""^\s*$root\s*\{""")
-    return regex.containsMatchIn(smlString)
-}
-
 fun deserializeApp(parsedResult: List<Any>): App {
     val app = App()
-    // TODO: Implement deserialization logic
+
+    parsedResult.forEach { tuple ->
+        when (tuple) {
+            is Tuple7<*, *, *, *, *, *, *> -> {
+                val elementName = (tuple.t2 as? TokenMatch)?.text
+                val properties = extractProperties(tuple)
+
+                when (elementName) {
+                    "App" -> {
+                        app.id = (properties["id"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.icon = (properties["icon"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.name = (properties["name"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.smlVersion = (properties["smlVersion"] as? PropertyValue.StringValue)?.value ?: ""
+                        parseNestedAppElements(extractChildElements(tuple), app)
+                    }
+                }
+            }
+        }
+    }
     return app
 }
 
@@ -109,6 +126,8 @@ fun extractChildElements(element: Any): List<Any> {
 
 fun deserializePage(parsedResult: List<Any>): Page {
     val page = Page(color = "", backgroundColor = "", padding = Padding(0, 0, 0, 0), elements = mutableListOf())
+    val currentProject = GlobalProjectState.projectState
+    val theme = currentProject?.app?.theme
 
     parsedResult.forEach { tuple ->
         when (tuple) {
@@ -118,10 +137,12 @@ fun deserializePage(parsedResult: List<Any>): Page {
 
                 when (elementName) {
                     "Page" -> {
-                        page.color = (properties["color"] as? PropertyValue.StringValue)?.value ?: ""
-                        page.backgroundColor = (properties["backgroundColor"] as? PropertyValue.StringValue)?.value ?: ""
+
+                        page.color = (properties["color"] as? PropertyValue.StringValue)?.value ?: (theme?.onBackground ?: "no")
+                        page.backgroundColor = (properties["backgroundColor"] as? PropertyValue.StringValue)?.value ?: (theme?.background ?: "n0")
                         page.padding = parsePadding((properties["padding"] as? PropertyValue.StringValue)?.value ?: "0")
                         parseNestedElements(extractChildElements(tuple), page.elements as MutableList<UIElement>)
+                        println("Page: ${(properties["color"] as? PropertyValue.StringValue)?.value}, ${theme?.onBackground}")
                     }
                 }
             }
@@ -151,6 +172,9 @@ val textAlignMap = mapOf(
 )
 
 fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIElement>) {
+    val currentProject = GlobalProjectState.projectState
+    val theme = currentProject?.app?.theme
+
     nestedElements.forEach { element ->
         when (element) {
             is Tuple7<*, *, *, *, *, *, *> -> {
@@ -159,17 +183,19 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
 
                 when (elementName) {
                     "Text" -> {
-                        elements.add(
-                            UIElement.TextElement(
-                                text = (properties["text"] as? PropertyValue.StringValue)?.value ?: "",
-                                color = hexToColor((properties["color"] as? PropertyValue.StringValue)?.value ?: ""),
-                                fontSize = ((properties["fontSize"] as? PropertyValue.IntValue)?.value ?: 14).sp,
-                                fontWeight = fontWeightMap[(properties["fontWeight"] as? PropertyValue.StringValue)?.value
-                                    ?: ""] ?: FontWeight.Normal,
-                                textAlign = textAlignMap[(properties["textAlign"] as? PropertyValue.StringValue)?.value
-                                    ?: ""] ?: TextAlign.Unspecified
-                            )
-                        )
+                        if (currentProject != null) {
+                            if (theme != null) {
+                                elements.add(
+                                    UIElement.TextElement(
+                                        text = (properties["text"] as? PropertyValue.StringValue)?.value ?: "",
+                                        color = (properties["color"] as? PropertyValue.StringValue)?.value ?: theme.onBackground,
+                                        fontSize = ((properties["fontSize"] as? PropertyValue.IntValue)?.value ?: 14).sp,
+                                        fontWeight = fontWeightMap[(properties["fontWeight"] as? PropertyValue.StringValue)?.value ?: ""] ?: FontWeight.Normal,
+                                        textAlign = textAlignMap[(properties["textAlign"] as? PropertyValue.StringValue)?.value ?: ""] ?: TextAlign.Unspecified
+                                    )
+                                )
+                            }
+                        }
                     }
                     "Column" -> {
                         val col = UIElement.ColumnElement(
@@ -205,7 +231,9 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
                     "Button" -> {
                         val btn = UIElement.ButtonElement(
                             label = (properties["label"] as? PropertyValue.StringValue)?.value ?: "",
-                            link = (properties["link"] as? PropertyValue.StringValue)?.value ?: ""
+                            link = (properties["link"] as? PropertyValue.StringValue)?.value ?: "",
+                            color = (properties["color"] as? PropertyValue.StringValue)?.value ?: "",
+                            backgroundColor = (properties["backgroundColor"] as? PropertyValue.StringValue)?.value ?: ""
                         )
                         elements.add(btn)
                     }
@@ -299,3 +327,100 @@ fun hexToColor(hex: String): Color {
         else -> Color.Black
     }
 }
+
+fun parseNestedAppElements(nestedElements: List<Any>, app: App) {
+    nestedElements.forEach { element ->
+        when (element) {
+            is Tuple7<*, *, *, *, *, *, *> -> {
+                val elementName = (element.t2 as? TokenMatch)?.text
+                val properties = extractProperties(element)
+
+                println("app ele: $elementName")
+                when (elementName) {
+                    "Navigation" -> {
+                        val type = (properties["type"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.navigation.type = type
+                        parseNestedNavElements(extractChildElements(element), app.navigation)
+                    }
+                    "Deployment" -> {
+                        parseNestedDeployElements(extractChildElements(element), app.deployment)
+                    }
+                    "Theme" -> {
+                        app.theme.seed = (properties["seed"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.shadow = (properties["shadow"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.error = (properties["error"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.scrim = (properties["scrim"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.onError = (properties["onError"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.background = (properties["background"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.errorContainer = (properties["errorContainer"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.inverseOnSurface = (properties["inverseOnSurface"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.inversePrimary = (properties["inversePrimary"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.inverseSurface = (properties["inverseSurface"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.onBackground = (properties["onBackground"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.onErrorContainer = (properties["onErrorContainer"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.onPrimary = (properties["onPrimary"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.onPrimaryContainer = (properties["onPrimaryContainer"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.onSecondary = (properties["onSecondary"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.onSecondaryContainer = (properties["onSecondaryContainer"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.onSurface = (properties["onSurface"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.onSurfaceVariant = (properties["onSurfaceVariant"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.onTertiary = (properties["onTertiary"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.onTertiaryContainer = (properties["onTertiaryContainer"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.outline = (properties["outline"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.outlineVariant = (properties["outlineVariant"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.primary = (properties["primary"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.onPrimaryContainer = (properties["error"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.secondary = (properties["onPrimaryContainer"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.onSecondaryContainer = (properties["error"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.surfaceTint = (properties["onSecondaryContainer"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.surfaceVariant = (properties["surfaceVariant"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.tertiary = (properties["tertiary"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.tertiaryContainer = (properties["tertiaryContainer"] as? PropertyValue.StringValue)?.value ?: ""
+                        println("theme: ${app.theme.background} ${app.theme.onBackground}")
+                    }
+                }
+            }
+        }
+    }
+}
+
+fun parseNestedNavElements(nestedElements: List<Any>, navigation: NavigationElement) {
+    nestedElements.forEach { element ->
+        when (element) {
+            is Tuple7<*, *, *, *, *, *, *> -> {
+                val elementName = (element.t2 as? TokenMatch)?.text
+                val properties = extractProperties(element)
+
+                when (elementName) {
+                    "Item" -> {
+                        val page = (properties["page"] as? PropertyValue.StringValue)?.value ?: ""
+                        navigation.items.add(ItemElement(page))
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+fun parseNestedDeployElements(nestedElements: List<Any>, deployment: DeploymentElement) {
+    nestedElements.forEach { element ->
+        when (element) {
+            is Tuple7<*, *, *, *, *, *, *> -> {
+                val elementName = (element.t2 as? TokenMatch)?.text
+                val properties = extractProperties(element)
+
+                when (elementName) {
+                    "File" -> {
+                        val path = (properties["path"] as? PropertyValue.StringValue)?.value ?: ""
+                        val date = (properties["time"] as? PropertyValue.StringValue)?.value ?: ""
+                        val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH.mm.ss")
+                        val dateTime = LocalDateTime.parse(date, formatter)
+                        deployment.files.add(FileElement(path, dateTime))
+                    }
+                }
+            }
+        }
+    }
+}
+

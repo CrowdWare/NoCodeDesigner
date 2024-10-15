@@ -25,22 +25,51 @@ import androidx.compose.ui.unit.TextUnit
 import java.time.LocalDateTime
 
 data class App(
-    val name: String = "",
-    val icon: String = "",
-    val id: String = "",
-    val smlVersion: String = "",
-    val theme: ThemeElement = ThemeElement(),
-    val navigation: NavigationElement = NavigationElement(),
-    val deployment: DeploymentElement = DeploymentElement()
+    var name: String = "",
+    var icon: String = "",
+    var id: String = "",
+    var smlVersion: String = "",
+    var theme: ThemeElement = ThemeElement(),
+    var navigation: NavigationElement = NavigationElement(),
+    var deployment: DeploymentElement = DeploymentElement()
 )
 
 data class ThemeElement(
-    val primary: String = "",
-    val onPrimary: String = ""
+    var primary: String = "",
+    var onPrimary: String = "",
+    var primaryContainer: String = "",
+    var onPrimaryContainer: String = "",
+    var secondary: String = "",
+    var onSecondary: String = "",
+    var secondaryContainer: String = "",
+    var onSecondaryContainer: String = "",
+    var tertiary: String = "",
+    var onTertiary: String = "",
+    var tertiaryContainer: String = "",
+    var onTertiaryContainer: String = "",
+    var error: String = "",
+    var errorContainer: String = "",
+    var onError: String = "",
+    var onErrorContainer: String = "",
+    var background: String = "",
+    var onBackground: String = "",
+    var surface: String = "",
+    var onSurface: String = "",
+    var surfaceVariant: String = "",
+    var onSurfaceVariant: String = "",
+    var outline: String = "",
+    var inverseOnSurface: String = "",
+    var inverseSurface: String = "",
+    var inversePrimary: String = "",
+    var shadow: String = "",
+    var surfaceTint: String = "",
+    var outlineVariant: String = "",
+    var scrim: String = "",
+    var seed: String = ""
 )
 
 data class NavigationElement(
-    val type: String = "",
+    var type: String = "",
     val items: MutableList<ItemElement> = mutableListOf()
 )
 
@@ -74,7 +103,7 @@ sealed class UIElement {
         val text: String,
 
         @HexColorAnnotation
-        val color: Color,
+        val color: String,
 
         @IntAnnotation
         val fontSize: TextUnit,
@@ -89,6 +118,12 @@ sealed class UIElement {
     data class ButtonElement(
         @StringAnnotation
         val label: String,
+
+        @HexColorAnnotation
+        val backgroundColor: String,
+
+        @HexColorAnnotation
+        val color: String,
 
         @LinkAnnotation
         val link: String) : UIElement()
