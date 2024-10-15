@@ -1,19 +1,26 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
-
-val minor = SimpleDateFormat("yy").format(Date()).toInt()
-val build = SimpleDateFormat("MMddHH").format(Date()).toInt()
-val version = "1.$minor.$build".take(10)
-
+// masterpiece in version numbering ;-)
+// version will increment all 10 minutes
+val currentDateTime: LocalDateTime = LocalDateTime.now()
+val majorVersion = (currentDateTime.year - 2014) / 10
+val yearPart = (currentDateTime.year - 2014) - 10
+val monthPart = String.format("%02d", currentDateTime.monthValue)
+val dayPart = String.format("%02d", currentDateTime.dayOfMonth)
+val hourPart = String.format("%02d", currentDateTime.hour)
+val minutesPart = String.format("%02d", currentDateTime.minute)
+val version = "$majorVersion.$yearPart$monthPart.$dayPart$hourPart$minutesPart".take(11)
 
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     kotlin("plugin.serialization") version "1.9.0"
-
 }
 
 repositories {

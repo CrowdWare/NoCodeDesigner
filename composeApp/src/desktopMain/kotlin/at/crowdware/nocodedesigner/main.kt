@@ -84,7 +84,7 @@ fun main() = application {
     projectState.darkMode = androidx.compose.foundation.isSystemInDarkTheme()
     val isWindows = System.getProperty("os.name").contains("Windows", ignoreCase = true)
     var isAskingToClose by remember { mutableStateOf(false) }
-   
+
     // setup logging, all println are stored in a log file
     setupLogging()
 
