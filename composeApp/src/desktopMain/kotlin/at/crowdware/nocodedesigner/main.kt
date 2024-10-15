@@ -30,8 +30,11 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyShortcut
+import androidx.compose.ui.res.loadImageBitmap
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Window
@@ -63,6 +66,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.launch
+import java.io.FileInputStream
 
 val LocalProjectState = compositionLocalOf<ProjectState> { error("No ProjectState provided") }
 
@@ -80,7 +84,7 @@ fun main() = application {
     projectState.darkMode = androidx.compose.foundation.isSystemInDarkTheme()
     val isWindows = System.getProperty("os.name").contains("Windows", ignoreCase = true)
     var isAskingToClose by remember { mutableStateOf(false) }
-
+   
     // setup logging, all println are stored in a log file
     setupLogging()
 
@@ -112,7 +116,8 @@ fun main() = application {
         transparent = !isWindows,
         undecorated = !isWindows,
         resizable = true,
-        state = windowState
+        state = windowState,
+        icon = painterResource("icons/WindowsIcon.ico")
     ) {
         var isMaximized by remember { mutableStateOf(window.extendedState == Frame.MAXIMIZED_BOTH) }
         window.minimumSize = Dimension(770, 735)
