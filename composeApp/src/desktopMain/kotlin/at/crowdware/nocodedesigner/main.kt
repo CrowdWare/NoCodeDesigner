@@ -78,7 +78,7 @@ fun main() = application {
     val projectState = createProjectState()
     GlobalProjectState.projectState = projectState
     projectState.darkMode = androidx.compose.foundation.isSystemInDarkTheme()
-
+    val isWindows = System.getProperty("os.name").contains("Windows", ignoreCase = true)
 
     // setup logging, all println are stored in a log file
     setupLogging()
@@ -108,8 +108,8 @@ fun main() = application {
     Window(
         onCloseRequest = {},
         title = appName + " [" + loadedState?.lastProject.toString() + "]",
-        transparent = true,
-        undecorated = true,
+        transparent = !isWindows,
+        undecorated = !isWindows,
         resizable = true,
         state = windowState
     ) {
@@ -154,6 +154,7 @@ fun main() = application {
 
                 ) {
                     Column {
+                        if (!isWindows) {
                         WindowCaptionArea {
                             Box(
                                 Modifier
@@ -191,7 +192,7 @@ fun main() = application {
                                     modifier = Modifier.align(Alignment.Center)
                                 )
                             }
-                        }
+                        }}
                         desktop()
                         if (projectState.isAboutDialogOpen) {
                             AboutDialog(
