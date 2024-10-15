@@ -128,6 +128,9 @@ abstract class ProjectState {
 
     private fun loadElementData() {
         elementData = listOf(mapPageToTreeNodes(page!!))
+        var clsName = "at.crowdware.nocodedesigner.utils.Page"
+        val clazz = Class.forName(clsName).kotlin
+        actualElement = clazz
     }
 
     fun mapUIElementToTreeNode(uiElement: UIElement): TreeNode {

@@ -46,6 +46,7 @@ data class FileElement(val path: String, val time: LocalDateTime)
 
 data class ItemElement (val page: String)
 
+@ElementAnnotation("A **Page** is the base element of the NoCodeApp. You can put all other Elements inside a Page.")
 data class Page(
     @HexColorAnnotation
     var color: String,
@@ -61,6 +62,7 @@ data class Page(
 
 sealed class UIElement {
     data object Zero : UIElement()
+    @ElementAnnotation("With a **Text** element you can render text on the page.")
     data class TextElement(
         @StringAnnotation
         val text: String,
@@ -77,12 +79,14 @@ sealed class UIElement {
         @StringAnnotation("Enter one of the following alignments left, center, right like **textAlign: \"center\"**")
         val textAlign: TextAlign
     ) : UIElement()
+    @ElementAnnotation("With a **Button** element you can render a clickable button on the page. With a click you can load other pages or external websites.")
     data class ButtonElement(
         @StringAnnotation
         val label: String,
 
         @LinkAnnotation
         val link: String) : UIElement()
+    @ElementAnnotation("With an **Image** element you can display an image on the page.")
     data class ImageElement(
         @StringAnnotation("Enter the name of the image file like **src: \"sample.png\"**.\nThe image file should be imported into assets first.")
         val src: String,
@@ -92,31 +96,38 @@ sealed class UIElement {
 
         @LinkAnnotation
         val link: String) : UIElement()
+    @ElementAnnotation("With a **Spacer** element you can create a visual distance between other elements on the page.")
     data class SpacerElement(
         @IntAnnotation
         val amount: Int,
 
         @WeightAnnotation()
         val weight: Int) : UIElement()
+    @ElementAnnotation("With a **Video** element you can show and play videos on the page.")
     data class VideoElement(
         @StringAnnotation("Enter the name of the video file like **src: \"sample.mp4\"**.\nThe video file should be imported into assets first.")
         val src: String) : UIElement()
+    @ElementAnnotation("With a **Youtube** element you can show and play YouTube videos on the page.")
     data class YoutubeElement(
         @StringAnnotation("Enter the YouTube video id in quotes like **id:\"FCyiuG\"**")
         val id: String) : UIElement()
+    @ElementAnnotation("With a **Sound** element you can play sounds when the page is loaded.")
     data class SoundElement(
         @StringAnnotation("Enter the name of the sound file like **src: \"sample.mp3\"**.\nThe sound file should be imported into assets first.")
         val src: String) : UIElement()
+    @ElementAnnotation("With a **Row** element you can arrange elements horizontally on the page.")
     data class RowElement(
         @PaddingAnnotation
         val padding: Padding,
 
         val uiElements: MutableList<UIElement> = mutableListOf()) : UIElement()
+    @ElementAnnotation("With a **Column** element you can arrange elements vertically on the page.")
     data class ColumnElement(
         @PaddingAnnotation
         val padding: Padding,
 
         val uiElements: MutableList<UIElement> = mutableListOf()) : UIElement()
+    @ElementAnnotation("With a **Markdown** element you can render styled text on the page.")
     data class MarkdownElement(
         @MarkdownAnnotation
         val text: String,

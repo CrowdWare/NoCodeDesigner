@@ -16,7 +16,9 @@ import androidx.compose.ui.unit.sp
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 import at.crowdware.nocodedesigner.utils.*
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
+import kotlin.reflect.full.findAnnotation
 
 @Composable
 fun propertyPanel(currentProject: ProjectState?) {
@@ -91,6 +93,56 @@ fun propertyPanel(currentProject: ProjectState?) {
                             }
                         }
                     }
+                }
+                if (element != null && (element.simpleName == "Page" || element.simpleName == "ColumnElement" || element.simpleName == "RowElement")) {
+
+                        Row(modifier = Modifier.background(MaterialTheme.colors.primary).fillMaxWidth().padding(8.dp)) {
+                            Column() {
+                                Text(
+                                    text = "Available Elements",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = ExtendedTheme.colors.syntaxColor
+                                )
+
+
+                                val sealedClass: KClass<UIElement> = UIElement::class
+                                val subclasses = sealedClass.sealedSubclasses
+
+                                subclasses.forEach { subclass ->
+                                    subclass.simpleName?.let {
+                                        if(it != "Zero") {
+                                            var clsName = ""
+                                            if (it == "Page") {
+                                                clsName = "at.crowdware.nocodedesigner.utils.Page"
+                                            } else {
+                                                clsName = "at.crowdware.nocodedesigner.utils.UIElement\$${it}"
+                                            }
+                                            val clazz = Class.forName(clsName).kotlin
+                                            // Retrieve the MyCustomAnnotation from the class
+                                            val annotation = clazz.findAnnotation<ElementAnnotation>()
+                                            Text(
+                                                text = it.substringBefore("Element"),
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = ExtendedTheme.colors.attributeNameColor
+                                            )
+                                            if (annotation != null) {
+                                                Spacer(modifier = Modifier.height(4.dp))
+                                                val md = parseMarkdown(annotation.description)
+                                                Text(
+                                                    text = md,
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Normal,
+                                                    color = MaterialTheme.colors.onPrimary
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.height(16.dp))
+                                        }
+                                    }
+                                }
+                            }
+                        }
                 }
             }
             VerticalScrollbar(

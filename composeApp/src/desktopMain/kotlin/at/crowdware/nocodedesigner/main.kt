@@ -150,7 +150,7 @@ fun main() = application {
                     })
                     if (isWindows) {
                         Separator()
-                        Item("Exit Application", onClick = {
+                        Item("Quit Application", onClick = {
                             onAppClose(window, projectState.folder)
                             exitApplication()
                         })

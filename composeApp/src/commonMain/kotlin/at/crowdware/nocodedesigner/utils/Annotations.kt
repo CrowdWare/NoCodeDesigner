@@ -19,6 +19,10 @@
 package at.crowdware.nocodedesigner.utils
 
 
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ElementAnnotation(val description: String )
+
 @Target(AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class IgnoreForDocumentation
