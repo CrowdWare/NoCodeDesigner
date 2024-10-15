@@ -62,7 +62,6 @@ fun propertyPanel(currentProject: ProjectState?) {
                                         return@forEach
                                     }
 
-
                                     member.annotations.forEach { annotation ->
                                         when (annotation) {
                                             is WeightAnnotation -> {
@@ -71,11 +70,9 @@ fun propertyPanel(currentProject: ProjectState?) {
                                             is HexColorAnnotation -> {
                                                 renderAnnotation(member.name, annotation.description)
                                             }
-
                                             is PaddingAnnotation -> {
                                                 renderAnnotation(member.name, annotation.description)
                                             }
-
                                             is MarkdownAnnotation -> {
                                                 renderAnnotation(member.name, annotation.description)
                                             }

@@ -50,7 +50,6 @@ import at.crowdware.nocodedesigner.viewmodel.ProjectState
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ClickableIcon(
-    //imageVector: ImageVector,
     painter: Painter,
     label: String,
     sml: String
@@ -60,77 +59,68 @@ fun ClickableIcon(
     var dragShadow by remember { mutableStateOf(1f) }
     var isHovered by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
-    val isDarkTheme = MaterialTheme.colors.isLight.not() // Detect if dark mode is enabled
+    val isDarkTheme = MaterialTheme.colors.isLight.not()
     val iconTint = if (isHovered) {
         ExtendedTheme.colors.accentColor
     } else {
         if (isDarkTheme) {
-            MaterialTheme.colors.onSurface.copy(alpha = 0.6f) // Default dark mode
+            MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
         } else {
-            MaterialTheme.colors.onSurface // Default light mode
+            MaterialTheme.colors.onSurface
         }
     }
 
     // Box background and border color based on hover and theme
     val backgroundColor = if (isHovered) {
-        if (isDarkTheme) MaterialTheme.colors.surface.copy(alpha = 0.1f) // Slightly lighter surface color in dark mode
-        else MaterialTheme.colors.surface.copy(alpha = 0.2f) // Slightly darker surface color in light mode
+        if (isDarkTheme) MaterialTheme.colors.surface.copy(alpha = 0.1f)
+        else MaterialTheme.colors.surface.copy(alpha = 0.2f)
     } else {
-        Color.Transparent // Default background (no fill)
+        Color.Transparent
     }
 
     val borderColor = if (isHovered) {
         ExtendedTheme.colors.accentColor
     } else {
-        if (isDarkTheme) MaterialTheme.colors.onSurface.copy(alpha = 0.2f) // Subtle border in dark mode
-        else MaterialTheme.colors.onSurface.copy(alpha = 0.4f) // Subtle border in light mode
+        if (isDarkTheme) MaterialTheme.colors.onSurface.copy(alpha = 0.2f)
+        else MaterialTheme.colors.onSurface.copy(alpha = 0.4f)
     }
 
     Box(contentAlignment = Alignment.Center,
         modifier = Modifier
             .clickable {
-                val cursorPosition =
-                    currentProject.currentFileContent.selection.start  // Get current cursor position
+                val cursorPosition = currentProject.currentFileContent.selection.start
                 val currentText = currentProject.currentFileContent.text
-
-                // Insert new text at the cursor position
-                val newTextValue =
-                    currentText.substring(0, cursorPosition) + sml + currentText.substring(
-                        cursorPosition
-                    )
-                // Update the TextFieldValue with new text and move the cursor after the inserted text
+                val newTextValue = currentText.substring(0, cursorPosition) + sml + currentText.substring(cursorPosition)
                 currentProject.currentFileContent = currentProject.currentFileContent.copy(
                     text = newTextValue,
-                    selection = TextRange(cursorPosition + sml.length)  // Move cursor to after the inserted text
+                    selection = TextRange(cursorPosition + sml.length)
                 )
                 currentProject.saveFileContent()
             }
             .width(95.dp)
             .border(2.dp, borderColor, shape = RoundedCornerShape(8.dp))
             .background(backgroundColor)
-            .padding(8.dp)  // Padding inside the border
-            .hoverable(interactionSource = interactionSource) // Detect hover state
+            .padding(8.dp)
+            .hoverable(interactionSource = interactionSource)
             .onGloballyPositioned {
                 currentState.objectLocalPosition = it.localToWindow(Offset.Zero)
             }.pointerMoveFilter(
                 onEnter = {
-                    isHovered = true // Trigger hover
+                    isHovered = true
                     false
                 },
                 onExit = {
-                    isHovered = false // Remove hover
+                    isHovered = false
                     false
                 }
             )
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally, // Center the icon and text horizontally
-            verticalArrangement = Arrangement.Center,           // Center vertically
-            modifier = Modifier.padding(8.dp)  // Optional padding inside the column
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(8.dp)
         ) {
-            // Display the icon
             Icon(
-                //imageVector = imageVector,
                 painter = painter,
                 contentDescription = "",
                 modifier = Modifier
@@ -138,13 +128,12 @@ fun ClickableIcon(
                     .alpha(dragShadow),
                 tint = iconTint
             )
-            Spacer(modifier = Modifier.height(4.dp)) // Spacer to add space between icon and text
+            Spacer(modifier = Modifier.height(4.dp))
 
-            // Display the text below the icon
             Text(modifier = Modifier.alpha(dragShadow),
-                text = label,        // The text you want to display below the icon
-                fontSize = 12.sp,         // Adjust the font size
-                color = MaterialTheme.colors.onSurface,    // Adjust the text color
+                text = label,
+                fontSize = 12.sp,
+                color = MaterialTheme.colors.onSurface,
                 style = MaterialTheme.typography.body1
             )
         }

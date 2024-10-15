@@ -77,7 +77,3 @@ fun projectDialog(
     )
 }
 
-
-
-expect fun openFolder(): String
-

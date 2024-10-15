@@ -26,13 +26,11 @@ repositories {
 }
 
 kotlin {
-    jvmToolchain(11) // Wenn Java 11 verwendet werden soll
+    jvmToolchain(17)
 
     jvm("desktop")
-    macosX64("macOS")
 
     sourceSets {
-        val macOSMain by getting
         val commonMain by getting {
             dependencies {
                 implementation(compose.runtime)
@@ -50,7 +48,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3")
                 implementation("com.github.h0tk3y.betterParse:better-parse:0.4.4")
                 implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
-
+                implementation("com.darkrockstudios:mpfilepicker:3.1.0")
             }
         }
 
@@ -93,35 +91,6 @@ compose.desktop {
     }
 }
 
-tasks.register<Copy>("copyDylibToApp") {
-    dependsOn("createDistributable")
-
-    // Berechne die Pfade zur Konfigurationszeit
-    val fromPath = layout.buildDirectory.dir("../mac/.build/release/libmac.dylib").get().asFile
-    val toPath = layout.buildDirectory.dir("compose/binaries/main/app/NoCodeDesigner.app/Contents/Resources").get().asFile
-
-    // Vermeide die Verwendung von `file()` oder `project` zur Ausführungszeit
-    from(fromPath)
-    into(toPath)
-
-    // Protokollierung und Überprüfung zur Ausführungszeit
-    doLast {
-        println("Copying $fromPath to $toPath")
-        if (!fromPath.exists()) {
-            throw GradleException(".dylib file not found at $fromPath")
-        }
-    }
-}
-
-tasks.register("deploy") {
-    dependsOn("generateVersionFile")
-    dependsOn("copyDylibToApp")
-    finalizedBy("packageDmg")
-    doFirst {
-        println("Deploy App")
-    }
-}
-
 tasks.named("assemble") {
     mustRunAfter("generateVersionFile")
 }
@@ -150,9 +119,9 @@ tasks.register("generateVersionFile") {
 
 
 tasks.named("compileKotlinDesktop") {
-    dependsOn("generateVersionFile") // Stellt sicher, dass die Version-Datei vor dem Kompilieren generiert wird
+    dependsOn("generateVersionFile")
 }
 
 tasks.named("build") {
-    dependsOn("generateVersionFile") // Stellt sicher, dass die Version-Datei vor dem Kompilieren generiert wird
+    dependsOn("generateVersionFile")
 }

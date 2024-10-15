@@ -42,6 +42,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
+import at.crowdware.nocodedesigner.model.extensionToNodeType
 import at.crowdware.nocodedesigner.ui.TreeView
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import java.awt.Cursor
@@ -138,6 +140,32 @@ fun projectStructure(currentProject: ProjectState) {
                                 }) {
                                     Text(text = "Rename", fontSize = 12.sp)
                                 }
+                            } else {
+                                DropdownMenuItem(onClick = {
+                                    expanded = false
+
+                                    println("Insert: ${treeNode.title}")
+                                    val ext = treeNode.title.value.substringAfter(".")
+                                    val type = extensionToNodeType[ext]
+                                    var ins = ""
+                                    when(type) {
+                                        NodeType.SOUND -> {ins = "Sound { src: \"${treeNode.title.value}\" }\n"}
+                                        NodeType.IMAGE -> {ins = "Image { src: \"${treeNode.title.value}\" }\n"}
+                                        NodeType.VIDEO -> {ins = "Video { src: \"${treeNode.title.value}\" }\n"}
+                                        else -> {}
+                                    }
+
+                                    val cursorPosition = currentProject.currentFileContent.selection.start
+                                    val currentText = currentProject.currentFileContent.text
+                                    val newTextValue = currentText.substring(0, cursorPosition) + ins + currentText.substring(cursorPosition)
+                                    currentProject.currentFileContent = currentProject.currentFileContent.copy(
+                                        text = newTextValue,
+                                        selection = TextRange(cursorPosition + ins.length)
+                                    )
+                                    currentProject.saveFileContent()
+                                }) {
+                                    Text(text = "Insert", fontSize = 12.sp)
+                                }
                             }
                             DropdownMenuItem(
                                 modifier = Modifier.background(color = Color.DarkGray),
@@ -173,11 +201,10 @@ fun projectStructure(currentProject: ProjectState) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(8.dp) // Divider thickness
+                .height(8.dp)
                 .pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR)))
                 .pointerInput(Unit) {
                     detectDragGestures { _, dragAmount ->
-                        // Update treeViewHeight based on drag
                         val dragScalingFactor = totalHeight * 0.000014f
                         treeViewHeight = (treeViewHeight + (dragAmount.y / size.height) * dragScalingFactor)
                             .coerceIn(0.1f, 0.9f)
@@ -185,6 +212,7 @@ fun projectStructure(currentProject: ProjectState) {
                 }
                 .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f)) // Divider color
         )
+
         BasicText(
             text = "Page Structure",
             modifier = Modifier.padding(8.dp),

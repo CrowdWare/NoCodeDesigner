@@ -45,6 +45,8 @@ import at.crowdware.nocodedesigner.view.desktop.desktop
 import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import at.crowdware.nocodedesigner.viewmodel.createProjectState
+import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
+import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 
 
 import com.sun.jna.Library
@@ -79,10 +81,7 @@ fun main() = application {
 
 
     // setup logging, all println are stored in a log file
-    //setupLogging()
-
-    // Load the native library
-    val macLib = Native.load(getLibraryPath(), MacLib::class.java) as MacLib
+    setupLogging()
 
     System.setProperty("apple.awt.application.name", appName)
     // Check if the desktop supports macOS actions (About, Quit, etc.)
@@ -251,46 +250,18 @@ fun main() = application {
                                     }
                                 })
                         }
-                        if(projectState.isOpenProjectDialogVisible) {
-                            try {
-                                // Call the native Swift method
-                                val folderPathPointer = macLib.selectFolder(projectState.darkMode)
 
-                                // Check if the pointer is null
-                                if (folderPathPointer == null) {
-                                    println("No folder selected or an error occurred in the Swift function.")
-                                } else {
-                                    // Convert the result from a Pointer to a String
-                                    val folderPath = folderPathPointer.getString(0)
-                                    println("Selected folder: $folderPath")
-                                    projectState.LoadProject(folderPath, "", "")
-                                }
-                            } catch (e: Exception) {
-                                // Catch any exceptions that happen during the JNA call
-                                println("Error calling native function: ${e.message}")
-                                e.printStackTrace()
-                            }
+                        DirectoryPicker(projectState.isOpenProjectDialogVisible, title = "Pick a folder") { path ->
                             projectState.isOpenProjectDialogVisible = false
-                        }
-                        if(projectState.isImportAssetDialogVisible) {
-                            try {
-                                // Call the native Swift method
-                                val filePathPointer = macLib.selectFile(projectState.darkMode)
-
-                                // Check if the pointer is null
-                                if (filePathPointer == null) {
-                                    println("No file selected or an error occurred in the Swift function.")
-                                } else {
-                                    // Convert the result from a Pointer to a String
-                                    val filePath = filePathPointer.getString(0)
-                                    projectState.ImportFile(filePath)
-                                }
-                            } catch (e: Exception) {
-                                // Catch any exceptions that happen during the JNA call
-                                println("Error calling native function: ${e.message}")
-                                e.printStackTrace()
+                            if (path != null) {
+                                projectState.LoadProject(path, "", "")
                             }
+                        }
+
+                        FilePicker(show = projectState.isImportAssetDialogVisible, title = "Pick a file to import") { platformFile ->
                             projectState.isImportAssetDialogVisible = false
+                            if(platformFile != null)
+                                projectState.ImportFile(platformFile.path)
                         }
                     }
                 }
@@ -312,59 +283,6 @@ fun onAppClose(frame: ComposeWindow, folder: String) {
     )
 }
 
-// Define the interface for the Swift library
-interface MacLib : Library {
-    fun selectFolder(darkMode: Boolean): Pointer?
-    fun selectFile(darkMode: Boolean): Pointer?
-}
-
-// JNA interface to access Objective-C runtime
-interface ObjCRuntime : Library {
-    fun objc_getClass(className: String): Pointer
-    fun sel_registerName(selectorName: String): Pointer
-    fun objc_msgSend(receiver: Pointer, selector: Pointer): Pointer
-}
-
-fun isRunningInProdMode(): Boolean {
-    val bp = getBundlePath()
-    // in dev you get like: /Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin
-    // in prod you get like: /Users/art/SourceCode/NoCodeDesigner/build/compose/binaries/main/app/NoCodeDesigner.app
-    return bp.contains(".app")
-}
-
-fun getBundlePath(): String {
-    val objc = Native.load("objc", ObjCRuntime::class.java) as ObjCRuntime
-    val nsBundleClass = objc.objc_getClass("NSBundle")
-    val mainBundleSelector = objc.sel_registerName("mainBundle")
-    val mainBundle = objc.objc_msgSend(nsBundleClass, mainBundleSelector)
-    val bundlePathSelector = objc.sel_registerName("bundlePath")
-    val bundlePathNSString = objc.objc_msgSend(mainBundle, bundlePathSelector)
-    val utf8StringSelector = objc.sel_registerName("UTF8String")
-    val bundlePathPointer = objc.objc_msgSend(bundlePathNSString, utf8StringSelector)
-
-    return bundlePathPointer.getString(0)
-}
-
-fun getLibraryPath(): String {
-    val home = System.getProperty("user.dir")
-
-    return if (isRunningInProdMode()) {
-        val objc = Native.load("objc", ObjCRuntime::class.java) as ObjCRuntime
-        val nsBundleClass = objc.objc_getClass("NSBundle")
-        val mainBundleSelector = objc.sel_registerName("mainBundle")
-        val mainBundle = objc.objc_msgSend(nsBundleClass, mainBundleSelector)
-        val bundlePathSelector = objc.sel_registerName("bundlePath")
-        val bundlePathNSString = objc.objc_msgSend(mainBundle, bundlePathSelector)
-        val utf8StringSelector = objc.sel_registerName("UTF8String")
-        val bundlePathPointer = objc.objc_msgSend(bundlePathNSString, utf8StringSelector)
-        val bundlePath = bundlePathPointer.getString(0)
-        val prodPath = "$bundlePath/Contents/Resources/libmac.dylib"
-        prodPath
-    } else {
-        val devPath = "$home/mac/.build/release/libmac.dylib"
-        devPath
-    }
-}
 
 fun setupLogging() {
     val userHome = System.getProperty("user.home")

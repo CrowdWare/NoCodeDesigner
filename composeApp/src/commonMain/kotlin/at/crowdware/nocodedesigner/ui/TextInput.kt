@@ -19,22 +19,21 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
+import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 
 
 @Composable
 fun TextInput(text: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, hasIcon: Boolean = false) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
+    var showDirectoryPicker by remember { mutableStateOf(false) }
 
     val borderColor = if (isFocused) {
         ExtendedTheme.colors.accentColor  // Farbe bei Fokus
@@ -48,11 +47,13 @@ fun TextInput(text: String, onValueChange: (String) -> Unit, modifier: Modifier 
     )
 
     CompositionLocalProvider(LocalTextSelectionColors provides customSelectionColors) {
-        Row (modifier = modifier.border(
-            width = 1.dp,
-            color = borderColor,  // Dynamische Farbe je nach Fokus
-            shape = RoundedCornerShape(4.dp)
-        )) {
+        Row(
+            modifier = modifier.border(
+                width = 1.dp,
+                color = borderColor,  // Dynamische Farbe je nach Fokus
+                shape = RoundedCornerShape(4.dp)
+            )
+        ) {
             BasicTextField(
                 value = text,
                 onValueChange = onValueChange,
@@ -72,13 +73,18 @@ fun TextInput(text: String, onValueChange: (String) -> Unit, modifier: Modifier 
             if (hasIcon) {
                 IconButton(onClick = {}, modifier = Modifier.size(24.dp)) {
                     Icon(Icons.Default.Folder, contentDescription = "Folder", modifier = Modifier.clickable {
-                        var path = openFolder()
-                        if (path.isNotEmpty()) {
-                            onValueChange(path)
-                        }
+                        showDirectoryPicker = true
                     })
                 }
             }
         }
     }
+
+    DirectoryPicker(showDirectoryPicker, title = "Pick a folder") { path ->
+        if (!path.isNullOrEmpty()) {
+            showDirectoryPicker = false
+            onValueChange(path)
+        }
+    }
 }
+

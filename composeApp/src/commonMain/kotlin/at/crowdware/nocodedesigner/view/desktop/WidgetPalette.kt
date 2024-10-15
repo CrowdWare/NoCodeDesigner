@@ -145,11 +145,11 @@ fun widgetPalette(currentProject: ProjectState?) {
                                 .padding(8.dp)
                                 .pointerMoveFilter(
                                     onEnter = {
-                                        isHovered = true // Trigger hover
+                                        isHovered = true
                                         false
                                     },
                                     onExit = {
-                                        isHovered = false // Remove hover
+                                        isHovered = false
                                         false
                                     }
                                 ),
@@ -174,24 +174,20 @@ fun widgetPalette(currentProject: ProjectState?) {
                                     modifier = Modifier.wrapContentSize(),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    //val buttonPainter = painterResource("drawable/button.xml")
                                     ClickableIcon(
-                                        //imageVector = Icons.Outlined.CheckBox,
                                         painter = painterResource("drawable/text.xml"),
                                         label = "Text",
                                         sml ="Text { text: \"Lorem ipsum dolor\" }\n"
                                     )
                                     ClickableIcon(
-                                        //imageVector = Icons.Outlined.CheckBox,
                                         painter = painterResource("drawable/markdown.xml"),
                                         label = "Markdown",
                                         sml ="Markdown { text: \"# Header\" }\n"
                                     )
                                     ClickableIcon(
-                                        //imageVector = Icons.Outlined.TextFields,
                                         painter = painterResource("drawable/spacer.xml"),
                                         label = "Spacer",
-                                        sml = "Spacer { height: 8 }\n"
+                                        sml = "Spacer { amount: 8 }\n"
                                     )
 
                                 }
@@ -200,22 +196,19 @@ fun widgetPalette(currentProject: ProjectState?) {
                                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
                                         ClickableIcon(
-                                            //imageVector = Icons.Outlined.TextFields,
                                             painter = painterResource("drawable/image.xml"),
                                             label = "Image",
                                             sml ="Image { src: \"sample.png\" }\n"
                                         )
                                         ClickableIcon(
-                                            //imageVector = Icons.Outlined.TextFields,
                                             painter = painterResource("drawable/video.xml"),
                                             label = "Video",
-                                            sml ="Video { src: \"sample.mp4\" height: 120 }\n"
+                                            sml ="Video { src: \"sample.mp4\" }\n"
                                         )
                                         ClickableIcon(
-                                            //imageVector = Icons.Outlined.TextFields,
                                             painter = painterResource("drawable/youtube.xml"),
                                             label = "Youtube",
-                                            sml ="Youtube { id: \"xyz\" height: 120 }\n"
+                                            sml ="Youtube { id: \"xyz\" }\n"
                                         )
                                     }
                                 }
@@ -236,11 +229,11 @@ fun widgetPalette(currentProject: ProjectState?) {
                                 .padding(8.dp)
                                 .pointerMoveFilter(
                                     onEnter = {
-                                        isHovered = true // Trigger hover
+                                        isHovered = true
                                         false
                                     },
                                     onExit = {
-                                        isHovered = false // Remove hover
+                                        isHovered = false
                                         false
                                     }
                                 ),
@@ -265,7 +258,6 @@ fun widgetPalette(currentProject: ProjectState?) {
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     ClickableIcon(
-                                        //imageVector = Icons.Outlined.SmartButton,
                                         painter = painterResource("drawable/button.xml"),
                                         label = "Button",
                                         sml = "Button { label: \"Click me\" link: \"page:home\" }\n"
