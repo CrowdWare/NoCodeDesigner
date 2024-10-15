@@ -30,6 +30,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyShortcut
@@ -132,12 +134,12 @@ fun main() = application {
                     isMaximized = (window.extendedState == Frame.MAXIMIZED_BOTH)
                 }
             }
-
+/*
             fun closeWindow() {
                 onAppClose(window, projectState.folder)
                 exitApplication()
             }
-
+*/
             MenuBar {
                 Menu("File", mnemonic = 'F') {
                     Item("Create Project", onClick = {
@@ -170,12 +172,19 @@ fun main() = application {
                 }
             }
             AppTheme(darkTheme = projectState.darkMode) {
+                var shape = RectangleShape
+                var borderShape = RectangleShape
+
+                if (!isWindows) {
+                    shape = RoundedCornerShape(10.dp)
+                    borderShape = RoundedCornerShape(10.dp)
+                }
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
-                        .border(0.5.dp, Color.Gray, RoundedCornerShape(10.dp)),
+                        .border(0.5.dp, Color.Gray, borderShape),
                     color = Color(55, 55, 55),
-                    shape = RoundedCornerShape(10.dp) //window has round corners now
+                    shape = shape
 
                 ) {
                     // used on Windows only, no close button on MacOS
@@ -225,7 +234,7 @@ fun main() = application {
                         }}
                         desktop()
                         if (projectState.isAboutDialogOpen) {
-                            AboutDialog(
+                            aboutDialog(
                                 appName = appName,
                                 version = version,
                                 onDismissRequest = { projectState.isAboutDialogOpen = false }
