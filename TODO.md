@@ -27,3 +27,7 @@
 - Drag and drop tree node to editor (button) 
 - WebService in KTOR also for Desktop
 - Code Generator
+
+## Known bugs
+Open a file and press undo, text field gets empty.
+https://youtrack.jetbrains.com/issue/CMP-2958/Expose-Undo-Redo-state-in-TextField

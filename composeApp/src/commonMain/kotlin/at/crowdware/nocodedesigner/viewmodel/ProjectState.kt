@@ -1,6 +1,7 @@
 package at.crowdware.nocodedesigner.viewmodel
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
@@ -11,6 +12,7 @@ import at.crowdware.nocodedesigner.utils.App
 import at.crowdware.nocodedesigner.utils.Page
 import at.crowdware.nocodedesigner.utils.UIElement
 import at.crowdware.nocodedesigner.utils.parsePage
+import kotlinx.serialization.json.JsonNull.content
 import kotlin.reflect.KClass
 
 
@@ -103,7 +105,12 @@ abstract class ProjectState {
                 isPageLoaded = true
                 loadElementData()
             }
-            currentFileContent = TextFieldValue(fileText)
+
+            currentFileContent = TextFieldValue(
+                text = fileText,
+                selection = TextRange(fileText.length)
+            )
+
             isEditorVisible = true
         }
     }

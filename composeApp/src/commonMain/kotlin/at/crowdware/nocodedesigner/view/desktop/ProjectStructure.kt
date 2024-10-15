@@ -163,6 +163,7 @@ fun projectStructure(currentProject: ProjectState) {
                                         selection = TextRange(cursorPosition + ins.length)
                                     )
                                     currentProject.saveFileContent()
+                                    currentProject.reloadPage()
                                 }) {
                                     Text(text = "Insert", fontSize = 12.sp)
                                 }

@@ -26,6 +26,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +53,7 @@ fun RowScope.syntaxEditor(
     onTextFieldValueChange: (TextFieldValue) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
+
     if (currentProject != null && currentProject.isEditorVisible) {
         Column(modifier = Modifier.weight(1F).fillMaxHeight()) {
             Column(modifier = Modifier.weight(1F).fillMaxHeight().background(color = MaterialTheme.colors.primary)) {
@@ -63,17 +66,18 @@ fun RowScope.syntaxEditor(
                 )
                 SyntaxTextField(
                     onValueChange = { newValue ->
-                        val oldText = textFieldValue.text
-                        onTextFieldValueChange(newValue)
-                        currentProject.currentFileContent = newValue
-                        // don't save if only the cursor has moved (no text has changed)
-                        if (oldText != newValue.text) {
-                            // Automatically save the content to disk after each change
-                            coroutineScope.launch(ioDispatcher()) {
-                                delay(500)
-                                currentProject.saveFileContent()
-                                currentProject.reloadPage()
-                            }
+                            val oldText = textFieldValue.text
+                            onTextFieldValueChange(newValue)
+                            currentProject.currentFileContent = newValue
+                            // don't save if only the cursor has moved (no text has changed)
+                            if (oldText != newValue.text) {
+                                // Automatically save the content to disk after each change
+                                coroutineScope.launch(ioDispatcher()) {
+                                    delay(500)
+                                    currentProject.saveFileContent()
+                                    currentProject.reloadPage()
+                                }
+
                         }
                     },
                     extension = currentProject.extension ?: "",
