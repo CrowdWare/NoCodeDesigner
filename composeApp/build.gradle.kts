@@ -78,10 +78,10 @@ compose.desktop {
             packageName = "NoCodeDesigner"
             packageVersion = "$version"
             linux {
-                iconFile.set(project.file("desktopAppIcons/LinuxIcon.png"))
+                iconFile.set(project.file("src/desktopMain/resources/icons/LinuxIcon.png"))
             }
             windows {
-                iconFile.set(project.file("desktopAppIcons/WindowsIcon.ico"))
+                iconFile.set(project.file("src/desktopMain/resources/icons/WindowsIcon.ico"))
             }
             macOS {
                 iconFile.set(project.file("src/desktopMain/resources/icons/icon.icns"))
