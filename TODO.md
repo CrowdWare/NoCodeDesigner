@@ -1,6 +1,8 @@
 # TODO
 
 ## Next release
+- Wrong icon under windows
+- Close Window not working on Windows (not coded)
 
 ## Nice to have
 - Syntax-edit Grammar

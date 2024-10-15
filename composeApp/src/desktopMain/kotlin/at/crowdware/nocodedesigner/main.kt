@@ -79,6 +79,7 @@ fun main() = application {
     GlobalProjectState.projectState = projectState
     projectState.darkMode = androidx.compose.foundation.isSystemInDarkTheme()
     val isWindows = System.getProperty("os.name").contains("Windows", ignoreCase = true)
+    var isAskingToClose by remember { mutableStateOf(false) }
 
     // setup logging, all println are stored in a log file
     setupLogging()
@@ -106,7 +107,7 @@ fun main() = application {
     }
 
     Window(
-        onCloseRequest = {},
+        onCloseRequest = { isAskingToClose = true } ,
         title = appName + " [" + loadedState?.lastProject.toString() + "]",
         transparent = !isWindows,
         undecorated = !isWindows,
@@ -127,6 +128,11 @@ fun main() = application {
                 }
             }
 
+            fun closeWindow() {
+                onAppClose(window, projectState.folder)
+                exitApplication()
+            }
+
             MenuBar {
                 Menu("File", mnemonic = 'F') {
                     Item("Create Project", onClick = {
@@ -142,6 +148,20 @@ fun main() = application {
                     Item("Open", onClick = {
                         projectState.isOpenProjectDialogVisible = true
                     })
+                    if (isWindows) {
+                        Separator()
+                        Item("Exit Application", onClick = {
+                            onAppClose(window, projectState.folder)
+                            exitApplication()
+                        })
+                    }
+                }
+                if (isWindows) {
+                    Menu("Help", mnemonic = 'H') {
+                        Item("About NoCodeBuilder", onClick = {
+                            projectState.isAboutDialogOpen = true
+                        })
+                    }
                 }
             }
             AppTheme(darkTheme = projectState.darkMode) {
@@ -153,6 +173,11 @@ fun main() = application {
                     shape = RoundedCornerShape(10.dp) //window has round corners now
 
                 ) {
+                    // used on Windows only, no close button on MacOS
+                    if(isAskingToClose) {
+                        onAppClose(window, projectState.folder)
+                        exitApplication()
+                    }
                     Column {
                         if (!isWindows) {
                         WindowCaptionArea {
