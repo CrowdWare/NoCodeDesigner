@@ -280,6 +280,8 @@ fun main() = application {
                                 onCreateRequest = {
                                     projectState.isNewProjectDialogVisible = false
                                     coroutineScope.launch {
+                                        if (!projectFolder.endsWith("/"))
+                                            projectFolder += "/"
                                         projectState.createProjectFiles(projectFolder, "", "", projectName, appId, theme)
                                     }
                                 })
