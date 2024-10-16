@@ -63,10 +63,12 @@ fun desktop() {
         textFieldValue = currentProject?.currentFileContent ?: ""
     }
 
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .fillMaxHeight()
-        .background(color = MaterialTheme.colors.primary)) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(color = MaterialTheme.colors.primary)
+    ) {
         toolbar(currentProject)
         if (currentProject?.isProjectStructureVisible == true)
             projectStructure(currentProject)

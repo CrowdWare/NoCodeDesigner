@@ -1,8 +1,7 @@
 # TODO
 
 ## Next release
-- Wrong icon under windows
-- Close Window not working on Windows (not coded)
+- When I change a color in app.sml it app should be reloaded
 
 ## Nice to have
 - Syntax-edit Grammar

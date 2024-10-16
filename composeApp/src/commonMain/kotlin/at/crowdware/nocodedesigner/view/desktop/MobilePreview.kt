@@ -157,9 +157,11 @@ fun renderButton(element: ButtonElement) {
     if(element.color.isNotEmpty() && element.backgroundColor.isNotEmpty())
         colors = ButtonDefaults.buttonColors(backgroundColor = hexToColor(element.backgroundColor), contentColor = hexToColor(element.color))
     else if(element.color.isNotEmpty())
-        colors = ButtonDefaults.buttonColors(contentColor = hexToColor(element.color))
+        colors = ButtonDefaults.buttonColors(backgroundColor = hexToColor("primary"), contentColor = hexToColor(element.color))
     else if(element.backgroundColor.isNotEmpty())
-        colors = ButtonDefaults.buttonColors(backgroundColor = hexToColor(element.backgroundColor))
+        colors = ButtonDefaults.buttonColors(backgroundColor = hexToColor(element.backgroundColor), contentColor = hexToColor("onPrimary"))
+    else
+        colors = ButtonDefaults.buttonColors(backgroundColor = hexToColor("primary"), contentColor = hexToColor("onPrimary"))
     Button(
         modifier = Modifier.fillMaxWidth(),
         colors = colors,
@@ -216,13 +218,13 @@ fun RenderUIElement(element: UIElement) {
             renderRow(element)
         }
         is ImageElement -> {
-            dynamicImageFromAssets(filename = element.src, element.scale, element.link)
+            dynamicImageFromAssets(modifier = Modifier, filename = element.src, element.scale, element.link)
         }
         is SoundElement -> {
             dynamicSoundfromAssets(element.src)
         }
         is VideoElement -> {
-            dynamicVideofromAssets(element.src)
+            dynamicVideofromAssets(modifier = Modifier, element.src)
         }
         is YoutubeElement -> {
             dynamicYoutube()
@@ -252,7 +254,7 @@ fun RowScope.RenderUIElement(element: UIElement) {
             renderRow(element)
         }
         is ImageElement -> {
-            dynamicImageFromAssets(filename = element.src, element.scale, element.link)
+            dynamicImageFromAssets(modifier = Modifier.weight(1f), filename = element.src, element.scale, element.link)
         }
         is SoundElement -> {
             dynamicSoundfromAssets(element.src)
@@ -268,10 +270,11 @@ fun RowScope.RenderUIElement(element: UIElement) {
             Spacer(modifier = mod)
         }
         is VideoElement -> {
-            dynamicVideofromAssets(element.src)
+            dynamicVideofromAssets(modifier = Modifier.weight(1f), element.src)
         }
         is YoutubeElement -> {
-            dynamicYoutube()
+            println("youtube mit weight aus row")
+            dynamicYoutube(modifier = Modifier.weight(1f))
         }
         else -> {
             println("Unsupported element: $element")
@@ -298,7 +301,7 @@ fun ColumnScope.RenderUIElement(element: UIElement) {
             renderRow(element)
         }
         is ImageElement -> {
-            dynamicImageFromAssets(filename = element.src, element.scale, element.link)
+            dynamicImageFromAssets(modifier = Modifier.weight(1f), filename = element.src, element.scale, element.link)
         }
         is SoundElement -> {
             dynamicSoundfromAssets(element.src)
@@ -314,10 +317,10 @@ fun ColumnScope.RenderUIElement(element: UIElement) {
             Spacer(modifier = mod)
         }
         is VideoElement -> {
-            dynamicVideofromAssets(element.src)
+            dynamicVideofromAssets(modifier = Modifier.weight(1f), element.src)
         }
         is YoutubeElement -> {
-            dynamicYoutube()
+            dynamicYoutube(modifier = Modifier.weight(1f))
         }
         else -> {
             println("Unsupported element: $element")
@@ -617,13 +620,13 @@ fun parseMarkdown(markdown: String): AnnotatedString {
 }
 
 @Composable
-expect fun dynamicImageFromAssets(filename: String, scale: String, link: String)
+expect fun dynamicImageFromAssets(modifier: Modifier = Modifier, filename: String, scale: String, link: String)
 @Composable
 expect fun dynamicSoundfromAssets(filename: String)
 @Composable
-expect fun dynamicVideofromAssets(filename: String)
+expect fun dynamicVideofromAssets(modifier: Modifier = Modifier, filename: String)
 @Composable
-expect fun dynamicYoutube()
+expect fun dynamicYoutube(modifier: Modifier = Modifier)
 
 fun handleButtonClick(link: String) {
     when {

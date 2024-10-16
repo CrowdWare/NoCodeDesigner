@@ -8,6 +8,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -16,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 import at.crowdware.nocodedesigner.utils.*
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
+import java.io.File
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.findAnnotation
@@ -34,7 +38,7 @@ fun propertyPanel(currentProject: ProjectState?) {
         )
         val scrollState = rememberScrollState()
         val element = currentProject?.actualElement
-
+        
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -152,6 +156,7 @@ fun propertyPanel(currentProject: ProjectState?) {
         }
     }
 }
+
 @Composable
 fun renderAnnotation(name: String, description: String) {
     Text(

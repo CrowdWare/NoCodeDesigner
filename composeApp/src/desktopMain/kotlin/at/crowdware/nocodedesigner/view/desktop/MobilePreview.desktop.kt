@@ -28,7 +28,7 @@ import java.net.URI
 
 
 @Composable
-actual fun dynamicImageFromAssets(filename: String, scale: String, link: String) {
+actual fun dynamicImageFromAssets(modifier: Modifier, filename: String, scale: String, link: String) {
     val ps = GlobalProjectState.projectState
     val path = "${ps?.folder}/assets/$filename"
 
@@ -53,7 +53,7 @@ actual fun dynamicImageFromAssets(filename: String, scale: String, link: String)
                 "none" -> ContentScale.None
                 else -> ContentScale.Fit
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth()
         )
     } else {
         Text(text = "Image not found: $filename", style = TextStyle(color = MaterialTheme.colors.onPrimary))
@@ -66,7 +66,7 @@ actual fun dynamicSoundfromAssets(filename: String) {
 }
 
 @Composable
-actual fun dynamicVideofromAssets(filename: String) {
+actual fun dynamicVideofromAssets(modifier: Modifier, filename: String) {
     val ps = GlobalProjectState.projectState
     val path = "${ps?.folder}/assets/$filename"
     var bitmap: BufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB)
@@ -80,7 +80,7 @@ actual fun dynamicVideofromAssets(filename: String) {
     Image(
         bitmap = bitmap.toComposeImageBitmap(),
         contentDescription = "Video Thumbnail",
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     )
 }
 
@@ -98,10 +98,10 @@ actual fun openWebPage(url: String) {
 }
 
 @Composable
-actual fun dynamicYoutube() {
+actual fun dynamicYoutube(modifier: Modifier) {
     Image(
         painter = painterResource("icons/youtube.png"),
         contentDescription = "Description of the image",
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     )
 }
