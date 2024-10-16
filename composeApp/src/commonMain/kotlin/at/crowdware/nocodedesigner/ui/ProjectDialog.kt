@@ -1,5 +1,6 @@
 package at.crowdware.nocodedesigner.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -7,10 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,9 +23,12 @@ fun projectDialog(
     onFolderChange: (String) -> Unit,
     id: String,
     onIdChange: (String) -> Unit,
+    theme: String,
+    onThemeChanged: (String) -> Unit,
     onDismissRequest: () -> Unit,
     onCreateRequest: () -> Unit
 ) {
+    //var theme by remember { mutableStateOf("Light") }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -54,6 +55,22 @@ fun projectDialog(
                     Spacer(modifier = Modifier.width(16.dp))
                     TextInput(folder, onFolderChange, modifier = Modifier.weight(3F), hasIcon = true)
                 }
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(modifier = Modifier.fillMaxWidth()) {
+
+                    Text(text = "Theme:", modifier = Modifier.align(Alignment.CenterVertically).weight(1f))
+
+                    RadioButtonItem(modifier = Modifier.weight(1f),
+                        label= "Light",
+                        selected = theme == "Light",
+                        onClick = { onThemeChanged("Light") }
+                    )
+                    RadioButtonItem( modifier = Modifier.weight(1f),
+                        label ="Dark",
+                        selected = theme == "Dark",
+                        onClick = { onThemeChanged("Dark") }
+                    )
+                }
             }
         },
         confirmButton = {
@@ -76,4 +93,6 @@ fun projectDialog(
         }
     )
 }
+
+
 

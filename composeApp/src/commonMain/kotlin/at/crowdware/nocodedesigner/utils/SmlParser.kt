@@ -216,17 +216,21 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
                         elements.add(row)
                     }
                     "Markdown" -> {
-                        val md = ((properties["text"] as? PropertyValue.StringValue)?.value ?: "").split("\n").joinToString("\n") { it.trim() }
-                        val ele = UIElement.MarkdownElement(
-                            text = md,
-                            color = (properties["color"] as? PropertyValue.StringValue)?.value ?: "#FFFFFF",
-                            fontSize = ((properties["fontSize"] as? PropertyValue.IntValue)?.value ?: 14).sp,
-                            fontWeight = fontWeightMap[(properties["fontWeight"] as? PropertyValue.StringValue)?.value
-                                ?: ""] ?: FontWeight.Normal,
-                            textAlign = textAlignMap[(properties["textAlign"] as? PropertyValue.StringValue)?.value
-                                ?: ""] ?: TextAlign.Unspecified
-                        )
-                        elements.add(ele)
+                        if (theme != null) {
+                            val md = ((properties["text"] as? PropertyValue.StringValue)?.value ?: "").split("\n")
+                                .joinToString("\n") { it.trim() }
+                            val ele = UIElement.MarkdownElement(
+                                text = md,
+                                color = (properties["color"] as? PropertyValue.StringValue)?.value
+                                    ?: theme.onBackground,
+                                fontSize = ((properties["fontSize"] as? PropertyValue.IntValue)?.value ?: 14).sp,
+                                fontWeight = fontWeightMap[(properties["fontWeight"] as? PropertyValue.StringValue)?.value
+                                    ?: ""] ?: FontWeight.Normal,
+                                textAlign = textAlignMap[(properties["textAlign"] as? PropertyValue.StringValue)?.value
+                                    ?: ""] ?: TextAlign.Unspecified
+                            )
+                            elements.add(ele)
+                        }
                     }
                     "Button" -> {
                         val btn = UIElement.ButtonElement(
@@ -346,8 +350,6 @@ fun parseNestedAppElements(nestedElements: List<Any>, app: App) {
                         parseNestedDeployElements(extractChildElements(element), app.deployment)
                     }
                     "Theme" -> {
-                        app.theme.seed = (properties["seed"] as? PropertyValue.StringValue)?.value ?: ""
-                        app.theme.shadow = (properties["shadow"] as? PropertyValue.StringValue)?.value ?: ""
                         app.theme.error = (properties["error"] as? PropertyValue.StringValue)?.value ?: ""
                         app.theme.scrim = (properties["scrim"] as? PropertyValue.StringValue)?.value ?: ""
                         app.theme.onError = (properties["onError"] as? PropertyValue.StringValue)?.value ?: ""
@@ -369,6 +371,7 @@ fun parseNestedAppElements(nestedElements: List<Any>, app: App) {
                         app.theme.outline = (properties["outline"] as? PropertyValue.StringValue)?.value ?: ""
                         app.theme.outlineVariant = (properties["outlineVariant"] as? PropertyValue.StringValue)?.value ?: ""
                         app.theme.primary = (properties["primary"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.theme.surface = (properties["surface"] as? PropertyValue.StringValue)?.value ?: ""
                         app.theme.onPrimaryContainer = (properties["error"] as? PropertyValue.StringValue)?.value ?: ""
                         app.theme.secondary = (properties["onPrimaryContainer"] as? PropertyValue.StringValue)?.value ?: ""
                         app.theme.onSecondaryContainer = (properties["error"] as? PropertyValue.StringValue)?.value ?: ""
@@ -376,7 +379,6 @@ fun parseNestedAppElements(nestedElements: List<Any>, app: App) {
                         app.theme.surfaceVariant = (properties["surfaceVariant"] as? PropertyValue.StringValue)?.value ?: ""
                         app.theme.tertiary = (properties["tertiary"] as? PropertyValue.StringValue)?.value ?: ""
                         app.theme.tertiaryContainer = (properties["tertiaryContainer"] as? PropertyValue.StringValue)?.value ?: ""
-                        println("theme: ${app.theme.background} ${app.theme.onBackground}")
                     }
                 }
             }

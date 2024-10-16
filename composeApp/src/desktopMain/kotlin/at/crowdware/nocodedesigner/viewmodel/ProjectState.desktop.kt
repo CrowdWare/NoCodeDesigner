@@ -97,25 +97,35 @@ class DesktopProjectState : ProjectState() {
         }
     }
 
-    override suspend fun createProjectFiles(path: String, uuid: String, pid: String, name: String, appId:String) {
-        val dir = File("$path/$name")
+    override suspend fun createProjectFiles(
+        path: String,
+        uuid: String,
+        pid: String,
+        name: String,
+        appId: String,
+        theme: String
+    ) {
+        val dir = File("$path$name")
         dir.mkdirs()
-        val app = File("$path/$name/app.sml")
-        val pages = File("$path/$name/pages")
+        val app = File("$path$name/app.sml")
+        val pages = File("$path$name/pages")
         pages.mkdirs()
-        val assets = File("$path/$name/assets")
+        val assets = File("$path$name/assets")
         assets.mkdirs()
-        val home = File("$path/$name/pages/home.sml")
+        val home = File("$path$name/pages/home.sml")
 
-        home.writeText("Page {\n  backgroundColor: \"#FFFFFF\"\n  padding: \"8\"\n\n  Column {\n    padding: \"8\"\n\n    Text { text: \"Home\" }\n  }\n}\n")
+        home.writeText("Page {\n  padding: \"8\"\n\n  Column {\n    padding: \"8\"\n\n    Text { text: \"Home\" }\n  }\n}\n")
         copyResourceToFile("icons/default.icon.png", "$path/$name/assets/icon.png")
         copyResourceToFile("python/server.py", "$path/$name/server.py")
         copyResourceToFile("python/upd_deploy.py", "$path/$name/upd_deploy.py")
         var appContent = "App {\n  smlVersion: \"1.0\"\n  name: \"$name\"\n  version: \"1.0\"\n  id: \"$appId.$name\"\n  icon: \"icon.png\"\n\n  Navigation {\n    type: \"HorizontalPager\"\n\n    Item { page: \"home\" }  \n  }\n"
-        appContent += writeDarkTheme()
+        if(theme == "Light")
+            appContent += writeLightTheme()
+        else
+            appContent += writeDarkTheme()
         appContent += "// deployment start - don't edit here\n\n// deployment end\n}\n\n"
         app.writeText(appContent)
-        LoadProject("$path/$name", uuid, pid)
+        LoadProject("$path$name", uuid, pid)
     }
 }
 
@@ -148,11 +158,9 @@ fun writeDarkTheme(): String {
     content += "    inverseOnSurface: \"#1F1B16\"\n"
     content += "    inverseSurface: \"#EAE1D9\"\n"
     content += "    inversePrimary: \"#825500\"\n"
-    content += "    shadow: \"#000000\"\n"
     content += "    surfaceTint: \"#FFB951\"\n"
     content += "    outlineVariant: \"#4F4539\"\n"
     content += "    scrim: \"#000000\"\n"
-    content += "    seed: \"#825500\"\n"
     content += "  }\n\n"
     return content
 }
@@ -160,7 +168,6 @@ fun writeDarkTheme(): String {
 fun writeLightTheme(): String {
     var content = "\n"
     content += "  Theme {\n"
-    content += "    primary: \"#FFB951\"\n"
     content += "    primary: \"#825500\"\n"
     content += "    onPrimary: \"#FFFFFF\"\n"
     content += "    primaryContainer: \"#FFDDB3\"\n"
@@ -187,11 +194,9 @@ fun writeLightTheme(): String {
     content += "    inverseOnSurface: \"#F9EFE7\"\n"
     content += "    inverseSurface: \"#34302A\"\n"
     content += "    inversePrimary: \"#FFB951\"\n"
-    content += "    shadow: \"#000000\"\n"
     content += "    surfaceTint: \"#825500\"\n"
     content += "    utlineVariant: \"#D3C4B4\"\n"
     content += "    scrim: \"#000000\"\n"
-    content += "    seed:\"#825500\"\n"
     content += "  }\n\n"
     return content
 }

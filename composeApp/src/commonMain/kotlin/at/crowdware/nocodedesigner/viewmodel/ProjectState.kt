@@ -12,7 +12,6 @@ import at.crowdware.nocodedesigner.utils.App
 import at.crowdware.nocodedesigner.utils.Page
 import at.crowdware.nocodedesigner.utils.UIElement
 import at.crowdware.nocodedesigner.utils.parsePage
-import kotlinx.serialization.json.JsonNull.content
 import kotlin.reflect.KClass
 
 
@@ -60,7 +59,14 @@ abstract class ProjectState {
     var cachedPage: Page? by mutableStateOf(null)
 
     abstract suspend fun loadProjectFiles(path: String, uuid: String, pid: String)
-    abstract suspend fun createProjectFiles(path: String, uuid: String, pid: String, name: String, appId:String)
+    abstract suspend fun createProjectFiles(
+        path: String,
+        uuid: String,
+        pid: String,
+        name: String,
+        appId: String,
+        theme: String
+    )
 
 
     fun LoadProject(path: String = folder, uuid: String, pid: String) {

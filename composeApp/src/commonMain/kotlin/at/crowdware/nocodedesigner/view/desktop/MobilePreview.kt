@@ -105,7 +105,7 @@ fun mobilePreview(currentProject: ProjectState?) {
                             Box(
                                 modifier = Modifier
                                     .size((1.0/scale*360.0).dp, (1.0/scale*640).dp)
-                                    .background(hexToColor(page.backgroundColor))
+                                    .background(hexToColor(page.backgroundColor, colorNameToHex("background")))
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -116,7 +116,7 @@ fun mobilePreview(currentProject: ProjectState?) {
                                             end = page.padding.right.dp
                                         )
                                         .fillMaxSize()
-                                        .background(color = hexToColor(page.backgroundColor))
+                                        .background(color = hexToColor(page.backgroundColor, colorNameToHex("background")) )
                                 ) {
                                     RenderPage(page)
                                 }
@@ -132,7 +132,7 @@ fun mobilePreview(currentProject: ProjectState?) {
 fun renderText(element: TextElement) {
     CustomText(
         text = element.text,
-        color = hexToColor( element.color),
+        color = hexToColor( element.color, colorNameToHex("onBackground")),
         fontSize = element.fontSize,
         fontWeight = element.fontWeight,
         textAlign = element.textAlign
@@ -144,7 +144,7 @@ fun renderMarkdown(element: MarkdownElement) {
     val parsedMarkdown = parseMarkdown(element.text)
     Text(
         text = parsedMarkdown,
-        style = TextStyle(color = hexToColor(element.color)),
+        style = TextStyle(color = hexToColor(element.color, colorNameToHex("onBackground"))),
         fontSize = element.fontSize,
         fontWeight = element.fontWeight,
         textAlign = element.textAlign
@@ -176,7 +176,7 @@ fun renderColumn(element: ColumnElement) {
         bottom = element.padding.bottom.dp,
         start = element.padding.left.dp,
         end = element.padding.right.dp
-    ).fillMaxWidth()) {
+    )/*.fillMaxWidth()*/) {
         for (childElement in element.uiElements) {
             RenderUIElement(childElement)
         }
@@ -325,10 +325,118 @@ fun ColumnScope.RenderUIElement(element: UIElement) {
     }
 }
 
-fun hexToColor(hex: String): Color {
+fun colorNameToHex(colorName: String): String {
+    val currentProject = GlobalProjectState.projectState
+    if (currentProject != null) {
+        return when (colorName) {
+            "primary" -> {
+                currentProject.app?.theme?.primary ?: ""
+            }
+
+            "onPrimary" -> {
+                currentProject.app?.theme?.onPrimary ?: ""
+            }
+
+            "primaryContainer" -> {
+                currentProject.app?.theme?.primaryContainer ?: ""
+            }
+
+            "onPrimaryContainer" -> {
+                currentProject.app?.theme?.onPrimaryContainer ?: ""
+            }
+
+            "surface" -> {
+                currentProject.app?.theme?.surface ?: ""
+            }
+
+            "onSurface" -> {
+                currentProject.app?.theme?.onSurface ?: ""
+            }
+
+            "secondary" -> {
+                currentProject.app?.theme?.secondary ?: ""
+            }
+
+            "onSecondary" -> {
+                currentProject.app?.theme?.onSecondary ?: ""
+            }
+
+            "secondaryContainer" -> {
+                currentProject.app?.theme?.secondaryContainer ?: ""
+            }
+
+            "onSecondaryContainer" -> {
+                currentProject.app?.theme?.onSecondaryContainer ?: ""
+            }
+
+            "tertiary" -> {
+                currentProject.app?.theme?.tertiary ?: ""
+            }
+
+            "onTertiary" -> {
+                currentProject.app?.theme?.onTertiary ?: ""
+            }
+
+            "tertiaryContainer" -> {
+                currentProject.app?.theme?.tertiaryContainer ?: ""
+            }
+
+            "onTertiaryContainer" -> {
+                currentProject.app?.theme?.onTertiaryContainer ?: ""
+            }
+
+            "outline" -> {
+                currentProject.app?.theme?.outline ?: ""
+            }
+
+            "outlineVariant" -> {
+                currentProject.app?.theme?.outlineVariant ?: ""
+            }
+
+            "onErrorContainer" -> {
+                currentProject.app?.theme?.onErrorContainer ?: ""
+            }
+
+            "onError" -> {
+                currentProject.app?.theme?.onError ?: ""
+            }
+
+            "inverseSurface" -> {
+                currentProject.app?.theme?.inverseSurface ?: ""
+            }
+
+            "inversePrimary" -> {
+                currentProject.app?.theme?.inversePrimary ?: ""
+            }
+
+            "inverseOnSurface" -> {
+                currentProject.app?.theme?.inverseOnSurface ?: ""
+            }
+
+            "background" -> {
+                currentProject.app?.theme?.background ?: ""
+            }
+
+            "error" -> {
+                currentProject.app?.theme?.error ?: ""
+            }
+
+            "scrim" -> {
+                currentProject.app?.theme?.scrim ?: ""
+            }
+
+            else -> { "#000000" }
+        }
+    }
+    return "#000000"
+}
+
+fun hexToColor(hex: String, default: String = "#000000"): Color {
     val currentProject = GlobalProjectState.projectState
     var value = hex
-
+    if (hex.isEmpty()) {
+        value = default
+    }
     if(!hex.startsWith("#") && currentProject!= null) {
         when(hex) {
             "primary" -> {value = currentProject.app?.theme?.primary ?: "" }
@@ -353,11 +461,9 @@ fun hexToColor(hex: String): Color {
             "inversePrimary" -> {value = currentProject.app?.theme?.inversePrimary ?: "" }
             "inverseOnSurface" -> {value = currentProject.app?.theme?.inverseOnSurface ?: "" }
             "background" -> {value = currentProject.app?.theme?.background ?: "" }
-            "seed" -> {value = currentProject.app?.theme?.seed ?: "" }
-            "shadow" -> {value = currentProject.app?.theme?.shadow ?: "" }
             "error" -> {value = currentProject.app?.theme?.error ?: "" }
             "scrim" -> {value = currentProject.app?.theme?.scrim ?: "" }
-            else -> {}
+            else -> {value = default}
         }
     }
 
@@ -552,7 +658,7 @@ fun CustomText(
 
     // Use a Box to apply the desired alignment
     Box(
-        modifier = Modifier.fillMaxWidth(),
+        //modifier = Modifier.fillMaxWidth(),
         contentAlignment = alignment as Alignment
     ) {
         Text(

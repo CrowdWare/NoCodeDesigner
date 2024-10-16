@@ -31,11 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyShortcut
-import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.MenuBar
@@ -54,9 +49,6 @@ import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 
 
-import com.sun.jna.Library
-import com.sun.jna.Native
-import com.sun.jna.Pointer
 import java.awt.Desktop
 import java.awt.Dimension
 import java.awt.Frame
@@ -68,7 +60,6 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.launch
-import java.io.FileInputStream
 
 val LocalProjectState = compositionLocalOf<ProjectState> { error("No ProjectState provided") }
 
@@ -275,6 +266,7 @@ fun main() = application {
                             var projectName by remember { mutableStateOf("") }
                             var appId by remember { mutableStateOf("com.sample.app") }
                             var projectFolder by remember { mutableStateOf("") }
+                            var theme by remember { mutableStateOf("Light") }
                             projectDialog(
                                 name = projectName,
                                 folder = projectFolder,
@@ -283,10 +275,12 @@ fun main() = application {
                                 id = appId,
                                 onIdChange = {appId = it},
                                 onDismissRequest = { projectState.isNewProjectDialogVisible = false },
+                                theme = theme,
+                                onThemeChanged = {theme = it},
                                 onCreateRequest = {
                                     projectState.isNewProjectDialogVisible = false
                                     coroutineScope.launch {
-                                        projectState.createProjectFiles(projectFolder, "", "", projectName, appId)
+                                        projectState.createProjectFiles(projectFolder, "", "", projectName, appId, theme)
                                     }
                                 })
                         }

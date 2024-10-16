@@ -54,7 +54,7 @@ Ensure the hex string starts with '#' and contains valid hexadecimal characters 
 Example: For a vibrant orange color, use '#FF5733'.
 
 You can also use one of these predefined colors. 
-**primary, onPrimary, primaryContainer, onPrimaryContainer, surface, onSurface, secondary, onSecondary, secondaryContainer, onSecondaryContainer, tertiary, onTertiary, tertiaryContainer, onTertiaryContainer, outline, outlineVariant, onErrorContainer, onError, inverseSurface, inversePrimary, inverseOnSurface, background, seed, shadow, error, scrim**
+**primary, onPrimary, primaryContainer, onPrimaryContainer, surface, onSurface, secondary, onSecondary, secondaryContainer, onSecondaryContainer, tertiary, onTertiary, tertiaryContainer, onTertiaryContainer, outline, outlineVariant, onErrorContainer, onError, inverseSurface, inversePrimary, inverseOnSurface, background, error, scrim**
 """)
 
 

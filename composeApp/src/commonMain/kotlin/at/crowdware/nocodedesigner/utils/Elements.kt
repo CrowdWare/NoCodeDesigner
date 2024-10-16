@@ -61,11 +61,9 @@ data class ThemeElement(
     var inverseOnSurface: String = "",
     var inverseSurface: String = "",
     var inversePrimary: String = "",
-    var shadow: String = "",
     var surfaceTint: String = "",
     var outlineVariant: String = "",
-    var scrim: String = "",
-    var seed: String = ""
+    var scrim: String = ""
 )
 
 data class NavigationElement(
@@ -132,7 +130,7 @@ sealed class UIElement {
         @StringAnnotation("Enter the name of the image file like **src: \"sample.png\"**.\nThe image file should be imported into assets first.")
         val src: String,
 
-        @StringAnnotation("Enter the value for scale like crop, fit, inside, fillbounds, fillheight, fillwidth, none **scale: \"fit\"**")
+        @StringAnnotation("Enter the value for scale like crop, fit, inside, fillbounds, fillheight, fillwidth, none.\nSample: **scale: \"fit\"**")
         val scale: String,
 
         @LinkAnnotation
