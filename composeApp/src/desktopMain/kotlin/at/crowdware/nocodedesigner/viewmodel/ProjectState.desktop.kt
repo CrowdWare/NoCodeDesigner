@@ -53,11 +53,20 @@ class DesktopProjectState : ProjectState() {
         }
 
         fun mapFileToTreeNode(file: File): TreeNode {
+            val allowedFolderNames = listOf("images", "videos", "sounds", "pages", "parts")
             val nodeType = getNodeType(file)
             val children = if (file.isDirectory) {
                 file.listFiles()
                     ?.filter { it.name != ".DS_Store" }
-                    ?.map { mapFileToTreeNode(it) } ?: emptyList()
+                    ?.flatMap {
+                        if (it.isDirectory && allowedFolderNames.contains(it.name)) {
+                            it.listFiles()?.filter { file -> file.name != ".DS_Store" }?.map { mapFileToTreeNode(it) } ?: emptyList()
+                        } else if (!it.isDirectory) {
+                            listOf(mapFileToTreeNode(it))
+                        } else {
+                            emptyList()
+                        }
+                    } ?: emptyList()
             } else {
                 emptyList()
             }
@@ -72,8 +81,14 @@ class DesktopProjectState : ProjectState() {
             )
             if (node.title.value == "pages") {
                 pageNode = node
-            } else if (node.title.value == "assets") {
-                assetsNode = node
+            } else if (node.title.value == "images") {
+                imagesNode = node
+            } else if (node.title.value == "videos") {
+                videosNode = node
+            } else if (node.title.value == "sounds") {
+                soundsNode = node
+            } else if (node.title.value == "parts") {
+                partsNode = node
             }
             return node
         }
@@ -110,12 +125,20 @@ class DesktopProjectState : ProjectState() {
         val app = File("$path$name/app.sml")
         val pages = File("$path$name/pages")
         pages.mkdirs()
-        val assets = File("$path$name/assets")
-        assets.mkdirs()
+        val images = File("$path$name/images")
+        images.mkdirs()
+        val videos = File("$path$name/videos")
+        videos.mkdirs()
+        val sounds = File("$path$name/sounds")
+        sounds.mkdirs()
+        val parts = File("$path$name/parts")
+        parts.mkdirs()
         val home = File("$path$name/pages/home.sml")
+        val homemd = File("$path$name/parts/home.md")
 
         home.writeText("Page {\n  padding: \"8\"\n\n  Column {\n    padding: \"8\"\n\n    Text { text: \"Home\" }\n  }\n}\n")
-        copyResourceToFile("icons/default.icon.png", "$path/$name/assets/icon.png")
+        homemd.writeText("# BookTitle\nLorem ipsum dolor\n")
+        copyResourceToFile("icons/default.icon.png", "$path/$name/images/icon.png")
         copyResourceToFile("python/server.py", "$path/$name/server.py")
         copyResourceToFile("python/upd_deploy.py", "$path/$name/upd_deploy.py")
         var appContent = "App {\n  smlVersion: \"1.0\"\n  name: \"$name\"\n  version: \"1.0\"\n  id: \"$appId.$name\"\n  icon: \"icon.png\"\n\n  Navigation {\n    type: \"HorizontalPager\"\n\n    Item { page: \"home\" }  \n  }\n"
@@ -232,6 +255,12 @@ actual fun createPage(path: String) {
     val file = File(path)
     file.createNewFile()
     file.writeText("Page {\n\n}")
+}
+
+actual fun createPart(path: String) {
+    val file = File(path)
+    file.createNewFile()
+    file.writeText("# Header\nLorem ipsum dolor\n")
 }
 
 actual fun renameFile(pathBefore: String, pathAfter: String) {

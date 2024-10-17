@@ -125,7 +125,7 @@ fun extractChildElements(element: Any): List<Any> {
 }
 
 fun deserializePage(parsedResult: List<Any>): Page {
-    val page = Page(color = "", backgroundColor = "", padding = Padding(0, 0, 0, 0), elements = mutableListOf())
+    val page = Page(color = "", backgroundColor = "", padding = Padding(0, 0, 0, 0), "false", elements = mutableListOf())
     val currentProject = GlobalProjectState.projectState
     val theme = currentProject?.app?.theme
 
@@ -141,8 +141,8 @@ fun deserializePage(parsedResult: List<Any>): Page {
                         page.color = (properties["color"] as? PropertyValue.StringValue)?.value ?: (theme?.onBackground ?: "no")
                         page.backgroundColor = (properties["backgroundColor"] as? PropertyValue.StringValue)?.value ?: (theme?.background ?: "n0")
                         page.padding = parsePadding((properties["padding"] as? PropertyValue.StringValue)?.value ?: "0")
+                        page.scrollable = (properties["scrollable"] as? PropertyValue.StringValue)?.value ?: "false"
                         parseNestedElements(extractChildElements(tuple), page.elements as MutableList<UIElement>)
-                        println("Page: ${(properties["color"] as? PropertyValue.StringValue)?.value}, ${theme?.onBackground}")
                     }
                 }
             }
@@ -311,28 +311,6 @@ fun parsePadding(padding: String): Padding {
     }
 }
 
-fun hexToColor(hex: String): Color {
-    val color = hex.trimStart('#')
-    return when (color.length) {
-        6 -> {
-            // Hex without alpha (e.g., "RRGGBB")
-            val r = color.substring(0, 2).toIntOrNull(16) ?: return Color.Black
-            val g = color.substring(2, 4).toIntOrNull(16) ?: return Color.Black
-            val b = color.substring(4, 6).toIntOrNull(16) ?: return Color.Black
-            Color(r, g, b)
-        }
-        8 -> {
-            // Hex with alpha (e.g., "AARRGGBB")
-            val a = color.substring(0, 2).toIntOrNull(16) ?: return Color.Black
-            val r = color.substring(2, 4).toIntOrNull(16) ?: return Color.Black
-            val g = color.substring(4, 6).toIntOrNull(16) ?: return Color.Black
-            val b = color.substring(6, 8).toIntOrNull(16) ?: return Color.Black
-            Color(r, g, b, a)
-        }
-        else -> Color.Black
-    }
-}
-
 fun parseNestedAppElements(nestedElements: List<Any>, app: App) {
     nestedElements.forEach { element ->
         when (element) {
@@ -340,7 +318,6 @@ fun parseNestedAppElements(nestedElements: List<Any>, app: App) {
                 val elementName = (element.t2 as? TokenMatch)?.text
                 val properties = extractProperties(element)
 
-                println("app ele: $elementName")
                 when (elementName) {
                     "Navigation" -> {
                         val type = (properties["type"] as? PropertyValue.StringValue)?.value ?: ""

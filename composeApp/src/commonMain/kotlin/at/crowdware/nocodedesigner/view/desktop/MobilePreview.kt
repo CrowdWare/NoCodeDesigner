@@ -21,10 +21,14 @@ package at.crowdware.nocodedesigner.view.desktop
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -54,8 +58,9 @@ import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
 @Composable
 fun mobilePreview(currentProject: ProjectState?) {
     var page: Page? = if (currentProject?.isPageLoaded == true) currentProject.page else null
+    val scrollState = rememberScrollState()
 
-    if(page == null && currentProject != null) {
+    if (page == null && currentProject != null) {
         page = currentProject.cachedPage
     }
 
@@ -101,14 +106,19 @@ fun mobilePreview(currentProject: ProjectState?) {
                             fontScale = fontScale
                         ),
                     ) {
-                        if (page != null) {
+                        if (page != null && page.elements.isNotEmpty()) {
                             Box(
                                 modifier = Modifier
-                                    .size((1.0/scale*360.0).dp, (1.0/scale*640).dp)
+                                    .size((1.0 / scale * 360.0).dp, (1.0 / scale * 640).dp)
                                     .background(hexToColor(page.backgroundColor, colorNameToHex("background")))
+
                             ) {
-                                Row(
-                                    modifier = Modifier
+                                var modifier = Modifier as Modifier
+                                if (page.scrollable == "true") {
+                                    modifier = modifier.verticalScroll(scrollState)
+                                }
+                                Column(
+                                    modifier = modifier
                                         .padding(
                                             start = page.padding.left.dp,
                                             top = page.padding.top.dp,
@@ -116,9 +126,39 @@ fun mobilePreview(currentProject: ProjectState?) {
                                             end = page.padding.right.dp
                                         )
                                         .fillMaxSize()
-                                        .background(color = hexToColor(page.backgroundColor, colorNameToHex("background")) )
+                                        .background(
+                                            color = hexToColor(
+                                                page.backgroundColor,
+                                                colorNameToHex("background")
+                                            )
+                                        )
                                 ) {
                                     RenderPage(page)
+                                }
+                            }
+                        } else if (currentProject != null && currentProject.extension == "md") {
+                            // markdown here
+                            val md = MarkdownElement(
+                                text = currentProject.currentFileContent.text,
+                                "onSurface",
+                                14.sp,
+                                FontWeight.Normal,
+                                TextAlign.Left
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .size((1.0 / scale * 360.0).dp, (1.0 / scale * 640).dp)
+                                    .background(hexToColor("surface"))
+
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .fillMaxSize()
+                                        .verticalScroll(scrollState)
+                                        .background(color = hexToColor("surface"))
+                                ) {
+                                    renderMarkdown(md)
                                 }
                             }
                         }
@@ -128,6 +168,8 @@ fun mobilePreview(currentProject: ProjectState?) {
         }
     }
 }
+
+
 @Composable
 fun renderText(element: TextElement) {
     CustomText(
@@ -526,7 +568,7 @@ fun hexToColor(hex: String, default: String = "#000000"): Color {
 }
 
 @Composable
-fun RenderPage(page: Page) {
+fun ColumnScope.RenderPage(page: Page) {
     for (element in page.elements) {
         RenderUIElement(element)
     }

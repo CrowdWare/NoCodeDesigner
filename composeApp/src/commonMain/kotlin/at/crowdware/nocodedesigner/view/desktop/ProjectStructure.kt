@@ -98,7 +98,7 @@ fun projectStructure(currentProject: ProjectState) {
                 onNodeDoubleClick = { node ->
                     val pNode = node as? TreeNode
                     if (pNode != null) {
-                        if (pNode.type == NodeType.SML)
+                        if (pNode.type == NodeType.SML || pNode.type == NodeType.MD)
                             currentProject.LoadFile(pNode.path)
                     }
                 },
@@ -130,9 +130,18 @@ fun projectStructure(currentProject: ProjectState) {
                     offset = dpOffset,
                     properties = PopupProperties(focusable = true)
                 ) {
-                    if (treeNode.children.isEmpty()) {
-                        if (treeNode.title.value != "home.sml" && treeNode.title.value != "app.sml") {
+                    if (treeNode.type != NodeType.DIRECTORY) {
+                        if (treeNode.title.value != "home.sml" && treeNode.title.value != "app.sml" && treeNode.title.value != "home.md") {
                             if (treeNode.type == NodeType.SML) {
+                                DropdownMenuItem(onClick = {
+                                    expanded = false
+                                    currentProject.currentTreeNode = treeNode
+                                    currentProject.isRenamePageDialogVisible = true
+                                }) {
+                                    Text(text = "Rename", fontSize = 12.sp)
+                                }
+                            }
+                            else if (treeNode.type == NodeType.MD) {
                                 DropdownMenuItem(onClick = {
                                     expanded = false
                                     currentProject.currentTreeNode = treeNode
@@ -186,10 +195,31 @@ fun projectStructure(currentProject: ProjectState) {
                         }) {
                             Text(text = "New", fontSize = 12.sp)
                         }
-                    } else if (treeNode.title.value == "assets") {
+                    } else if (treeNode.title.value == "parts") {
                         DropdownMenuItem(onClick = {
                             expanded = false
-                            currentProject.isImportAssetDialogVisible = true
+                            currentProject.isPartDialogVisible = true
+                        }) {
+                            Text(text = "New", fontSize = 12.sp)
+                        }
+                    } else if (treeNode.title.value == "images") {
+                        DropdownMenuItem(onClick = {
+                            expanded = false
+                            currentProject.isImportImageDialogVisible = true
+                        }) {
+                            Text(text = "Import", fontSize = 12.sp)
+                        }
+                    } else if (treeNode.title.value == "videos") {
+                        DropdownMenuItem(onClick = {
+                            expanded = false
+                            currentProject.isImportVideoDialogVisible = true
+                        }) {
+                            Text(text = "Import", fontSize = 12.sp)
+                        }
+                    } else if (treeNode.title.value == "sounds") {
+                        DropdownMenuItem(onClick = {
+                            expanded = false
+                            currentProject.isImportSoundDialogVisible = true
                         }) {
                             Text(text = "Import", fontSize = 12.sp)
                         }

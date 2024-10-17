@@ -79,7 +79,7 @@ fun main() = application {
     var isAskingToClose by remember { mutableStateOf(false) }
 
     // setup logging, all println are stored in a log file
-    setupLogging()
+    //setupLogging()
 
     System.setProperty("apple.awt.application.name", appName)
     // Check if the desktop supports macOS actions (About, Quit, etc.)
@@ -139,8 +139,14 @@ fun main() = application {
                     Item("Create Page", onClick = {
                         projectState.isPageDialogVisible = true
                     })
-                    Item("Import Asset", onClick = {
-                        projectState.isImportAssetDialogVisible = true
+                    Item("Import Image", onClick = {
+                        projectState.isImportImageDialogVisible = true
+                    })
+                    Item("Import Video", onClick = {
+                        projectState.isImportVideoDialogVisible = true
+                    })
+                    Item("Import Sound", onClick = {
+                        projectState.isImportSoundDialogVisible = true
                     })
                     Separator()
                     Item("Open", onClick = {
@@ -245,6 +251,20 @@ fun main() = application {
                                     }
                                 })
                         }
+                        if(projectState.isPartDialogVisible) {
+                            val coroutineScope = rememberCoroutineScope()
+                            var partName by remember { mutableStateOf("") }
+                            partDialog(
+                                name = partName,
+                                onNameChange = { partName = it},
+                                onDismissRequest = { projectState.isPartDialogVisible = false },
+                                onCreateRequest = {
+                                    projectState.isPartDialogVisible = false
+                                    coroutineScope.launch {
+                                        projectState.addPart(partName)
+                                    }
+                                })
+                        }
                         if (projectState.isRenamePageDialogVisible) {
                             val coroutineScope = rememberCoroutineScope()
                             val title = projectState.currentTreeNode?.title?.value?.substringBefore(".")
@@ -287,6 +307,26 @@ fun main() = application {
                                 })
                         }
 
+                        if (projectState.isCreateEbookVisible) {
+                            val coroutineScope = rememberCoroutineScope()
+                            var title by remember { mutableStateOf("") }
+                            var folder by remember { mutableStateOf(System.getProperty("user.home") + "/NoCodeDesigner") }
+                            createEbookDialog(
+                                name = title,
+                                folder = folder,
+                                onFolderChange = {folder = it},
+                                onNameChange = {title = it},
+                                onDismissRequest = { projectState.isCreateEbookVisible = false },
+                                onCreateRequest = {
+                                    projectState.isCreateEbookVisible = false
+                                    coroutineScope.launch {
+                                        if (!folder.endsWith("/"))
+                                            folder += "/"
+                                        projectState.createEbook(title, folder)
+                                    }
+                                })
+                        }
+
                         DirectoryPicker(projectState.isOpenProjectDialogVisible, title = "Pick a folder") { path ->
                             projectState.isOpenProjectDialogVisible = false
                             if (path != null) {
@@ -294,10 +334,29 @@ fun main() = application {
                             }
                         }
 
-                        FilePicker(show = projectState.isImportAssetDialogVisible, title = "Pick a file to import") { platformFile ->
-                            projectState.isImportAssetDialogVisible = false
+                        FilePicker(
+                            show = projectState.isImportImageDialogVisible,
+                            title = "Pick an image file to import",
+                            fileExtensions = listOf("png", "jpg", "jpeg", "webp", "gif", "bmp")) { platformFile ->
+                            projectState.isImportImageDialogVisible = false
                             if(platformFile != null)
-                                projectState.ImportFile(platformFile.path)
+                                projectState.ImportImageFile(platformFile.path)
+                        }
+                        FilePicker(
+                            show = projectState.isImportVideoDialogVisible,
+                            title = "Pick a video file to import",
+                            fileExtensions = listOf("mp4", "mkv", "webm", "avi", "mov", "flv", "ts", "3gp", "m4v")) { platformFile ->
+                            projectState.isImportVideoDialogVisible = false
+                            if(platformFile != null)
+                                projectState.ImportVideoFile(platformFile.path)
+                        }
+                        FilePicker(
+                            show = projectState.isImportSoundDialogVisible,
+                            title = "Pick a sound file to import",
+                            fileExtensions = listOf("wav", "mp3", "ogg", "flac", "aac", "amr", "opus", "midi")) { platformFile ->
+                            projectState.isImportSoundDialogVisible = false
+                            if(platformFile != null)
+                                projectState.ImportSoundFile(platformFile.path)
                         }
                     }
                 }

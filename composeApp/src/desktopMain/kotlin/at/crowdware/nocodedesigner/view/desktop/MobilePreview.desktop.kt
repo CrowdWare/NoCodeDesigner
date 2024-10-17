@@ -30,7 +30,7 @@ import java.net.URI
 @Composable
 actual fun dynamicImageFromAssets(modifier: Modifier, filename: String, scale: String, link: String) {
     val ps = GlobalProjectState.projectState
-    val path = "${ps?.folder}/assets/$filename"
+    val path = "${ps?.folder}/images/$filename"
 
     val imageFile = File(path)
     var bitmap: ImageBitmap = ImageBitmap(1, 1)
@@ -68,7 +68,7 @@ actual fun dynamicSoundfromAssets(filename: String) {
 @Composable
 actual fun dynamicVideofromAssets(modifier: Modifier, filename: String) {
     val ps = GlobalProjectState.projectState
-    val path = "${ps?.folder}/assets/$filename"
+    val path = "${ps?.folder}/videos/$filename"
     var bitmap: BufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB)
     try {
         val picture: Picture = FrameGrab.getFrameFromFile(File(path), 0)

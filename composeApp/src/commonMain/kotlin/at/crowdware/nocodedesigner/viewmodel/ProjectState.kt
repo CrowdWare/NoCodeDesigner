@@ -5,13 +5,10 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
+import at.crowdware.nocodedesigner.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import at.crowdware.nocodedesigner.utils.App
-import at.crowdware.nocodedesigner.utils.Page
-import at.crowdware.nocodedesigner.utils.UIElement
-import at.crowdware.nocodedesigner.utils.parsePage
 import kotlin.reflect.KClass
 
 
@@ -22,6 +19,7 @@ expect fun createProjectState(): ProjectState
 expect fun fileExists(path: String): Boolean
 expect fun deleteFile(path: String)
 expect fun createPage(path: String)
+expect fun createPart(path: String)
 expect fun renameFile(pathBefore: String, pathAfter: String)
 expect fun copyAssetFile(path: String, target: String)
 
@@ -39,11 +37,15 @@ abstract class ProjectState {
     var extension by mutableStateOf("")
         private set
     var isPageDialogVisible by mutableStateOf(false)
+    var isPartDialogVisible by mutableStateOf(false)
     var isRenamePageDialogVisible by mutableStateOf(false)
     var isProjectStructureVisible by mutableStateOf(true)
     var isNewProjectDialogVisible by mutableStateOf(false)
     var isOpenProjectDialogVisible by mutableStateOf(false)
-    var isImportAssetDialogVisible by mutableStateOf(false)
+    var isImportImageDialogVisible by mutableStateOf(false)
+    var isImportVideoDialogVisible by mutableStateOf(false)
+    var isImportSoundDialogVisible by mutableStateOf(false)
+    var isCreateEbookVisible by mutableStateOf(false)
     var isAboutDialogOpen by  mutableStateOf(false)
     var isEditorVisible by mutableStateOf(false)
     var darkMode by mutableStateOf(false)
@@ -53,7 +55,10 @@ abstract class ProjectState {
     var parseError: String? by mutableStateOf(null)
 
     lateinit var pageNode: TreeNode
-    lateinit var assetsNode: TreeNode
+    lateinit var imagesNode: TreeNode
+    lateinit var videosNode: TreeNode
+    lateinit var soundsNode: TreeNode
+    lateinit var partsNode: TreeNode
     var app: App? by mutableStateOf(null)
     var page: Page? by mutableStateOf(null)
     var cachedPage: Page? by mutableStateOf(null)
@@ -68,6 +73,9 @@ abstract class ProjectState {
         theme: String
     )
 
+    fun createEbook(title: String, folder: String) {
+        CreateEbook.start(title, folder, this.folder)
+    }
 
     fun LoadProject(path: String = folder, uuid: String, pid: String) {
         folder = path
@@ -78,12 +86,28 @@ abstract class ProjectState {
         }
     }
 
-    fun ImportFile(path: String) {
+    fun ImportImageFile(path: String) {
         val filename = path.substringAfterLast("/")
-        val target  = "$folder/assets/$filename"
+        val target  = "$folder/images/$filename"
         copyAssetFile(path, target)
         val node = TreeNode(title = mutableStateOf(filename), path = path, type = getNodeType(path))
-        assetsNode.children.add(node)
+        imagesNode.children.add(node)
+    }
+
+    fun ImportVideoFile(path: String) {
+        val filename = path.substringAfterLast("/")
+        val target  = "$folder/videos/$filename"
+        copyAssetFile(path, target)
+        val node = TreeNode(title = mutableStateOf(filename), path = path, type = getNodeType(path))
+        videosNode.children.add(node)
+    }
+
+    fun ImportSoundFile(path: String) {
+        val filename = path.substringAfterLast("/")
+        val target  = "$folder/sounds/$filename"
+        copyAssetFile(path, target)
+        val node = TreeNode(title = mutableStateOf(filename), path = path, type = getNodeType(path))
+        soundsNode.children.add(node)
     }
 
     fun LoadFile(filePath: String) {
@@ -103,15 +127,22 @@ abstract class ProjectState {
                 path = "$filePath.$extension"
             }
             val fileText = loadFileContent(path, "", "")
-            val result = parsePage(fileText)
-            page = result.first
-            parseError = result.second
-            if (page != null) {
-                cachedPage = page
-                isPageLoaded = true
-                loadElementData()
+            if (extension == "sml") {
+                val result = parsePage(fileText)
+                page = result.first
+                parseError = result.second
+                if (page != null) {
+                    cachedPage = page
+                    isPageLoaded = true
+                    loadElementData ()
+                }
+            } else {
+                page = Page(color = "", backgroundColor = "", padding = Padding(0, 0, 0, 0), "false", elements = mutableListOf())
+                elementData = emptyList()
+                val clsName = "at.crowdware.nocodedesigner.utils.Markdown"
+                val clazz = Class.forName(clsName).kotlin
+                actualElement = clazz
             }
-
             currentFileContent = TextFieldValue(
                 text = fileText,
                 selection = TextRange(fileText.length)
@@ -122,13 +153,15 @@ abstract class ProjectState {
     }
 
     fun reloadPage() {
-        val result = parsePage(currentFileContent.text)
-        page = result.first
-        parseError = result.second
-        if(page != null) {
-            cachedPage = page
-            isPageLoaded = true
-            loadElementData()
+        if(extension == "sml") {
+            val result = parsePage(currentFileContent.text)
+            page = result.first
+            parseError = result.second
+            if (page != null) {
+                cachedPage = page
+                isPageLoaded = true
+                loadElementData()
+            }
         }
     }
 
@@ -259,6 +292,17 @@ abstract class ProjectState {
         LoadFile(path)
     }
 
+    fun addPart(name: String) {
+        val path = "$folder/parts/$name.md"
+        createPart(path)
+
+        val newNode = TreeNode(title = mutableStateOf( "${name}.md"), path = path, type= NodeType.MD)
+        val updatedChildren = partsNode.children + newNode
+        partsNode.children.clear()
+        partsNode.children.addAll(updatedChildren)
+        LoadFile(path)
+    }
+
     fun deleteItem(treeNode: TreeNode) {
         deleteFile(treeNode.path)
 
@@ -267,7 +311,7 @@ abstract class ProjectState {
 
             pageNode.children.remove(currentTreeNode as TreeNode)
 
-            if ( title == fileName) {
+            if (title == fileName) {
                 // we have to remove the editor, because file cannot be edited anymore
                 currentFileContent = TextFieldValue("")
                 path = ""
@@ -275,9 +319,21 @@ abstract class ProjectState {
                 extension = ""
                 isEditorVisible = false
             }
+        } else if (currentTreeNode?.type == NodeType.MD) {
+            val title = currentTreeNode?.title?.value
 
+            partsNode.children.remove(currentTreeNode as TreeNode)
+
+            if (title == fileName) {
+                // we have to remove the editor, because file cannot be edited anymore
+                currentFileContent = TextFieldValue("")
+                path = ""
+                fileName = ""
+                extension = ""
+                isEditorVisible = false
+            }
         } else {
-            assetsNode.children.remove(currentTreeNode as TreeNode)
+            imagesNode.children.remove(currentTreeNode as TreeNode)
         }
     }
 

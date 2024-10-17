@@ -22,7 +22,16 @@ val extensionToNodeType = mapOf(
     "mp3" to NodeType.SOUND,
     "wav" to NodeType.SOUND,
     "flac" to NodeType.SOUND,
-    "sml" to NodeType.SML
+    "sml" to NodeType.SML,
+    "md" to NodeType.MD,
+    "webp" to NodeType.IMAGE,
+    "bmp" to NodeType.IMAGE,
+    "webm" to NodeType.VIDEO,
+    "avi" to NodeType.VIDEO,
+    "flv" to NodeType.VIDEO,
+    "ts" to NodeType.VIDEO,
+    "3gp" to NodeType.VIDEO,
+    "m4v" to NodeType.VIDEO
 )
 
 open class TreeNode(

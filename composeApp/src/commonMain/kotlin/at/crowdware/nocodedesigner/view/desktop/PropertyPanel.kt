@@ -51,6 +51,7 @@ fun propertyPanel(currentProject: ProjectState?) {
                     .verticalScroll(scrollState)
                     .padding(end = 10.dp)
             ) {
+                // TODO: render annotation for Markdown
                 Row(modifier = Modifier.background(MaterialTheme.colors.primary).fillMaxWidth().padding(8.dp)) {
                     Column() {
                         if (element != null) {

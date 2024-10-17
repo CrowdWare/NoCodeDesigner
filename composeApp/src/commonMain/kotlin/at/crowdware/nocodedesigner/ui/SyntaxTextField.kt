@@ -125,6 +125,7 @@ fun SyntaxTextField(
                     cursorBrush = SolidColor(cursorColor),
                     visualTransformation = when(extension) {
                         "sml" -> SmlSyntaxHighlighter(extendedColors)
+                        "md" -> MarkdownSyntaxHighlighter(extendedColors)
                         else -> VisualTransformation.None
                     },
                     maxLines = Int.MAX_VALUE

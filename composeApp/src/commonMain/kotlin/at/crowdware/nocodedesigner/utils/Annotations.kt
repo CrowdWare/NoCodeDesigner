@@ -21,11 +21,24 @@ package at.crowdware.nocodedesigner.utils
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class ElementAnnotation(val description: String )
+annotation class ElementAnnotation(val description: String = """Enter text using Markdown syntax to format the content.
+Supported elements include:
+
+- **Headings**: Use `#` for headings `##` for sub headings up to `######`.
+- **Bold Text**: Wrap text in double asterisks (e.g., `**bold text**`).
+- **Italic Text**: Wrap text in single asterisks (e.g., `*italic text*`).
+- **Bold Italic Text**: Wrap text in triple asterisks (e.g., `***bold italic text***`).
+- **Strikethrough**: Wrap text in double tildes (e.g., `~~strikethrough~~`).
+- Also you can simulate special characters like **(c)** for `(c)` and **(tm)** for `(tm)` and **(r)** for `(r)`.
+""")
 
 @Target(AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class IgnoreForDocumentation
+
+@Target(AnnotationTarget.PROPERTY)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class BoolAnnotation(val description: String = "You can enter boolean value like **true** and **false**. Sample **scrollable: true**")
 
 @Target(AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.RUNTIME)

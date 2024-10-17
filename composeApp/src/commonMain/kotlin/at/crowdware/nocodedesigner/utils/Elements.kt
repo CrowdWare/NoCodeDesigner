@@ -79,6 +79,9 @@ data class FileElement(val path: String, val time: LocalDateTime)
 
 data class ItemElement (val page: String)
 
+@ElementAnnotation()
+data class Markdown (var dummy: String)
+
 @ElementAnnotation("A **Page** is the base element of the NoCodeApp. You can put all other Elements inside a Page.")
 data class Page(
     @HexColorAnnotation
@@ -89,6 +92,9 @@ data class Page(
 
     @PaddingAnnotation
     var padding: Padding,
+
+    @StringAnnotation("You can enter boolean values like **\"true\"** and **\"false\"**. Sample **scrollable: \"true\"**")
+    var scrollable: String,
 
     @IgnoreForDocumentation
     val elements: MutableList<UIElement>)

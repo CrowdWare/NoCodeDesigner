@@ -85,5 +85,12 @@ fun toolbar(currentProject: ProjectState?) {
                 isSelected = !it
             )
         }
+        Spacer(modifier = Modifier.height(8.dp))
+        HoverableIcon(
+            onClick = { currentProject?.isCreateEbookVisible = true },
+            painter = painterResource("drawable/book.xml"),
+            tooltipText = "Create Ebook",
+            isSelected = currentProject?.isCreateEbookVisible == true
+        )
     }
 }

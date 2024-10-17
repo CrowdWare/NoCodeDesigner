@@ -1,7 +1,19 @@
 # TODO
 
 ## Next release
-- When I change a color in app.sml it app should be reloaded
+- When I change a color in app.sml app should be reloaded for preview
+- Theme, FontSize, FontFamily
+- FontSize changeable from end user in book app
+- TopAppBar in app.sml
+- Page: barTitle
+- Hyperlinks like buttons
+- Annotation for markdown has to be completed
+
+## Ebook Release
+- Syntax Edit for Markdown
+- Markdown to HTML (Lib oder Grammar)
+- Epub creation
+- MarkdownElement becomes src: "home.md" to use MD in apps
 
 ## Nice to have
 - Syntax-edit Grammar
@@ -32,3 +44,30 @@
 ## Known bugs
 Open a file and press undo, text field gets empty.
 https://youtrack.jetbrains.com/issue/CMP-2958/Expose-Undo-Redo-state-in-TextField
+
+
+## Pricing
+FREE     0,- edit and preview
+STARTER 10,- month ebooks (epub2) only
+PRO     30,- month source code and .APK
+
+## CrowdFunding
+ 20,- one month Pro
+ 50,- three months pro
+ 50,- six months Starter
+ 90,- one year Starter
+300,- one year Pro
+
+
+
+
+## Concurrency
+### Flutterflow
+30,- month SourceCode, APK
+70,- month one click playstore 
+
+### Thunkable
+0,-  month  2 APK downloads
+15,- month 25 APK downloads
+45,- month playstore, unlimited APK
+
