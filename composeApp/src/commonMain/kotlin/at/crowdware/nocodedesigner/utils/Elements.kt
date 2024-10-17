@@ -133,6 +133,9 @@ sealed class UIElement {
         @StringAnnotation("Enter the value for scale like crop, fit, inside, fillbounds, fillheight, fillwidth, none.\nSample: **scale: \"fit\"**")
         val scale: String,
 
+        @WeightAnnotation
+        val weight: Int,
+
         @LinkAnnotation
         val link: String) : UIElement()
     @ElementAnnotation("With a **Spacer** element you can create a visual distance between other elements on the page.")
@@ -144,12 +147,16 @@ sealed class UIElement {
         val weight: Int) : UIElement()
     @ElementAnnotation("With a **Video** element you can show and play videos on the page.")
     data class VideoElement(
-        @StringAnnotation("Enter the name of the video file like **src: \"sample.mp4\"**.\nThe video file should be imported into assets first.")
-        val src: String) : UIElement()
+        @StringAnnotation("Enter the name of the video file like **src: \"sample.mp4\"**.\nThe video file should be imported into assets first.\nYou can also specify a URL to stream a video from an online source, like **src: \"http://example.com/sample.mp4\"**")
+        val src: String,
+        @WeightAnnotation
+        val weight: Int) : UIElement()
     @ElementAnnotation("With a **Youtube** element you can show and play YouTube videos on the page.")
     data class YoutubeElement(
         @StringAnnotation("Enter the YouTube video id in quotes like **id:\"FCyiuG\"**")
-        val id: String) : UIElement()
+        val id: String,
+        @WeightAnnotation
+        val weight: Int) : UIElement()
     @ElementAnnotation("With a **Sound** element you can play sounds when the page is loaded.")
     data class SoundElement(
         @StringAnnotation("Enter the name of the sound file like **src: \"sample.mp3\"**.\nThe sound file should be imported into assets first.")

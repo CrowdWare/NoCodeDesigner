@@ -224,7 +224,11 @@ fun RenderUIElement(element: UIElement) {
             dynamicSoundfromAssets(element.src)
         }
         is VideoElement -> {
-            dynamicVideofromAssets(modifier = Modifier, element.src)
+            if (element.src.startsWith("http")) {
+                dynamicVideofromUrl(modifier = Modifier)
+            } else {
+                dynamicVideofromAssets(modifier = Modifier, element.src)
+            }
         }
         is YoutubeElement -> {
             dynamicYoutube()
@@ -254,7 +258,7 @@ fun RowScope.RenderUIElement(element: UIElement) {
             renderRow(element)
         }
         is ImageElement -> {
-            dynamicImageFromAssets(modifier = Modifier.weight(1f), filename = element.src, element.scale, element.link)
+            dynamicImageFromAssets(modifier = if(element.weight > 0){Modifier.weight(element.weight.toFloat())}else{Modifier}, filename = element.src, element.scale, element.link)
         }
         is SoundElement -> {
             dynamicSoundfromAssets(element.src)
@@ -270,11 +274,27 @@ fun RowScope.RenderUIElement(element: UIElement) {
             Spacer(modifier = mod)
         }
         is VideoElement -> {
-            dynamicVideofromAssets(modifier = Modifier.weight(1f), element.src)
+            if (element.src.startsWith("http")) {
+                dynamicVideofromUrl(
+                    modifier = if (element.weight > 0) {
+                        Modifier.weight(element.weight.toFloat())
+                    } else {
+                        Modifier
+                    }
+                )
+            } else {
+                dynamicVideofromAssets(
+                    modifier = if (element.weight > 0) {
+                        Modifier.weight(element.weight.toFloat())
+                    } else {
+                        Modifier
+                    }, element.src
+                )
+            }
         }
         is YoutubeElement -> {
             println("youtube mit weight aus row")
-            dynamicYoutube(modifier = Modifier.weight(1f))
+            dynamicYoutube(modifier = if (element.weight > 0) {Modifier.weight(element.weight.toFloat())} else {Modifier})
         }
         else -> {
             println("Unsupported element: $element")
@@ -301,7 +321,7 @@ fun ColumnScope.RenderUIElement(element: UIElement) {
             renderRow(element)
         }
         is ImageElement -> {
-            dynamicImageFromAssets(modifier = Modifier.weight(1f), filename = element.src, element.scale, element.link)
+            dynamicImageFromAssets(modifier = if (element.weight > 0) {Modifier.weight(element.weight.toFloat())} else {Modifier}, filename = element.src, element.scale, element.link)
         }
         is SoundElement -> {
             dynamicSoundfromAssets(element.src)
@@ -317,10 +337,24 @@ fun ColumnScope.RenderUIElement(element: UIElement) {
             Spacer(modifier = mod)
         }
         is VideoElement -> {
-            dynamicVideofromAssets(modifier = Modifier.weight(1f), element.src)
+            if (element.src.startsWith("http")) {
+                dynamicVideofromUrl(modifier = if (element.weight > 0) {
+                    Modifier.weight(element.weight.toFloat())
+                } else {
+                    Modifier
+                })
+            } else {
+                dynamicVideofromAssets(
+                    modifier = if (element.weight > 0) {
+                        Modifier.weight(element.weight.toFloat())
+                    } else {
+                        Modifier
+                    }, element.src
+                )
+            }
         }
         is YoutubeElement -> {
-            dynamicYoutube(modifier = Modifier.weight(1f))
+            dynamicYoutube(modifier = if (element.weight > 0) {Modifier.weight(element.weight.toFloat())} else {Modifier})
         }
         else -> {
             println("Unsupported element: $element")
@@ -625,6 +659,8 @@ expect fun dynamicImageFromAssets(modifier: Modifier = Modifier, filename: Strin
 expect fun dynamicSoundfromAssets(filename: String)
 @Composable
 expect fun dynamicVideofromAssets(modifier: Modifier = Modifier, filename: String)
+@Composable
+expect fun dynamicVideofromUrl(modifier: Modifier = Modifier)
 @Composable
 expect fun dynamicYoutube(modifier: Modifier = Modifier)
 

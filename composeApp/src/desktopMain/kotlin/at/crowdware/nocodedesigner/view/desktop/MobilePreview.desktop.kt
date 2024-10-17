@@ -84,6 +84,15 @@ actual fun dynamicVideofromAssets(modifier: Modifier, filename: String) {
     )
 }
 
+@Composable
+actual fun dynamicVideofromUrl(modifier: Modifier) {
+    Image(
+        painter = painterResource("images/video.png"),
+        contentDescription = "Description of the image",
+        modifier = modifier.fillMaxWidth()
+    )
+}
+
 actual fun loadPage(pageId: String) {
     val ps = GlobalProjectState.projectState
     ps?.LoadFile(ps.folder + "/pages/" + pageId)
@@ -100,7 +109,7 @@ actual fun openWebPage(url: String) {
 @Composable
 actual fun dynamicYoutube(modifier: Modifier) {
     Image(
-        painter = painterResource("icons/youtube.png"),
+        painter = painterResource("images/youtube.png"),
         contentDescription = "Description of the image",
         modifier = modifier.fillMaxWidth()
     )
