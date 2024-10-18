@@ -23,14 +23,14 @@ import kotlin.io.path.createTempDirectory
 
 class CreateEbook {
     companion object {
-        fun start(title: String, folder: String, source: String, ebook: Ebook) {
+        fun start(title: String, folder: String, source: String, book: Book) {
             val dir = File(folder)
             dir.mkdirs()
 
             val tempDir = createTempDirectory().toFile()
             val guid = UUID.randomUUID().toString()
 
-            copyAssets(ebook.theme, tempDir)
+            copyAssets(book.theme, tempDir)
 
             File(tempDir, "EPUB/parts").mkdirs()
             File(tempDir, "EPUB/images").mkdirs()
@@ -40,9 +40,9 @@ class CreateEbook {
             writeMimetype(tempDir)
             writeContainer(tempDir)
 
-            generatePackage(tempDir, ebook, guid)
-            val toc = generateParts(tempDir, ebook, source)
-            generateToc(tempDir, ebook, toc)
+            generatePackage(tempDir, book, guid)
+            val toc = generateParts(tempDir, book, source)
+            generateToc(tempDir, book, toc)
 
             val files = getAllFiles(tempDir)
 
@@ -143,7 +143,7 @@ class CreateEbook {
                     "</container>", Charsets.UTF_8)
         }
 
-        fun generatePackage(dir: File, book: Ebook, guid: String) {
+        fun generatePackage(dir: File, book: Book, guid: String) {
             val context = mutableMapOf<String, Any>()
 
             context["uuid"] = guid
@@ -205,7 +205,7 @@ class CreateEbook {
             File(outputPath.toUri()).writeText(renderedXml, Charsets.UTF_8)
         }
 
-        fun generateParts(dir: File, book: Ebook, source: String): List<Map<String, Any>> {
+        fun generateParts(dir: File, book: Book, source: String): List<Map<String, Any>> {
             val toc = mutableListOf<Map<String, Any>>()
 
             val item = mutableMapOf<String, Any>(
@@ -273,7 +273,7 @@ class CreateEbook {
                 .replace("<td align=\"left\"", "<td class=\"left\"")
         }
 
-        fun generateToc(dir: File, book: Ebook, parts: List<Map<String, Any>>) {
+        fun generateToc(dir: File, book: Book, parts: List<Map<String, Any>>) {
             val context = mutableMapOf<String, Any>()
             context["parts"] = parts
 

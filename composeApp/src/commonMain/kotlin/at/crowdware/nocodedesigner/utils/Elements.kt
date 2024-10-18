@@ -34,7 +34,7 @@ data class App(
     var deployment: DeploymentElement = DeploymentElement()
 )
 
-data class Ebook (
+data class Book (
     var smlVersion: String = "",
     var theme: String = "Epub3",
     var name: String = "",

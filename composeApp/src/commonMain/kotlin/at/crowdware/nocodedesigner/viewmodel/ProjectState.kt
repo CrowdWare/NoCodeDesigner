@@ -29,9 +29,7 @@ abstract class ProjectState {
         private set
     var fileName by mutableStateOf("No file loaded")
     var folder by mutableStateOf("")
-        private set
     var path by mutableStateOf("")
-        private set
     var treeData by mutableStateOf<List<TreeNode>>(emptyList())
     var elementData by mutableStateOf<List<TreeNode>>(emptyList())
     var extension by mutableStateOf("")
@@ -60,9 +58,12 @@ abstract class ProjectState {
     lateinit var soundsNode: TreeNode
     lateinit var partsNode: TreeNode
     var app: App? by mutableStateOf(null)
+    var book: Book? by mutableStateOf(null)
     var page: Page? by mutableStateOf(null)
     var cachedPage: Page? by mutableStateOf(null)
 
+    abstract fun loadApp()
+    abstract fun loadBook()
     abstract suspend fun loadProjectFiles(path: String, uuid: String, pid: String)
     abstract suspend fun createProjectFiles(
         path: String,
@@ -70,14 +71,16 @@ abstract class ProjectState {
         pid: String,
         name: String,
         appId: String,
-        theme: String
+        theme: String,
+        createBook: Boolean,
+        createApp: Boolean
     )
 
     fun createEbook(title: String, folder: String) {
-        val ebook = Ebook(smlVersion = "1.0", theme = "Epub3", name="MyBook", language = "en", "Olaf Japp" )
-        ebook.parts.add(PartElement("home.md", "Intro"))
-        ebook.parts.add(PartElement("about.md", "About"))
-        CreateEbook.start(title, folder, this.folder, ebook)
+        //val ebook = Book(smlVersion = "1.0", theme = "Epub3", name="MyBook", language = "en", "Olaf Japp" )
+        //ebook.parts.add(PartElement("home.md", "Intro"))
+        //ebook.parts.add(PartElement("about.md", "About"))
+        book?.let { CreateEbook.start(title, folder, this.folder, it) }
     }
 
     fun LoadProject(path: String = folder, uuid: String, pid: String) {

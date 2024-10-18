@@ -110,6 +110,31 @@ fun deserializeApp(parsedResult: List<Any>): App {
     return app
 }
 
+fun deserializeBook(parsedResult: List<Any>): Book {
+    val book = Book()
+
+    parsedResult.forEach { tuple ->
+        when (tuple) {
+            is Tuple7<*, *, *, *, *, *, *> -> {
+                val elementName = (tuple.t2 as? TokenMatch)?.text
+                val properties = extractProperties(tuple)
+
+                when (elementName) {
+                    "Ebook" -> {
+                        book.name = (properties["name"] as? PropertyValue.StringValue)?.value ?: ""
+                        book.smlVersion = (properties["smlVersion"] as? PropertyValue.StringValue)?.value ?: ""
+                        book.theme = (properties["theme"] as? PropertyValue.StringValue)?.value ?: ""
+                        book.creator = (properties["creator"] as? PropertyValue.StringValue)?.value ?: ""
+                        book.language = (properties["language"] as? PropertyValue.StringValue)?.value ?: ""
+                        parseNestedBookElements(extractChildElements(tuple), book)
+                    }
+                }
+            }
+        }
+    }
+    return book
+}
+
 fun extractProperties(element: Any): Map<String, PropertyValue> {
     if (element is Tuple7<*, *, *, *, *, *, *>) {
         return (element.t5 as? List<*>)?.filterIsInstance<Pair<String, PropertyValue>>()?.toMap() ?: emptyMap()
@@ -282,24 +307,6 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
     }
 }
 
-fun parsePage(sml: String): Pair<Page?, String?> {
-    try {
-        val result = SmlGrammar.parseToEnd(sml)
-        return Pair(deserializePage(result), null)
-    } catch(e: Exception) {
-        return Pair(null, e.message)
-    }
-}
-
-fun parseApp(sml: String, ): Pair<App?, String?> {
-    try {
-        val result = SmlGrammar.parseToEnd(sml)
-        return Pair(deserializeApp(result), null)
-    } catch(e: Exception) {
-        return Pair(null, e.message)
-    }
-}
-
 fun parsePadding(padding: String): Padding {
     val paddingValues = padding.split(" ").mapNotNull { it.toIntOrNull() }
 
@@ -310,6 +317,28 @@ fun parsePadding(padding: String): Padding {
         else -> Padding(0, 0, 0, 0)
     }
 }
+
+fun parseNestedBookElements(nestedElements: List<Any>, book: Book) {
+    nestedElements.forEach { element ->
+        when (element) {
+            is Tuple7<*, *, *, *, *, *, *> -> {
+                val elementName = (element.t2 as? TokenMatch)?.text
+                val properties = extractProperties(element)
+
+                println("parseNested: $elementName")
+                when (elementName) {
+                    "Part" -> {
+                        book.parts.add(PartElement(
+                            src = (properties["src"] as? PropertyValue.StringValue)?.value ?: "",
+                            name = (properties["name"] as? PropertyValue.StringValue)?.value ?: ""))
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 
 fun parseNestedAppElements(nestedElements: List<Any>, app: App) {
     nestedElements.forEach { element ->
@@ -401,6 +430,34 @@ fun parseNestedDeployElements(nestedElements: List<Any>, deployment: DeploymentE
                 }
             }
         }
+    }
+}
+
+
+fun parsePage(sml: String): Pair<Page?, String?> {
+    try {
+        val result = SmlGrammar.parseToEnd(sml)
+        return Pair(deserializePage(result), null)
+    } catch(e: Exception) {
+        return Pair(null, e.message)
+    }
+}
+
+fun parseApp(sml: String, ): Pair<App?, String?> {
+    try {
+        val result = SmlGrammar.parseToEnd(sml)
+        return Pair(deserializeApp(result), null)
+    } catch(e: Exception) {
+        return Pair(null, e.message)
+    }
+}
+
+fun parseBook(sml: String, ): Pair<Book?, String?> {
+    try {
+        val result = SmlGrammar.parseToEnd(sml)
+        return Pair(deserializeBook(result), null)
+    } catch(e: Exception) {
+        return Pair(null, e.message)
     }
 }
 

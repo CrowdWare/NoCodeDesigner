@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.substring
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
@@ -75,9 +76,12 @@ fun RowScope.syntaxEditor(
                                 coroutineScope.launch(ioDispatcher()) {
                                     delay(500)
                                     currentProject.saveFileContent()
-                                    currentProject.reloadPage()
+                                    when (currentProject.path.substringAfterLast("/")) {
+                                        "app.sml" -> {currentProject.loadApp()}
+                                        "book.sml" -> {currentProject.loadBook()}
+                                        else -> {currentProject.reloadPage()}
+                                    }
                                 }
-
                         }
                     },
                     extension = currentProject.extension ?: "",

@@ -5,6 +5,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import at.crowdware.nocodedesigner.model.*
 import java.io.File
 import at.crowdware.nocodedesigner.utils.parseApp
+import at.crowdware.nocodedesigner.utils.parseBook
 import java.io.IOException
 import java.io.InputStream
 import java.nio.file.Files
@@ -94,21 +95,54 @@ class DesktopProjectState : ProjectState() {
         }
 
         val nodes = file.listFiles()
-            // python3 server.py runs the webserver for NoCodeBrowser testing
-            ?.filter { it.name != ".DS_Store" && !it.name.endsWith(".py")}
+            // Python 3 server.py runs the webserver for NoCodeBrowser testing
+            ?.filter {
+                it.name != ".DS_Store" &&
+                        !it.name.endsWith(".py") &&
+                        (it.isDirectory && it.name in listOf("pages", "parts", "images", "sounds", "videos")) ||
+                        (it.isFile && it.name in listOf("app.sml", "book.sml")) // Füge die gewünschten Dateien hinzu
+            }
             ?.map { mapFileToTreeNode(it) }
             ?: emptyList()
         val sortedNodes = nodes.sortedWith(compareBy<TreeNode> { it.type != NodeType.DIRECTORY }.thenBy { it.title.value })
         treeData = sortedNodes.toList()
+        folder = path
 
         // app.sml load and parse
+        val appFile =  File("$folder/app.sml")
+        if (appFile.exists()) {
+            loadApp()
+            LoadFile("$folder/pages/home.sml")
+        }
+
+        // book.sml load and parse
+        val bookFile = File("$folder/book.sml")
+        if(bookFile.exists()) {
+            loadBook()
+            LoadFile("$folder/parts/home.md")
+        }
+    }
+
+    override fun loadApp() {
+        val appFile = File("$folder/app.sml")
         try {
-            val uiSml = File("$path/app.sml").readText()
+            val uiSml = appFile.readText()
             val result = parseApp(uiSml)
             app = result.first
-            LoadFile("$path/pages/home.sml")
         } catch (e: Exception) {
             println("Error parsing app.sml: ${e.message}")
+        }
+    }
+
+    override fun loadBook() {
+        println("Load Book: $folder")
+        val bookFile = File("$folder/book.sml")
+        try {
+            val uiSml = bookFile.readText()
+            val result = parseBook(uiSml)
+            book = result.first
+        } catch (e: Exception) {
+            println("Error parsing book.sml: ${e.message}")
         }
     }
 
@@ -118,36 +152,49 @@ class DesktopProjectState : ProjectState() {
         pid: String,
         name: String,
         appId: String,
-        theme: String
+        theme: String,
+        createBook: Boolean,
+        createApp: Boolean
     ) {
         val dir = File("$path$name")
         dir.mkdirs()
-        val app = File("$path$name/app.sml")
-        val pages = File("$path$name/pages")
-        pages.mkdirs()
+        if(createApp) {
+            val pages = File("$path$name/pages")
+            pages.mkdirs()
+            val videos = File("$path$name/videos")
+            videos.mkdirs()
+            val sounds = File("$path$name/sounds")
+            sounds.mkdirs()
+            val app = File("$path$name/app.sml")
+            var appContent = "App {\n  smlVersion: \"1.0\"\n  name: \"$name\"\n  version: \"1.0\"\n  id: \"$appId.$name\"\n  icon: \"icon.png\"\n\n  Navigation {\n    type: \"HorizontalPager\"\n\n    Item { page: \"home\" }  \n  }\n"
+            if(theme == "Light")
+                appContent += writeLightTheme()
+            else
+                appContent += writeDarkTheme()
+            appContent += "// deployment start - don't edit here\n\n// deployment end\n}\n\n"
+            app.writeText(appContent)
+
+            val home = File("$path$name/pages/home.sml")
+            home.writeText("Page {\n  padding: \"8\"\n\n  Column {\n    padding: \"8\"\n\n    Text { text: \"Home\" }\n  }\n}\n")
+            copyResourceToFile("python/server.py", "$path/$name/server.py")
+            copyResourceToFile("python/upd_deploy.py", "$path/$name/upd_deploy.py")
+            copyResourceToFile("icons/default.icon.png", "$path/$name/images/icon.png")
+        }
+
+        if (createBook) {
+            val parts = File("$path$name/parts")
+            parts.mkdirs()
+            val homemd = File("$path$name/parts/home.md")
+            homemd.writeText("# BookTitle\nLorem ipsum dolor\n")
+
+            val book = File("$path$name/book.sml")
+            var bookContent = "Ebook {\n  smlVersion: \"1.0\"\n  name: \"$name\"\n  version: \"1.0\"\n  theme: \"Epub3\"\n  creator: \"\"\n  language: \"en\"\n\n  Part {\n    src: \"home.md\"\n    name:\"Start\"\n  }\n}\n"
+            book.writeText(bookContent)
+        }
+
         val images = File("$path$name/images")
         images.mkdirs()
-        val videos = File("$path$name/videos")
-        videos.mkdirs()
-        val sounds = File("$path$name/sounds")
-        sounds.mkdirs()
-        val parts = File("$path$name/parts")
-        parts.mkdirs()
-        val home = File("$path$name/pages/home.sml")
-        val homemd = File("$path$name/parts/home.md")
 
-        home.writeText("Page {\n  padding: \"8\"\n\n  Column {\n    padding: \"8\"\n\n    Text { text: \"Home\" }\n  }\n}\n")
-        homemd.writeText("# BookTitle\nLorem ipsum dolor\n")
-        copyResourceToFile("icons/default.icon.png", "$path/$name/images/icon.png")
-        copyResourceToFile("python/server.py", "$path/$name/server.py")
-        copyResourceToFile("python/upd_deploy.py", "$path/$name/upd_deploy.py")
-        var appContent = "App {\n  smlVersion: \"1.0\"\n  name: \"$name\"\n  version: \"1.0\"\n  id: \"$appId.$name\"\n  icon: \"icon.png\"\n\n  Navigation {\n    type: \"HorizontalPager\"\n\n    Item { page: \"home\" }  \n  }\n"
-        if(theme == "Light")
-            appContent += writeLightTheme()
-        else
-            appContent += writeDarkTheme()
-        appContent += "// deployment start - don't edit here\n\n// deployment end\n}\n\n"
-        app.writeText(appContent)
         LoadProject("$path$name", uuid, pid)
     }
 }

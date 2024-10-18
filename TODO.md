@@ -11,10 +11,7 @@
 - Annotation for markdown has to be completed
 
 ## Ebook Release
-- Syntax Edit for Markdown
-- Markdown to HTML (Lib oder Grammar)
-- Epub creation
-- MarkdownElement becomes src: "home.md" to use MD in apps
+- Create project should decide book or app
 
 ## Nice to have
 - Syntax-edit Grammar

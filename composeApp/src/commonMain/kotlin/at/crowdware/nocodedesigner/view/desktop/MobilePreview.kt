@@ -140,7 +140,7 @@ fun mobilePreview(currentProject: ProjectState?) {
                             // markdown here
                             val md = MarkdownElement(
                                 text = currentProject.currentFileContent.text,
-                                "onSurface",
+                                color = "#000000",
                                 14.sp,
                                 FontWeight.Normal,
                                 TextAlign.Left
@@ -148,7 +148,7 @@ fun mobilePreview(currentProject: ProjectState?) {
                             Box(
                                 modifier = Modifier
                                     .size((1.0 / scale * 360.0).dp, (1.0 / scale * 640).dp)
-                                    .background(hexToColor("surface"))
+                                    .background(hexToColor("#F6F6F6"))
 
                             ) {
                                 Column(
@@ -156,7 +156,7 @@ fun mobilePreview(currentProject: ProjectState?) {
                                         .padding(8.dp)
                                         .fillMaxSize()
                                         .verticalScroll(scrollState)
-                                        .background(color = hexToColor("surface"))
+                                        .background(color = hexToColor("#F6F6F6"))
                                 ) {
                                     renderMarkdown(md)
                                 }

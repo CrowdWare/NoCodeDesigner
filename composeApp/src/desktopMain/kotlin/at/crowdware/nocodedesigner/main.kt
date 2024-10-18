@@ -287,22 +287,29 @@ fun main() = application {
                             var appId by remember { mutableStateOf("com.sample.app") }
                             var projectFolder by remember { mutableStateOf("") }
                             var theme by remember { mutableStateOf("Light") }
-                            projectDialog(
+                            var createBook by remember { mutableStateOf(false) }
+                            var createApp by remember { mutableStateOf(false) }
+
+                            createProjectDialog(
                                 name = projectName,
                                 folder = projectFolder,
                                 onFolderChange = {projectFolder = it},
                                 onNameChange = {projectName = it},
                                 id = appId,
+                                app = createApp,
+                                book = createBook,
                                 onIdChange = {appId = it},
                                 onDismissRequest = { projectState.isNewProjectDialogVisible = false },
                                 theme = theme,
                                 onThemeChanged = {theme = it},
+                                onCheckBookChanged = {createBook = it},
+                                onCheckAppChanged = {createApp = it},
                                 onCreateRequest = {
                                     projectState.isNewProjectDialogVisible = false
                                     coroutineScope.launch {
                                         if (!projectFolder.endsWith("/"))
                                             projectFolder += "/"
-                                        projectState.createProjectFiles(projectFolder, "", "", projectName, appId, theme)
+                                        projectState.createProjectFiles(projectFolder, "", "", projectName, appId, theme, createBook, createApp)
                                     }
                                 })
                         }
