@@ -85,12 +85,27 @@ fun toolbar(currentProject: ProjectState?) {
                 isSelected = !it
             )
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        HoverableIcon(
-            onClick = { currentProject?.isCreateEbookVisible = true },
-            painter = painterResource("drawable/book.xml"),
-            tooltipText = "Create Ebook",
-            isSelected = currentProject?.isCreateEbookVisible == true
-        )
+        if (currentProject != null) {
+            if (currentProject.book != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                HoverableIcon(
+                    onClick = { currentProject?.isCreateEbookVisible = true },
+                    painter = painterResource("drawable/book.xml"),
+                    tooltipText = "Create Ebook",
+                    isSelected = currentProject?.isCreateEbookVisible == true
+                )
+            }
+        }
+        if (currentProject != null) {
+            if( currentProject.app != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                HoverableIcon(
+                    onClick = { currentProject?.isCreateAPKVisible = true },
+                    painter = painterResource("drawable/android.xml"),
+                    tooltipText = "Create APK",
+                    isSelected = currentProject?.isCreateAPKVisible == true
+                )
+            }
+        }
     }
 }

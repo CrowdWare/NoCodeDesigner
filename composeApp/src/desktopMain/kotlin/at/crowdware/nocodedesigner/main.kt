@@ -315,8 +315,9 @@ fun main() = application {
                         }
 
                         if (projectState.isCreateEbookVisible) {
+                            val bookName = projectState.book?.name!!
                             val coroutineScope = rememberCoroutineScope()
-                            var title by remember { mutableStateOf("") }
+                            var title by remember { mutableStateOf(bookName) }
                             var folder by remember { mutableStateOf(System.getProperty("user.home") + "/NoCodeDesigner") }
                             createEbookDialog(
                                 name = title,
@@ -330,6 +331,27 @@ fun main() = application {
                                         if (!folder.endsWith("/"))
                                             folder += "/"
                                         projectState.createEbook(title, folder)
+                                    }
+                                })
+                        }
+
+                        if (projectState.isCreateAPKVisible ) {
+                            val appName = projectState.app?.name!!
+                            val coroutineScope = rememberCoroutineScope()
+                            var title by remember { mutableStateOf(appName) }
+                            var folder by remember { mutableStateOf(System.getProperty("user.home") + "/NoCodeDesigner") }
+                            createAPKDialog(
+                                name = title,
+                                folder = folder,
+                                onFolderChange = {folder = it},
+                                onNameChange = {title = it},
+                                onDismissRequest = { projectState.isCreateAPKVisible = false },
+                                onCreateRequest = {
+                                    projectState.isCreateAPKVisible = false
+                                    coroutineScope.launch {
+                                        if (!folder.endsWith("/"))
+                                            folder += "/"
+                                        projectState.createAPK(title, folder)
                                     }
                                 })
                         }

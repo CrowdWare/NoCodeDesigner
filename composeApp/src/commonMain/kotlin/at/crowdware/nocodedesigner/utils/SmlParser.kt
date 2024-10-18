@@ -325,7 +325,6 @@ fun parseNestedBookElements(nestedElements: List<Any>, book: Book) {
                 val elementName = (element.t2 as? TokenMatch)?.text
                 val properties = extractProperties(element)
 
-                println("parseNested: $elementName")
                 when (elementName) {
                     "Part" -> {
                         book.parts.add(PartElement(

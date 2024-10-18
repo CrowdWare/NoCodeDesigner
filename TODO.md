@@ -10,9 +10,6 @@
 - Hyperlinks like buttons
 - Annotation for markdown has to be completed
 
-## Ebook Release
-- Create project should decide book or app
-
 ## Nice to have
 - Syntax-edit Grammar
   - Comments are not grayed out

@@ -135,7 +135,6 @@ class DesktopProjectState : ProjectState() {
     }
 
     override fun loadBook() {
-        println("Load Book: $folder")
         val bookFile = File("$folder/book.sml")
         try {
             val uiSml = bookFile.readText()
@@ -275,16 +274,14 @@ actual fun createProjectState(): ProjectState {
     return DesktopProjectState()
 }
 
-fun copyResourceToFile(resourcePath: String, outputPath: String) {
+actual fun copyResourceToFile(resourcePath: String, outputPath: String) {
     val classLoader = Thread.currentThread().contextClassLoader
     val inputStream: InputStream? = classLoader.getResourceAsStream(resourcePath)
 
     if (inputStream != null) {
         val targetPath = Paths.get(outputPath)
-
         Files.createDirectories(targetPath.parent)
-
-        Files.copy(inputStream, targetPath)
+        Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING)
     } else {
         println("Ressource $resourcePath could not be found.")
     }

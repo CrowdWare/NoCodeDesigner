@@ -22,6 +22,7 @@ expect fun createPage(path: String)
 expect fun createPart(path: String)
 expect fun renameFile(pathBefore: String, pathAfter: String)
 expect fun copyAssetFile(path: String, target: String)
+expect fun copyResourceToFile(resourcePath: String, outputPath: String)
 
 abstract class ProjectState {
     var currentFileContent by mutableStateOf(TextFieldValue(""))
@@ -44,6 +45,7 @@ abstract class ProjectState {
     var isImportVideoDialogVisible by mutableStateOf(false)
     var isImportSoundDialogVisible by mutableStateOf(false)
     var isCreateEbookVisible by mutableStateOf(false)
+    var isCreateAPKVisible by mutableStateOf(false)
     var isAboutDialogOpen by  mutableStateOf(false)
     var isEditorVisible by mutableStateOf(false)
     var darkMode by mutableStateOf(false)
@@ -77,10 +79,11 @@ abstract class ProjectState {
     )
 
     fun createEbook(title: String, folder: String) {
-        //val ebook = Book(smlVersion = "1.0", theme = "Epub3", name="MyBook", language = "en", "Olaf Japp" )
-        //ebook.parts.add(PartElement("home.md", "Intro"))
-        //ebook.parts.add(PartElement("about.md", "About"))
         book?.let { CreateEbook.start(title, folder, this.folder, it) }
+    }
+
+    fun createAPK(title: String, folder: String) {
+        app?.let { CreateAPK.start(title, folder, this.folder, it) }
     }
 
     fun LoadProject(path: String = folder, uuid: String, pid: String) {
