@@ -1,6 +1,7 @@
 # TODO
 
 ## Next release
+- book.sml parsen..use at createEbook()
 - When I change a color in app.sml app should be reloaded for preview
 - Theme, FontSize, FontFamily
 - FontSize changeable from end user in book app

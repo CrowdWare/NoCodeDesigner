@@ -34,6 +34,15 @@ data class App(
     var deployment: DeploymentElement = DeploymentElement()
 )
 
+data class Ebook (
+    var smlVersion: String = "",
+    var theme: String = "Epub3",
+    var name: String = "",
+    var language: String = "",
+    var creator: String = "",
+    val parts: MutableList<PartElement> = mutableListOf()
+)
+
 data class ThemeElement(
     var primary: String = "",
     var onPrimary: String = "",
@@ -78,6 +87,8 @@ data class DeploymentElement(
 data class FileElement(val path: String, val time: LocalDateTime)
 
 data class ItemElement (val page: String)
+
+data class PartElement (val src: String, val name: String, val pdfOnly: Boolean = false)
 
 @ElementAnnotation()
 data class Markdown (var dummy: String)

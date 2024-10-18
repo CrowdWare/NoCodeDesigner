@@ -56,6 +56,9 @@ kotlin {
                 implementation("com.github.h0tk3y.betterParse:better-parse:0.4.4")
                 implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
                 implementation("com.darkrockstudios:mpfilepicker:3.1.0")
+                implementation("net.pwall.mustache:kotlin-mustache:0.12")
+                implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
+                kotlin.srcDir(layout.buildDirectory.dir("generated/version"))
             }
         }
 
@@ -68,7 +71,6 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
                 implementation("org.jcodec:jcodec:0.2.5")
                 implementation("org.jcodec:jcodec-javase:0.2.5")
-                kotlin.srcDir(layout.buildDirectory.dir("generated/version"))
             }
         }
     }

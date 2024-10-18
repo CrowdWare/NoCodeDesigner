@@ -1,83 +1,73 @@
 package at.crowdware.nocodedesigner.utils
 
+import at.crowdware.nocodedesigner.Version
+import com.vladsch.flexmark.html.HtmlRenderer
+import com.vladsch.flexmark.parser.Parser
+import com.vladsch.flexmark.util.data.MutableDataSet
+import net.pwall.mustache.Template
 import java.io.File
 import java.io.InputStream
 import java.net.URL
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import kotlin.io.path.createDirectories
 import kotlin.io.path.createTempDirectory
+
 
 class CreateEbook {
     companion object {
-        fun start(title: String, folder: String, source: String, theme: String = "Epub3") {
-            val dir = File("$folder/$title")
+        fun start(title: String, folder: String, source: String, ebook: Ebook) {
+            val dir = File(folder)
             dir.mkdirs()
 
             val tempDir = createTempDirectory().toFile()
             val guid = UUID.randomUUID().toString()
 
-            println("tmp: $tempDir $guid")
-
-            copyAssets(theme, tempDir)
+            copyAssets(ebook.theme, tempDir)
 
             File(tempDir, "EPUB/parts").mkdirs()
             File(tempDir, "EPUB/images").mkdirs()
             File(tempDir, "META-INF").mkdirs()
 
-            val currentDir = System.getProperty("user.dir")
-
             copyImages(tempDir, source)
-/*            writeMimetype(tempDir)
+            writeMimetype(tempDir)
             writeContainer(tempDir)
 
-            generatePackage(tempDir, "book", guid)
-            val toc = generateParts(tempDir, "book")
-            generateToc(tempDir, "book", toc)
-            generateNcx(tempDir, "book", guid)
-
-            System.setProperty("user.dir", tempDir.path)
+            generatePackage(tempDir, ebook, guid)
+            val toc = generateParts(tempDir, ebook, source)
+            generateToc(tempDir, ebook, toc)
 
             val files = getAllFiles(tempDir)
 
-            ZipOutputStream(Files.newOutputStream(Paths.get("output.zip"))).use { zip ->
+            ZipOutputStream(Files.newOutputStream(Paths.get("$folder/$title.epub"))).use { zip ->
                 files.forEach { file ->
-                    zip.putNextEntry(ZipEntry(file.relativeTo(tempDir).pathString))
+                    zip.putNextEntry(ZipEntry(file.relativeTo(tempDir).path))
                     zip.write(file.readBytes())
                     zip.closeEntry()
                 }
             }
-
-            System.setProperty("user.dir", currentDir)
-
             tempDir.deleteRecursively()
-            */
-
         }
 
 
         fun copyAssets(theme: String, targetDir: File) {
-
             val classLoader = Thread.currentThread().contextClassLoader
-
-            // Path inside the resources (e.g., "themes/<theme>/assets")
             val resourcePath = "themes/$theme/assets"
-
-            // Get the resource URL to determine if it's a directory
             val resourceURL = classLoader.getResource(resourcePath)
                 ?: throw IllegalArgumentException("Resource not found: $resourcePath")
 
-            // Recursively copy the resources
             copyDirectoryFromResources(classLoader, resourceURL, resourcePath, targetDir)
         }
 
         fun copyDirectoryFromResources(classLoader: ClassLoader, resourceURL: URL, resourcePath: String, targetDir: File) {
-            // Determine if the URL is a directory by checking for a JAR protocol or a regular file path
             if (resourceURL.protocol == "jar") {
-                // If the resource is inside a JAR, we handle the jar entry
                 val jarPath = resourceURL.path.substringBefore("!")
                 val jarFile = File(URL(jarPath).toURI())
                 val jar = java.util.jar.JarFile(jarFile)
@@ -92,13 +82,11 @@ class CreateEbook {
                         targetFile.parentFile.mkdirs() // Ensure parent directories exist
                     }
 
-                    // Copy entry as stream
                     classLoader.getResourceAsStream(entry.name)?.use { inputStream ->
                         copyStreamToFile(inputStream, targetFile)
                     }
                 }
             } else {
-                // When running from a local file system (not inside a JAR)
                 val directory = File(resourceURL.toURI())
 
                 directory.walkTopDown().forEach { file ->
@@ -106,10 +94,8 @@ class CreateEbook {
                     val targetFile = File(targetDir, relativePath)
 
                     if (file.isDirectory) {
-                        // Create directories in target
                         targetFile.mkdirs()
                     } else {
-                        // Copy files
                         classLoader.getResourceAsStream("$resourcePath/$relativePath")?.use { inputStream ->
                             copyStreamToFile(inputStream, targetFile)
                         }
@@ -133,39 +119,223 @@ class CreateEbook {
             sourceDir.walkTopDown().forEach { file ->
                 if (file.isFile) {
                     val targetFile = File(targetDir, file.name)
-                    println("cpy: ${file.name}")
                     Files.copy(file.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
                 }
             }
         }
 
         fun writeMimetype(dir: File) {
-            // Logik zum Schreiben der mimetype-Datei
+            val mimeFile = File(dir, "mimetype")
+            mimeFile.writeText("application/epub+zip", Charsets.UTF_8)
         }
 
         fun writeContainer(dir: File) {
-            // Logik zum Schreiben der container.xml
+            val metaInfDir = File(dir, "META-INF")
+
+            metaInfDir.mkdirs()
+
+            val containerFile = File(metaInfDir, "container.xml")
+            containerFile.writeText("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                    "<container xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\" version=\"1.0\">\n" +
+                    "  <rootfiles>\n" +
+                    "    <rootfile full-path=\"EPUB/package.opf\" media-type=\"application/oebps-package+xml\"/>\n" +
+                    "  </rootfiles>\n" +
+                    "</container>", Charsets.UTF_8)
         }
 
-        fun generatePackage(dir: File, book: String, guid: String) {
-            // Logik zur Generierung des EPUB-Pakets
+        fun generatePackage(dir: File, book: Ebook, guid: String) {
+            val context = mutableMapOf<String, Any>()
+
+            context["uuid"] = guid
+            context["lang"] = book.language
+            context["title"] = book.name
+            context["date"] = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"))
+            context["version"] = Version.version
+            context["creator"] = book.creator
+
+            val items = mutableListOf<Map<String, String>>()
+            val spine = mutableListOf<String>()
+
+            for (part in book.parts) {
+                if (!part.pdfOnly) {
+                    val name = part.name.replace(" ", "-").lowercase()
+                    if (name != "toc") {
+                        val item = mutableMapOf<String, String>()
+                        item["href"] = "parts/$name.xhtml"
+                        item["id"] = name
+                        item["type"] = "application/xhtml+xml"
+                        items.add(item)
+                        spine.add(name)
+                    }
+                }
+            }
+
+            val imagesDir = File(dir, "EPUB/images")
+            if (imagesDir.exists()) {
+                imagesDir.walkTopDown().forEach { file ->
+                    if (file.isFile && file.name != ".DS_Store") {
+                        val filename = file.nameWithoutExtension
+                        val extension = file.extension
+                        val item = mutableMapOf<String, String>()
+                        item["href"] = "images/${file.name}"
+                        item["id"] = "${filename}_img"
+                        item["type"] = "image/$extension"
+                        items.add(item)
+                    }
+                }
+            }
+            // Add items and spine to context
+            context["items"] = items
+            context["spine"] = spine
+
+            // Read and process the template file
+            val classLoader = Thread.currentThread().contextClassLoader
+
+            // Path inside the resources (e.g., "themes/<theme>/assets")
+            val resourcePath = "themes/${book.theme}/layout/package.opf"
+            val inputStream: InputStream? = classLoader.getResourceAsStream(resourcePath)
+            val data = inputStream?.bufferedReader()?.use { it.readText() } ?: throw IllegalArgumentException("File not found: $resourcePath")
+
+            val template = Template.parse(data)
+            val renderedXml = template.processToString(context)
+
+            // Write the rendered XML to the output file
+            val outputPath = Paths.get(dir.path, "EPUB", "package.opf")
+            outputPath.parent.createDirectories()
+            File(outputPath.toUri()).writeText(renderedXml, Charsets.UTF_8)
         }
 
-        fun generateParts(dir: File, book: String): String {
-            // Logik zur Generierung der Teile (parts)
-            return "toc"
-        }
+        fun generateParts(dir: File, book: Ebook, source: String): List<Map<String, Any>> {
+            val toc = mutableListOf<Map<String, Any>>()
 
-        fun generateToc(dir: File, book: String, toc: String) {
-            // Logik zur Generierung der Table of Contents
-        }
+            val item = mutableMapOf<String, Any>(
+                "href" to "toc.xhtml",
+                "name" to if (book.language == "de") "Inhaltsverzeichnis" else "Table of Contents",
+                "id" to "nav",
+                "parts" to mutableListOf<Any>()
+            )
+            toc.add(item)
 
-        fun generateNcx(dir: File, book: String, guid: String) {
-            // Logik zur Generierung der NCX-Datei
+            val path = Paths.get("").toAbsolutePath().toString()
+
+            for (part in book.parts) {
+                if (!part.pdfOnly) {
+                    val context = mutableMapOf<String, Any>()
+                    val partSourcePath = Paths.get(source, "parts", part.src).toFile()
+
+                    val text = partSourcePath.readText(Charsets.UTF_8)
+                    val name = part.name.replace(" ", "-").lowercase()
+
+                    if (name != "toc") {
+                        val options = MutableDataSet()
+                        options.set(HtmlRenderer.GENERATE_HEADER_ID, true)
+                        options.set(HtmlRenderer.RENDER_HEADER_ID,true)
+
+                        val parser = Parser.builder(options).build()
+                        val document = parser.parse(text)
+                        val renderer = HtmlRenderer.builder(options).build()
+                        // Markdown processing and table fixing
+                        val html = fixTables(renderer.render(document))
+
+                        val linkList = getLinks(html, name)
+                        toc.addAll(linkList)
+
+                        context["content"] = html
+
+                        val classLoader = Thread.currentThread().contextClassLoader
+                        val resourcePath = "themes/${book.theme}/layout/template.xhtml"
+                        val inputStream: InputStream? = classLoader.getResourceAsStream(resourcePath)
+                        val templateData = inputStream?.bufferedReader()?.use { it.readText() } ?: throw IllegalArgumentException("File not found: $resourcePath")
+
+                        val template = Template.parse(templateData)
+                        val xhtml = template.processToString(context)
+
+                        val outputFile = Paths.get(dir.path, "EPUB", "parts", "$name.xhtml").toFile()
+                        outputFile.writeText(xhtml, Charsets.UTF_8)
+                    }
+                }
+            }
+
+            return toc
         }
 
         fun getAllFiles(dir: File): List<File> {
             return dir.walk().filter { it.isFile }.toList()
+        }
+
+        fun fixTables(text: String): String {
+            return text
+                .replace("<th align=\"center\"", "<th class=\"center\"")
+                .replace("<th align=\"right\"", "<th class=\"right\"")
+                .replace("<th align=\"left\"", "<th class=\"left\"")
+                .replace("<td align=\"center\"", "<td class=\"center\"")
+                .replace("<td align=\"right\"", "<td class=\"right\"")
+                .replace("<td align=\"left\"", "<td class=\"left\"")
+        }
+
+        fun generateToc(dir: File, book: Ebook, parts: List<Map<String, Any>>) {
+            val context = mutableMapOf<String, Any>()
+            context["parts"] = parts
+
+            val classLoader = Thread.currentThread().contextClassLoader
+            val resourcePath = "themes/${book.theme}/layout/toc.xhtml"
+            val inputStream: InputStream? = classLoader.getResourceAsStream(resourcePath)
+            val templateData = inputStream?.bufferedReader()?.use { it.readText() } ?: throw IllegalArgumentException("File not found: $resourcePath")
+
+            val template = Template.parse(templateData)
+            val xhtml = template.processToString(context)
+
+            val outputPath = Paths.get(dir.path, "EPUB", "parts", "toc.xhtml")
+            Files.writeString(outputPath, xhtml, StandardCharsets.UTF_8)
+        }
+
+        private fun getLinks(text: String, partName: String): List<Map<String, Any>> {
+            val nodes = mutableListOf<Map<String, Any>>()
+            val linksList = mutableListOf<Map<String, Any>>()
+
+            for (line in text.split("\n")) {
+                if (line.isBlank()) continue
+
+                val c = when {
+                    line.startsWith("<h1 ") -> 1
+                    line.startsWith("<h2 ") -> 2
+                    line.startsWith("<h3 ") -> 3
+                    line.startsWith("<h4 ") -> 4
+                    line.startsWith("<h5 ") -> 5
+                    line.startsWith("<h6 ") -> 6
+                    else -> 0
+                }
+
+                if (c > 0) {
+                    val idStart = line.indexOf("id=") + 4
+                    val idEnd = line.indexOf('"', idStart)
+                    val id = line.substring(idStart, idEnd)
+
+                    val nameStart = line.indexOf(">", idEnd) + 1
+                    val nameEnd = line.indexOf("<", nameStart)
+                    val name = line.substring(nameStart, nameEnd)
+
+                    val item = mutableMapOf<String, Any>()
+                    item["href"] = "$partName.xhtml#$id"
+                    item["name"] = name
+                    item["id"] = id
+                    item["parts"] = mutableListOf<Map<String, Any>>()
+
+                    if (nodes.size < c) {
+                        nodes.add(item)
+                    } else {
+                        nodes[c - 1] = item
+                    }
+
+                    if (c == 1) {
+                        linksList.add(item)
+                    } else {
+                        (nodes[c - 2]["parts"] as MutableList<Map<String, Any>>).add(item)
+                    }
+                }
+            }
+
+            return linksList
         }
     }
 }

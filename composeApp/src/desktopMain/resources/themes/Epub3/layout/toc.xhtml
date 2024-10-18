@@ -9,52 +9,42 @@
 <body>
     <nav epub:type="toc" id="toc">
     <h1>Table of Contents</h1>
-    <ol>
-      {% for a in parts %}
-      <li id="{{ a.id }}"><a href="{{ a.href }}">{{ a.name }}</a>
-        {% if a.parts %}
-        <ol>
-          {% for b in a.parts %}
-          <li><a href="{{ b.href }}">{{ b.name }}</a>
-            {% if b.parts %}
-            <ol>
-              {% for c in b.parts %}
-              <li><a href="{{ c.href }}">{{ c.name }}</a>
-                {% if c.parts %}
-                <ol>
-                  {% for d in c.parts %}
-                  <li><a href="{{ d.href }}">{{ d.name }}</a>
-                    {% if d.parts %}
-                    <ol>
-                      {% for e in d.parts %}
-                      <li><a href="{{ e.href }}">{{ e.name }}</a>
-                        {% if e.parts %}
-                        <ol>
-                          {% for f in e.parts %}
-                          <li><a href="{{ f.href }}">{{ f.name }}</a>
+    <ul>
+      {{#parts}}
+      <li id="{{{ id }}}"><a href="{{{ href }}}">{{{ name }}}</a>
+        {{#parts}}
+        <ul>
+          <li><a href="{{{ href }}}">{{{ name }}}</a>
+            {{#parts}}
+            <ul>
+              <li><a href="{{{ href }}}">{{{ name }}}</a>
+                <ul>
+                  {{#parts}}
+                  <li><a href="{{{ href }}}">{{{ name }}}</a>
+                    {{#parts}}
+                    <ul>
+                      <li><a href="{{{ href }}}">{{{ name }}}</a>
+                        {{#parts}}
+                        <ul>
+                          <li><a href="{{{ href }}}">{{{ name }}}</a>
                           </li>
-                          {% endfor %}
-                        </ol>
-                        {% endif %}
+                        </ul>
+                        {{/parts}}
                       </li>
-                      {% endfor %}
-                    </ol>
-                    {% endif %}
+                    </ul>
+                    {{/parts}}
                   </li>
-                  {% endfor %}
-                </ol>
-                {% endif %}
+                  {{/parts}}
+                </ul>
               </li>
-              {% endfor %}
-            </ol>
-            {% endif %}
+            </ul>
+            {{/parts}}
           </li>
-          {% endfor %}
-        </ol>
-        {% endif %}
+        </ul>
+        {{/parts}}
       </li>
-      {% endfor %}
-    </ol>
+      {{/parts}}
+    </ul>
     </nav>
 </body>
 </html>

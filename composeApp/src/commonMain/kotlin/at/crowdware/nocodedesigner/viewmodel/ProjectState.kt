@@ -74,7 +74,10 @@ abstract class ProjectState {
     )
 
     fun createEbook(title: String, folder: String) {
-        CreateEbook.start(title, folder, this.folder)
+        val ebook = Ebook(smlVersion = "1.0", theme = "Epub3", name="MyBook", language = "en", "Olaf Japp" )
+        ebook.parts.add(PartElement("home.md", "Intro"))
+        ebook.parts.add(PartElement("about.md", "About"))
+        CreateEbook.start(title, folder, this.folder, ebook)
     }
 
     fun LoadProject(path: String = folder, uuid: String, pid: String) {
