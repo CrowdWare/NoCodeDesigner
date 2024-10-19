@@ -83,7 +83,7 @@ abstract class ProjectState {
     }
 
     fun createAPK(title: String, folder: String) {
-        app?.let { CreateAPK.start(title, folder, this.folder, it) }
+        app?.let { CreateAPK.start(title, folder, this.folder, it, this) }
     }
 
     fun LoadProject(path: String = folder, uuid: String, pid: String) {

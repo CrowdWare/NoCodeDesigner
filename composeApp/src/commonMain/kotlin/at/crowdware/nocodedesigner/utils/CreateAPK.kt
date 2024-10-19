@@ -1,6 +1,12 @@
 package at.crowdware.nocodedesigner.utils
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import at.crowdware.nocodedesigner.viewmodel.copyResourceToFile
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.awt.Color
 import java.awt.Image
 import java.awt.image.BufferedImage
@@ -14,70 +20,106 @@ import kotlin.io.path.createTempDirectory
 
 class CreateAPK {
     companion object {
-        fun start(title: String, folder: String, source: String, app: App) {
+        fun start(title: String, folder: String, source: String, app: App, currentProject: ProjectState) {
             val tempDir = createTempDirectory().toFile()
-            tempDir.mkdir()
-            try {
-                copyResourceToFile("apk/app-debug.apk", "${tempDir.path}/app-debug.apk")
-                copyResourceToFile("apk/apksigner", "${tempDir.path}/apksigner")
-                copyResourceToFile("apk/apksigner.jar", "${tempDir.path}/apksigner.jar")
-                changeFilePermissions("${tempDir.path}/apksigner")
-                copyResourceToFile("apk/apktool", "${tempDir.path}/apktool")
-                copyResourceToFile("apk/apktool_2.9.3.jar", "${tempDir.path}/apktool_2.9.3.jar")
-                changeFilePermissions("${tempDir.path}/apktool")
-                runProcess(listOf("${tempDir.path}/apktool", "d", "app-debug.apk", "-f", "-o", "out/"), "${tempDir.path}/")
+            val scope = CoroutineScope(Dispatchers.IO)
 
-                changeAppId(app.id, "${tempDir.path}", app.name)
-                changeIcon("$source/images/${app.icon}", "${tempDir.path}")
-                copyFilesToAsset(source, tempDir.path)
+            scope.launch {
+                try {
+                    tempDir.mkdir()
+                    currentProject.parseError = "Build APK started...\n"
+                    copyResourceToFile("apk/app-debug.apk", "${tempDir.path}/app-debug.apk")
+                    currentProject.parseError += "base apk copied\n"
+                    copyResourceToFile("apk/apksigner", "${tempDir.path}/apksigner")
+                    currentProject.parseError += "apksigner copied\n"
+                    copyResourceToFile("apk/apksigner.jar", "${tempDir.path}/apksigner.jar")
+                    currentProject.parseError += "apksigner.jar copied\n"
+                    changeFilePermissions("${tempDir.path}/apksigner")
+                    currentProject.parseError += "permission added\n"
+                    copyResourceToFile("apk/apktool", "${tempDir.path}/apktool")
+                    currentProject.parseError += "apktool copied\n"
+                    copyResourceToFile("apk/apktool_2.9.3.jar", "${tempDir.path}/apktool_2.9.3.jar")
+                    currentProject.parseError += "apktool.jar copied\n"
+                    changeFilePermissions("${tempDir.path}/apktool")
+                    currentProject.parseError += "permission added\n"
+                    runProcess(
+                        listOf("${tempDir.path}/apktool", "d", "app-debug.apk", "-f", "-o", "out/"),
+                        "${tempDir.path}/"
+                    )
+                    currentProject.parseError += "apk extracted\n"
+                    changeAppId(app.id, "${tempDir.path}", app.name)
+                    currentProject.parseError += "appId changed\n"
+                    changeIcon("$source/images/${app.icon}", "${tempDir.path}")
+                    currentProject.parseError += "icon exchanged\n"
+                    copyFilesToAsset(source, tempDir.path)
+                    currentProject.parseError += "assets copied\n"
 
-                runProcess(listOf("${tempDir.path}/apktool", "b", "out/", "-o", "rebuild.apk"), "${tempDir.path}/")
-                runProcess(
-                    listOf(
-                        "keytool",
-                        "-genkey",
-                        "-v",
-                        "-keystore",
-                        "debug.keystore",
-                        "-keyalg",
-                        "RSA",
-                        "-keysize",
-                        "2048",
-                        "-validity",
-                        "10000",
-                        "-alias",
-                        "androiddebugkey",
-                        "-storepass",
-                        "android123",
-                        "-keypass",
-                        "android123",
-                        "-dname",
-                        "CN=Android Debug,O=Android,C=US"
-                    ), "${tempDir.path}/"
-                )
-                runProcess(
-                    listOf(
-                        "${tempDir.path}/apksigner",
-                        "sign",
-                        "--ks",
-                        "debug.keystore",
-                        "--ks-key-alias",
-                        "androiddebugkey",
-                        "--ks-pass",
-                        "pass:android123",
-                        "--key-pass",
-                        "pass:android123",
-                        "--out",
-                        "signed.apk",
-                        "rebuild.apk"
-                    ), "${tempDir.path}/"
-                )
-                runProcess(listOf("keytool", "-delete", "-alias", "androiddebugkey", "-keystore", "debug.keystore"),"${tempDir.path}")
-                File(tempDir, "signed.apk").copyTo(File("$folder/$title.apk"), overwrite = true)
-                tempDir.deleteRecursively()
-                println("ready")
-            } catch(e: Exception) {
-                println("Error while creating APK: ${e.message}")
+                    runProcess(
+                        listOf("${tempDir.path}/apktool", "b", "out/", "-o", "rebuild.apk"),
+                        "${tempDir.path}/"
+                    )
+                    currentProject.parseError += "apk builded\n"
+                    runProcess(
+                        listOf(
+                            "keytool",
+                            "-genkey",
+                            "-v",
+                            "-keystore",
+                            "debug.keystore",
+                            "-keyalg",
+                            "RSA",
+                            "-keysize",
+                            "2048",
+                            "-validity",
+                            "10000",
+                            "-alias",
+                            "androiddebugkey",
+                            "-storepass",
+                            "android123",
+                            "-keypass",
+                            "android123",
+                            "-dname",
+                            "CN=Android Debug,O=Android,C=US"
+                        ), "${tempDir.path}/"
+                    )
+                    currentProject.parseError += "keypair generated\n"
+                    runProcess(
+                        listOf(
+                            "${tempDir.path}/apksigner",
+                            "sign",
+                            "--ks",
+                            "debug.keystore",
+                            "--ks-key-alias",
+                            "androiddebugkey",
+                            "--ks-pass",
+                            "pass:android123",
+                            "--key-pass",
+                            "pass:android123",
+                            "--out",
+                            "signed.apk",
+                            "rebuild.apk"
+                        ), "${tempDir.path}/"
+                    )
+                    currentProject.parseError += "apk signed\n"
+                    runProcess(
+                        listOf(
+                            "keytool",
+                            "-delete",
+                            "-alias",
+                            "androiddebugkey",
+                            "-keystore",
+                            "debug.keystore"
+                        ), "${tempDir.path}"
+                    )
+                    currentProject.parseError += "keypair deleted\n"
+                    File(tempDir, "signed.apk").copyTo(File("$folder/$title.apk"), overwrite = true)
+                    tempDir.deleteRecursively()
+                    currentProject.parseError += "cleaned up\n"
+                    currentProject.parseError += "$title.apk is copied to $folder\n"
+                } catch (e: Exception) {
+                    println("Error while creating APK: ${e.message}")
+                }
+                //    }
             }
         }
 
@@ -101,7 +143,7 @@ class CreateAPK {
         fun copyFilesToAsset(source: String, folder: String) {
             val sourceDir = File(source)
             val outputDir = File("$folder/out/assets")
-            if(!outputDir.exists())
+            if (!outputDir.exists())
                 outputDir.mkdir()
 
             copyFilesRecursively(sourceDir, outputDir)
@@ -191,7 +233,16 @@ class CreateAPK {
             val result = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
             val g2dResult = result.createGraphics()
             g2dResult.drawImage(img, 0, 0, null)
-            g2dResult.clip = java.awt.geom.Area(java.awt.geom.RoundRectangle2D.Double(0.0, 0.0, size.toDouble(), size.toDouble(), size.toDouble(), size.toDouble()))
+            g2dResult.clip = java.awt.geom.Area(
+                java.awt.geom.RoundRectangle2D.Double(
+                    0.0,
+                    0.0,
+                    size.toDouble(),
+                    size.toDouble(),
+                    size.toDouble(),
+                    size.toDouble()
+                )
+            )
             g2dResult.drawImage(img, 0, 0, null)
             g2dResult.dispose()
             ImageIO.write(result, "PNG", File("${folder}/round.png"))
@@ -248,7 +299,5 @@ class CreateAPK {
                 ImageIO.write(bufferedImage3, "PNG", File("${outputDir.path}/ic_launcher_foreground.png"))
             }
         }
-
-
     }
 }

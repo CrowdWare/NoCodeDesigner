@@ -19,16 +19,13 @@
 
 package at.crowdware.nocodedesigner.view.desktop
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -67,55 +64,72 @@ fun RowScope.syntaxEditor(
                 )
                 SyntaxTextField(
                     onValueChange = { newValue ->
-                            val oldText = textFieldValue.text
-                            onTextFieldValueChange(newValue)
-                            currentProject.currentFileContent = newValue
-                            // don't save if only the cursor has moved (no text has changed)
-                            if (oldText != newValue.text) {
-                                // Automatically save the content to disk after each change
-                                coroutineScope.launch(ioDispatcher()) {
-                                    delay(500)
-                                    currentProject.saveFileContent()
-                                    when (currentProject.path.substringAfterLast("/")) {
-                                        "app.sml" -> {currentProject.loadApp()}
-                                        "book.sml" -> {currentProject.loadBook()}
-                                        else -> {currentProject.reloadPage()}
+                        val oldText = textFieldValue.text
+                        onTextFieldValueChange(newValue)
+                        currentProject.currentFileContent = newValue
+                        // don't save if only the cursor has moved (no text has changed)
+                        if (oldText != newValue.text) {
+                            // Automatically save the content to disk after each change
+                            coroutineScope.launch(ioDispatcher()) {
+                                delay(500)
+                                currentProject.saveFileContent()
+                                when (currentProject.path.substringAfterLast("/")) {
+                                    "app.sml" -> {
+                                        currentProject.loadApp()
+                                    }
+
+                                    "book.sml" -> {
+                                        currentProject.loadBook()
+                                    }
+
+                                    else -> {
+                                        currentProject.reloadPage()
                                     }
                                 }
+                            }
                         }
                     },
                     extension = currentProject.extension ?: "",
                     textFieldValue = textFieldValue
                 )
-                BasicTextField(
-                    "Test", onValueChange = {},
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    maxLines = 30,
-                    textStyle = TextStyle(
-                        fontSize = 14.sp,
-                        color = ExtendedTheme.colors.attributeNameColor,
-                        fontFamily = FontFamily.Monospace
-                    ),
-                )
             }
             if (currentProject.parseError != null) {
                 CustomSelectionColors {
-                    BasicTextField(
-                        value = currentProject.parseError!!,
-                        modifier = Modifier.fillMaxWidth().weight(.1f).padding(8.dp)
-                            .background(MaterialTheme.colors.surface),
-                        onValueChange = {},
-                        textStyle = TextStyle(
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colors.onSurface,
-                            fontFamily = FontFamily.Monospace
-                        ),
-                        //fontSize = 12.sp,
-                        //color = MaterialTheme.colors.onSurface
-                        maxLines = 200
-                    )
+                    val scrollState = rememberScrollState()
+                    Row (modifier = Modifier.weight(.5f)){
+                        Box(
+                            modifier = Modifier
+                                .weight(1f) // Allow the text field to take the remaining space
+                                .verticalScroll(scrollState) // Enable vertical scrolling
+                        ) {
+                            BasicTextField(
+                                value = currentProject.parseError!!,
+                                modifier = Modifier
+                                    .fillMaxWidth().padding(8.dp)
+                                    .background(MaterialTheme.colors.surface)
+                                    .padding(8.dp),
+                                onValueChange = {},
+                                textStyle = TextStyle(
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colors.onSurface,
+                                    fontFamily = FontFamily.Monospace
+                                ),
+                                maxLines = 200
+                            )
+                        }
+                        VerticalScrollbar(
+                            adapter = rememberScrollbarAdapter(scrollState),
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(8.dp)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+
+                    LaunchedEffect(currentProject.parseError) {
+                        delay(1000)
+                        scrollState.animateScrollTo(scrollState.maxValue)
+                    }
                 }
             }
         }
