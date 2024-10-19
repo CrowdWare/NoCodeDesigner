@@ -83,6 +83,7 @@ compose.desktop {
         mainClass = "at.crowdware.nocodedesigner.MainKt"
 
         nativeDistributions {
+            modules("jdk.unsupported")
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "NoCodeDesigner"
             packageVersion = "$version"

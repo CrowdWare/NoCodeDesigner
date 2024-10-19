@@ -79,7 +79,7 @@ fun main() = application {
     var isAskingToClose by remember { mutableStateOf(false) }
 
     // setup logging, all println are stored in a log file
-    //setupLogging()
+    setupLogging()
 
     System.setProperty("apple.awt.application.name", appName)
     // Check if the desktop supports macOS actions (About, Quit, etc.)
@@ -104,7 +104,7 @@ fun main() = application {
     }
 
     Window(
-        onCloseRequest = { isAskingToClose = true } ,
+        onCloseRequest = { isAskingToClose = true },
         title = appName + " [" + loadedState?.lastProject.toString() + "]",
         transparent = !isWindows,
         undecorated = !isWindows,
@@ -125,7 +125,7 @@ fun main() = application {
                     isMaximized = (window.extendedState == Frame.MAXIMIZED_BOTH)
                 }
             }
-/*
+            /*
             fun closeWindow() {
                 onAppClose(window, projectState.folder)
                 exitApplication()
@@ -185,50 +185,52 @@ fun main() = application {
 
                 ) {
                     // used on Windows only, no close button on MacOS
-                    if(isAskingToClose) {
+                    if (isAskingToClose) {
                         onAppClose(window, projectState.folder)
                         exitApplication()
                     }
                     Column {
                         if (!isWindows) {
-                        WindowCaptionArea {
-                            Box(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(40.dp)
-                                    .background(ExtendedTheme.colors.captionColor)
-                                    .padding(start = 12.dp, top = 6.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxHeight(),
-                                    verticalAlignment = Alignment.CenterVertically
+                            WindowCaptionArea {
+                                Box(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(40.dp)
+                                        .background(ExtendedTheme.colors.captionColor)
+                                        .padding(start = 12.dp, top = 6.dp)
                                 ) {
-                                    // Mac-style window controls (close, minimize, fullscreen)
-                                    WindowControlButton(color = Color(255, 92, 92)) {
-                                        onAppClose(window, projectState.folder)
-                                        exitApplication()
-                                    } // Close
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    WindowControlButton(color = Color(255, 189, 76)) {
-                                        window.extendedState = Frame.ICONIFIED
-                                    } // Minimize
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    WindowControlButton(color = Color(87, 188, 87)) {
-                                        val isMaximized = window.extendedState == Frame.MAXIMIZED_BOTH
-                                        window.extendedState = if (isMaximized) Frame.NORMAL else Frame.MAXIMIZED_BOTH
-                                    } // Fullscreen/Restore
+                                    Row(
+                                        modifier = Modifier.fillMaxHeight(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        // Mac-style window controls (close, minimize, fullscreen)
+                                        WindowControlButton(color = Color(255, 92, 92)) {
+                                            onAppClose(window, projectState.folder)
+                                            exitApplication()
+                                        } // Close
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        WindowControlButton(color = Color(255, 189, 76)) {
+                                            window.extendedState = Frame.ICONIFIED
+                                        } // Minimize
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        WindowControlButton(color = Color(87, 188, 87)) {
+                                            val isMaximized = window.extendedState == Frame.MAXIMIZED_BOTH
+                                            window.extendedState =
+                                                if (isMaximized) Frame.NORMAL else Frame.MAXIMIZED_BOTH
+                                        } // Fullscreen/Restore
+                                    }
+                                    // Add the title or caption text
+                                    var caption = appName
+                                    if (!projectState.projectName.isEmpty())
+                                        caption += " - " + projectState.projectName
+                                    Text(
+                                        text = caption,
+                                        color = MaterialTheme.colors.onPrimary,
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
                                 }
-                                // Add the title or caption text
-                                var caption = appName
-                                if (!projectState.projectName.isEmpty())
-                                    caption += " - " + projectState.projectName
-                                Text(
-                                    text = caption,
-                                    color = MaterialTheme.colors.onPrimary,
-                                    modifier = Modifier.align(Alignment.Center)
-                                )
                             }
-                        }}
+                        }
                         desktop()
                         if (projectState.isAboutDialogOpen) {
                             aboutDialog(
@@ -237,12 +239,12 @@ fun main() = application {
                                 onDismissRequest = { projectState.isAboutDialogOpen = false }
                             )
                         }
-                        if(projectState.isPageDialogVisible) {
+                        if (projectState.isPageDialogVisible) {
                             val coroutineScope = rememberCoroutineScope()
                             var pageName by remember { mutableStateOf("") }
                             pageDialog(
                                 name = pageName,
-                                onNameChange = { pageName = it},
+                                onNameChange = { pageName = it },
                                 onDismissRequest = { projectState.isPageDialogVisible = false },
                                 onCreateRequest = {
                                     projectState.isPageDialogVisible = false
@@ -251,12 +253,12 @@ fun main() = application {
                                     }
                                 })
                         }
-                        if(projectState.isPartDialogVisible) {
+                        if (projectState.isPartDialogVisible) {
                             val coroutineScope = rememberCoroutineScope()
                             var partName by remember { mutableStateOf("") }
                             partDialog(
                                 name = partName,
-                                onNameChange = { partName = it},
+                                onNameChange = { partName = it },
                                 onDismissRequest = { projectState.isPartDialogVisible = false },
                                 onCreateRequest = {
                                     projectState.isPartDialogVisible = false
@@ -271,7 +273,7 @@ fun main() = application {
                             var pageName by remember { mutableStateOf(title ?: "") }
                             renamePageDialog(
                                 name = pageName,
-                                onNameChange = { pageName = it},
+                                onNameChange = { pageName = it },
                                 onDismissRequest = { projectState.isRenamePageDialogVisible = false },
                                 onCreateRequest = {
                                     projectState.isRenamePageDialogVisible = false
@@ -293,23 +295,32 @@ fun main() = application {
                             createProjectDialog(
                                 name = projectName,
                                 folder = projectFolder,
-                                onFolderChange = {projectFolder = it},
-                                onNameChange = {projectName = it},
+                                onFolderChange = { projectFolder = it },
+                                onNameChange = { projectName = it },
                                 id = appId,
                                 app = createApp,
                                 book = createBook,
-                                onIdChange = {appId = it},
+                                onIdChange = { appId = it },
                                 onDismissRequest = { projectState.isNewProjectDialogVisible = false },
                                 theme = theme,
-                                onThemeChanged = {theme = it},
-                                onCheckBookChanged = {createBook = it},
-                                onCheckAppChanged = {createApp = it},
+                                onThemeChanged = { theme = it },
+                                onCheckBookChanged = { createBook = it },
+                                onCheckAppChanged = { createApp = it },
                                 onCreateRequest = {
                                     projectState.isNewProjectDialogVisible = false
                                     coroutineScope.launch {
                                         if (!projectFolder.endsWith("/"))
                                             projectFolder += "/"
-                                        projectState.createProjectFiles(projectFolder, "", "", projectName, appId, theme, createBook, createApp)
+                                        projectState.createProjectFiles(
+                                            projectFolder,
+                                            "",
+                                            "",
+                                            projectName,
+                                            appId,
+                                            theme,
+                                            createBook,
+                                            createApp
+                                        )
                                     }
                                 })
                         }
@@ -322,8 +333,8 @@ fun main() = application {
                             createEbookDialog(
                                 name = title,
                                 folder = folder,
-                                onFolderChange = {folder = it},
-                                onNameChange = {title = it},
+                                onFolderChange = { folder = it },
+                                onNameChange = { title = it },
                                 onDismissRequest = { projectState.isCreateEbookVisible = false },
                                 onCreateRequest = {
                                     projectState.isCreateEbookVisible = false
@@ -335,7 +346,7 @@ fun main() = application {
                                 })
                         }
 
-                        if (projectState.isCreateAPKVisible ) {
+                        if (projectState.isCreateAPKVisible) {
                             val appName = projectState.app?.name!!
                             val coroutineScope = rememberCoroutineScope()
                             var title by remember { mutableStateOf(appName) }
@@ -343,8 +354,8 @@ fun main() = application {
                             createAPKDialog(
                                 name = title,
                                 folder = folder,
-                                onFolderChange = {folder = it},
-                                onNameChange = {title = it},
+                                onFolderChange = { folder = it },
+                                onNameChange = { title = it },
                                 onDismissRequest = { projectState.isCreateAPKVisible = false },
                                 onCreateRequest = {
                                     projectState.isCreateAPKVisible = false
@@ -356,7 +367,10 @@ fun main() = application {
                                 })
                         }
 
-                        DirectoryPicker(projectState.isOpenProjectDialogVisible, title = "Pick a folder") { path ->
+                        DirectoryPicker(
+                            show = projectState.isOpenProjectDialogVisible,
+                            title = "Pick a project folder to be opened"
+                        ) { path ->
                             projectState.isOpenProjectDialogVisible = false
                             if (path != null) {
                                 projectState.LoadProject(path, "", "")
@@ -366,25 +380,28 @@ fun main() = application {
                         FilePicker(
                             show = projectState.isImportImageDialogVisible,
                             title = "Pick an image file to import",
-                            fileExtensions = listOf("png", "jpg", "jpeg", "webp", "gif", "bmp")) { platformFile ->
+                            fileExtensions = listOf("png", "jpg", "jpeg", "webp", "gif", "bmp")
+                        ) { platformFile ->
                             projectState.isImportImageDialogVisible = false
-                            if(platformFile != null)
+                            if (platformFile != null)
                                 projectState.ImportImageFile(platformFile.path)
                         }
                         FilePicker(
                             show = projectState.isImportVideoDialogVisible,
                             title = "Pick a video file to import",
-                            fileExtensions = listOf("mp4", "mkv", "webm", "avi", "mov", "flv", "ts", "3gp", "m4v")) { platformFile ->
+                            fileExtensions = listOf("mp4", "mkv", "webm", "avi", "mov", "flv", "ts", "3gp", "m4v")
+                        ) { platformFile ->
                             projectState.isImportVideoDialogVisible = false
-                            if(platformFile != null)
+                            if (platformFile != null)
                                 projectState.ImportVideoFile(platformFile.path)
                         }
                         FilePicker(
                             show = projectState.isImportSoundDialogVisible,
                             title = "Pick a sound file to import",
-                            fileExtensions = listOf("wav", "mp3", "ogg", "flac", "aac", "amr", "opus", "midi")) { platformFile ->
+                            fileExtensions = listOf("wav", "mp3", "ogg", "flac", "aac", "amr", "opus", "midi")
+                        ) { platformFile ->
                             projectState.isImportSoundDialogVisible = false
-                            if(platformFile != null)
+                            if (platformFile != null)
                                 projectState.ImportSoundFile(platformFile.path)
                         }
                     }

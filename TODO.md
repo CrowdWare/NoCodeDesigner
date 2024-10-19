@@ -1,8 +1,8 @@
 # TODO
 
 ## Next release
-- book.sml parsen..use at createEbook()
-- When I change a color in app.sml app should be reloaded for preview
+- Build APK in background , display a bar or details in an output window
+- Browser App does not display the right colors, when pre cached
 - Theme, FontSize, FontFamily
 - FontSize changeable from end user in book app
 - TopAppBar in app.sml
@@ -47,6 +47,9 @@ STARTER 10,- month ebooks (epub2) only
 PRO     30,- month source code and .APK
 
 ## CrowdFunding
+at https://www.indiegogo.com/
+We need a pitch video.
+And a preview video where I demonstrate the app.
  20,- one month Pro
  50,- three months pro
  50,- six months Starter
