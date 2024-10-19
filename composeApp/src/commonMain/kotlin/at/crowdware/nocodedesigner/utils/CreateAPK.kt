@@ -10,31 +10,75 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.attribute.PosixFilePermission
 import javax.imageio.ImageIO
+import kotlin.io.path.createTempDirectory
 
 class CreateAPK {
     companion object {
         fun start(title: String, folder: String, source: String, app: App) {
-            val tempDir = File("$folder/tmp") //createTempDirectory().toFile()
+            val tempDir = createTempDirectory().toFile()
             tempDir.mkdir()
+            try {
+                copyResourceToFile("apk/app-debug.apk", "${tempDir.path}/app-debug.apk")
+                copyResourceToFile("apk/apksigner", "${tempDir.path}/apksigner")
+                copyResourceToFile("apk/apksigner.jar", "${tempDir.path}/apksigner.jar")
+                changeFilePermissions("${tempDir.path}/apksigner")
+                copyResourceToFile("apk/apktool", "${tempDir.path}/apktool")
+                copyResourceToFile("apk/apktool_2.9.3.jar", "${tempDir.path}/apktool_2.9.3.jar")
+                changeFilePermissions("${tempDir.path}/apktool")
+                runProcess(listOf("${tempDir.path}/apktool", "d", "app-debug.apk", "-f", "-o", "out/"), "${tempDir.path}/")
 
-            copyResourceToFile("apk/app-debug.apk", "$folder/tmp/app-debug.apk")
-            copyResourceToFile("apk/apksigner", "$folder/tmp/apksigner")
-            copyResourceToFile("apk/apksigner.jar", "$folder/tmp/apksigner.jar")
-            changeFilePermissions("$folder/tmp/apksigner")
-            copyResourceToFile("apk/apktool", "$folder/tmp/apktool")
-            copyResourceToFile("apk/apktool_2.9.3.jar", "$folder/tmp/apktool_2.9.3.jar")
-            changeFilePermissions("$folder/tmp/apktool")
-            runProcess(listOf("${folder}tmp/apktool", "d", "app-debug.apk", "-f", "-o", "out/"), "$folder/tmp/")
+                changeAppId(app.id, "${tempDir.path}", app.name)
+                changeIcon("$source/images/${app.icon}", "${tempDir.path}")
+                copyFilesToAsset(source, tempDir.path)
 
-            changeAppId(app.id, "$folder/tmp", app.name)
-            changeIcon("$source/images/${app.icon}", "$folder/tmp")
-            copyFilesToAsset(source, folder)
-
-            runProcess(listOf("${folder}tmp/apktool", "b", "out/", "-o", "rebuild.apk"), "$folder/tmp/")
-            runProcess(listOf("keytool", "-genkey", "-v", "-keystore", "debug.keystore", "-keyalg", "RSA", "-keysize", "2048", "-validity", "10000", "-alias", "androiddebugkey", "-storepass", "android", "-keypass", "android", "-dname", "CN=Android Debug,O=Android,C=US"), "$folder/tmp/")
-            runProcess(listOf("${folder}tmp/apksigner", "sign", "--ks", "debug.keystore", "--ks-key-alias", "androiddebugkey", "--ks-pass", "pass:android", "--key-pass", "pass:android", "--out", "signed.apk", "rebuild.apk"), "$folder/tmp/")
-
-            println("ready")
+                runProcess(listOf("${tempDir.path}/apktool", "b", "out/", "-o", "rebuild.apk"), "${tempDir.path}/")
+                runProcess(
+                    listOf(
+                        "keytool",
+                        "-genkey",
+                        "-v",
+                        "-keystore",
+                        "debug.keystore",
+                        "-keyalg",
+                        "RSA",
+                        "-keysize",
+                        "2048",
+                        "-validity",
+                        "10000",
+                        "-alias",
+                        "androiddebugkey",
+                        "-storepass",
+                        "android123",
+                        "-keypass",
+                        "android123",
+                        "-dname",
+                        "CN=Android Debug,O=Android,C=US"
+                    ), "${tempDir.path}/"
+                )
+                runProcess(
+                    listOf(
+                        "${tempDir.path}/apksigner",
+                        "sign",
+                        "--ks",
+                        "debug.keystore",
+                        "--ks-key-alias",
+                        "androiddebugkey",
+                        "--ks-pass",
+                        "pass:android123",
+                        "--key-pass",
+                        "pass:android123",
+                        "--out",
+                        "signed.apk",
+                        "rebuild.apk"
+                    ), "${tempDir.path}/"
+                )
+                runProcess(listOf("keytool", "-delete", "-alias", "androiddebugkey", "-keystore", "debug.keystore"),"${tempDir.path}")
+                File(tempDir, "signed.apk").copyTo(File("$folder/$title.apk"), overwrite = true)
+                tempDir.deleteRecursively()
+                println("ready")
+            } catch(e: Exception) {
+                println("Error while creating APK: ${e.message}")
+            }
         }
 
         fun copyFilesRecursively(sourceDir: File, targetDir: File) {
@@ -56,7 +100,7 @@ class CreateAPK {
 
         fun copyFilesToAsset(source: String, folder: String) {
             val sourceDir = File(source)
-            val outputDir = File("$folder/tmp/out/assets")
+            val outputDir = File("$folder/out/assets")
             if(!outputDir.exists())
                 outputDir.mkdir()
 
