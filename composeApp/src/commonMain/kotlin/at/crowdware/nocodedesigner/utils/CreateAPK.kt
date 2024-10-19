@@ -44,7 +44,7 @@ class CreateAPK {
                     currentProject.parseError += "permission added\n"
                     runProcess(
                         listOf("${tempDir.path}/apktool", "d", "app-debug.apk", "-f", "-o", "out/"),
-                        "${tempDir.path}/"
+                        "${tempDir.path}/", currentProject
                     )
                     currentProject.parseError += "apk extracted\n"
                     changeAppId(app.id, "${tempDir.path}", app.name)
@@ -56,7 +56,7 @@ class CreateAPK {
 
                     runProcess(
                         listOf("${tempDir.path}/apktool", "b", "out/", "-o", "rebuild.apk"),
-                        "${tempDir.path}/"
+                        "${tempDir.path}/", currentProject
                     )
                     currentProject.parseError += "apk builded\n"
                     runProcess(
@@ -80,7 +80,7 @@ class CreateAPK {
                             "android123",
                             "-dname",
                             "CN=Android Debug,O=Android,C=US"
-                        ), "${tempDir.path}/"
+                        ), "${tempDir.path}/", currentProject
                     )
                     currentProject.parseError += "keypair generated\n"
                     runProcess(
@@ -98,7 +98,7 @@ class CreateAPK {
                             "--out",
                             "signed.apk",
                             "rebuild.apk"
-                        ), "${tempDir.path}/"
+                        ), "${tempDir.path}/", currentProject
                     )
                     currentProject.parseError += "apk signed\n"
                     runProcess(
@@ -109,7 +109,7 @@ class CreateAPK {
                             "androiddebugkey",
                             "-keystore",
                             "debug.keystore"
-                        ), "${tempDir.path}"
+                        ), "${tempDir.path}", currentProject
                     )
                     currentProject.parseError += "keypair deleted\n"
                     File(tempDir, "signed.apk").copyTo(File("$folder/$title.apk"), overwrite = true)
@@ -119,7 +119,6 @@ class CreateAPK {
                 } catch (e: Exception) {
                     println("Error while creating APK: ${e.message}")
                 }
-                //    }
             }
         }
 
@@ -171,7 +170,8 @@ class CreateAPK {
             file.writeText(updatedContent)
         }
 
-        fun runProcess(command: List<String>, workingDirectory: String) {
+        fun runProcess(command: List<String>, workingDirectory: String, currentProject: ProjectState) {
+            val cmd = command[0].substringAfterLast("/")
             try {
                 val process = ProcessBuilder(command)
                     .directory(File(workingDirectory))
@@ -179,12 +179,12 @@ class CreateAPK {
                     .start()
                 val exitCode = process.waitFor()
                 if (exitCode == 0) {
-                    println("Command ${command[0]} executed successfully!")
+                    currentProject.parseError += "${cmd} executed successfully!\b"
                 } else {
-                    println("Command ${command[0]} failed with exit code: $exitCode")
+                    currentProject.parseError += "${cmd} failed with exit code: $exitCode\n"
                 }
             } catch (e: Exception) {
-                println("runProzess: ${e.message}")
+                currentProject.parseError += "${cmd} failed with error: ${e.message}\n"
                 e.printStackTrace()
             }
         }

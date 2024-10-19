@@ -1,7 +1,7 @@
 # TODO
 
 ## Next release
-- Build APK in background , display a bar or details in an output window
+- Build APK error handling
 - Browser App does not display the right colors, when pre cached
 - Theme, FontSize, FontFamily
 - FontSize changeable from end user in book app
