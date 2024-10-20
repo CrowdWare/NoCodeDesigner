@@ -45,7 +45,7 @@ Deployment {{
 
 
 """gets a list of files and there last change date"""
-def generate_deployment_data(base_path, exclude_files=None):
+def generate_deployment_data(type, base_path, exclude_files=None):
     if exclude_files is None:
         exclude_files = []
 
@@ -56,7 +56,7 @@ def generate_deployment_data(base_path, exclude_files=None):
                 file_path = os.path.relpath(os.path.join(dirpath, filename), base_path)
                 mod_time = os.path.getmtime(os.path.join(dirpath, filename))
                 formatted_time = datetime.utcfromtimestamp(mod_time).strftime('%Y.%m.%d %H.%M.%S')
-                deployment_entries.append(f'  File {{ path: "{file_path}" time: "{formatted_time}" }}')
+                deployment_entries.append(f'  File {{ path: "{file_path}" time: "{formatted_time}" type: "{type}" }}')
 
     return "\n".join(deployment_entries)
 
@@ -69,11 +69,13 @@ def update():
     images_path = os.path.join(base_path, 'images')
     sounds_path = os.path.join(base_path, 'sounds')
     videos_path = os.path.join(base_path, 'videos')
+    godot_path = os.path.join(base_path, 'godot')
 
-    deployment_data = generate_deployment_data(pages_path, exclude_files=['.DS_Store'])
-    deployment_data += "\n" + generate_deployment_data(images_path, exclude_files=['.DS_Store'])
-    deployment_data += "\n" + generate_deployment_data(sounds_path, exclude_files=['.DS_Store'])
-    deployment_data += "\n" + generate_deployment_data(videos_path, exclude_files=['.DS_Store'])
+    deployment_data = generate_deployment_data("page", pages_path, exclude_files=['.DS_Store'])
+    deployment_data += "\n" + generate_deployment_data("image", images_path, exclude_files=['.DS_Store'])
+    deployment_data += "\n" + generate_deployment_data("sound", sounds_path, exclude_files=['.DS_Store'])
+    deployment_data += "\n" + generate_deployment_data("video", videos_path, exclude_files=['.DS_Store'])
+    deployment_data += "\n" + generate_deployment_data("godot", godot_path, exclude_files=['.DS_Store'])
 
     print("Updating app.sml with deployment files...")
     update_deployment(app_sml_path, deployment_data)

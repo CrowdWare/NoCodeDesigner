@@ -275,6 +275,9 @@ fun RenderUIElement(element: UIElement) {
         is YoutubeElement -> {
             dynamicYoutube()
         }
+        is GodotElement -> {
+            dynamicGodot()
+        }
         else -> {
             println("Unknown element: $element")
         }
@@ -335,8 +338,10 @@ fun RowScope.RenderUIElement(element: UIElement) {
             }
         }
         is YoutubeElement -> {
-            println("youtube mit weight aus row")
             dynamicYoutube(modifier = if (element.weight > 0) {Modifier.weight(element.weight.toFloat())} else {Modifier})
+        }
+        is GodotElement -> {
+            dynamicGodot(modifier = if (element.weight > 0) {Modifier.weight(element.weight.toFloat())} else {Modifier})
         }
         else -> {
             println("Unsupported element: $element")
@@ -397,6 +402,9 @@ fun ColumnScope.RenderUIElement(element: UIElement) {
         }
         is YoutubeElement -> {
             dynamicYoutube(modifier = if (element.weight > 0) {Modifier.weight(element.weight.toFloat())} else {Modifier})
+        }
+        is GodotElement -> {
+            dynamicGodot(modifier = if (element.weight > 0) {Modifier.weight(element.weight.toFloat())} else {Modifier})
         }
         else -> {
             println("Unsupported element: $element")
@@ -705,6 +713,8 @@ expect fun dynamicVideofromAssets(modifier: Modifier = Modifier, filename: Strin
 expect fun dynamicVideofromUrl(modifier: Modifier = Modifier)
 @Composable
 expect fun dynamicYoutube(modifier: Modifier = Modifier)
+@Composable
+expect fun dynamicGodot(modifier: Modifier = Modifier)
 
 fun handleButtonClick(link: String) {
     when {

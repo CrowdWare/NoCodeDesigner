@@ -114,3 +114,12 @@ actual fun dynamicYoutube(modifier: Modifier) {
         modifier = modifier.fillMaxWidth()
     )
 }
+
+@Composable
+actual fun dynamicGodot(modifier: Modifier) {
+    Image(
+        painter = painterResource("images/godot.png"),
+        contentDescription = "Description of the image",
+        modifier = modifier.fillMaxWidth()
+    )
+}

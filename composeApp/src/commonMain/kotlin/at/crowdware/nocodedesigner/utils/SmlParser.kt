@@ -301,6 +301,13 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
                         )
                         elements.add(yt)
                     }
+                    "Godot" -> {
+                        val yt = UIElement.GodotElement(
+                            height = (properties["height"] as? PropertyValue.IntValue)?.value ?: 0,
+                            weight = (properties["weight"] as? PropertyValue.IntValue)?.value ?: 0
+                        )
+                        elements.add(yt)
+                    }
                 }
             }
         }

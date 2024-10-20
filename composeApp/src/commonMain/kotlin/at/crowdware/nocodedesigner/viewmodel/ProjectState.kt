@@ -6,6 +6,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
 import at.crowdware.nocodedesigner.utils.*
+import com.sun.source.tree.Tree
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -258,7 +259,14 @@ abstract class ProjectState {
                 ),
                 expanded = mutableStateOf(true)
             )
-            UIElement.Zero -> TreeNode(
+            is UIElement.GodotElement -> TreeNode(
+                title = mutableStateOf("Godot"),
+                type = NodeType.OTHER,
+                path = "",
+                children = mutableStateListOf(),
+                expanded = mutableStateOf(false)
+            )
+            is UIElement.Zero -> TreeNode(
                 title = mutableStateOf("Zero Element"),
                 type = NodeType.OTHER,
                 path = "",
