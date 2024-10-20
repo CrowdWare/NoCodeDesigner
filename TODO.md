@@ -1,6 +1,7 @@
 # TODO
 
 ## Next release
+- Build APK has to change appId into something like at.crowdware.nocodebrowser.preCached
 - Build APK error handling
 - Browser App does not display the right colors, when pre cached
 - Theme, FontSize, FontFamily
