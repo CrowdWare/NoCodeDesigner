@@ -143,7 +143,7 @@ fun mobilePreview(currentProject: ProjectState?) {
                                 color = "#000000",
                                 14.sp,
                                 FontWeight.Normal,
-                                TextAlign.Left
+                                TextAlign.Left, 0, 0, 0
                             )
                             Box(
                                 modifier = Modifier
@@ -194,7 +194,7 @@ fun renderMarkdown(element: MarkdownElement) {
 }
 
 @Composable
-fun renderButton(element: ButtonElement) {
+fun renderButton(modifier: Modifier, element: ButtonElement) {
     var colors = ButtonDefaults.buttonColors()
     if(element.color.isNotEmpty() && element.backgroundColor.isNotEmpty())
         colors = ButtonDefaults.buttonColors(backgroundColor = hexToColor(element.backgroundColor), contentColor = hexToColor(element.color))
@@ -205,7 +205,9 @@ fun renderButton(element: ButtonElement) {
     else
         colors = ButtonDefaults.buttonColors(backgroundColor = hexToColor("primary"), contentColor = hexToColor("onPrimary"))
     Button(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth()
+            .then(if(element.width > 0) Modifier.width(element.width.dp)else Modifier)
+            .then(if(element.height > 0) Modifier.height(element.height.dp)else Modifier),
         colors = colors,
         onClick =  { handleButtonClick(element.link) }
     ) {
@@ -233,8 +235,10 @@ fun renderRow(element: RowElement) {
         top = element.padding.top.dp,
         bottom = element.padding.bottom.dp,
         start = element.padding.left.dp,
-        end = element.padding.right.dp
-    ).fillMaxWidth()) {
+        end = element.padding.right.dp)
+        .fillMaxWidth()
+        .then(if(element.height > 0) Modifier.height(element.height.dp) else Modifier)
+        .then(if(element.width > 0) Modifier.width(element.width.dp) else Modifier)){
         for (childElement in element.uiElements) {
             RenderUIElement(childElement)
         }
@@ -251,7 +255,7 @@ fun RenderUIElement(element: UIElement) {
             renderMarkdown(element)
         }
         is ButtonElement -> {
-            renderButton(element)
+            renderButton(modifier = Modifier, element)
         }
         is ColumnElement -> {
             renderColumn(element)
@@ -275,8 +279,8 @@ fun RenderUIElement(element: UIElement) {
         is YoutubeElement -> {
             dynamicYoutube()
         }
-        is GodotElement -> {
-            dynamicGodot()
+        is SceneElement -> {
+            dynamicScene(modifier = Modifier, element.width, element.height)
         }
         else -> {
             println("Unknown element: $element")
@@ -294,7 +298,7 @@ fun RowScope.RenderUIElement(element: UIElement) {
             renderMarkdown(element)
         }
         is ButtonElement -> {
-            renderButton(element)
+            renderButton(modifier = if(element.weight > 0)Modifier.weight(element.weight.toFloat())else Modifier, element)
         }
         is ColumnElement -> {
             renderColumn(element)
@@ -303,7 +307,7 @@ fun RowScope.RenderUIElement(element: UIElement) {
             renderRow(element)
         }
         is ImageElement -> {
-            dynamicImageFromAssets(modifier = if(element.weight > 0){Modifier.weight(element.weight.toFloat())}else{Modifier}, filename = element.src, element.scale, element.link)
+            dynamicImageFromAssets(modifier = if(element.weight > 0)Modifier.weight(element.weight.toFloat())else Modifier, filename = element.src, element.scale, element.link)
         }
         is SoundElement -> {
             dynamicSoundfromAssets(element.src)
@@ -340,8 +344,8 @@ fun RowScope.RenderUIElement(element: UIElement) {
         is YoutubeElement -> {
             dynamicYoutube(modifier = if (element.weight > 0) {Modifier.weight(element.weight.toFloat())} else {Modifier})
         }
-        is GodotElement -> {
-            dynamicGodot(modifier = if (element.weight > 0) {Modifier.weight(element.weight.toFloat())} else {Modifier})
+        is SceneElement -> {
+            dynamicScene(modifier = if (element.weight > 0) {Modifier.weight(element.weight.toFloat())} else {Modifier}, element.width, element.height)
         }
         else -> {
             println("Unsupported element: $element")
@@ -359,7 +363,7 @@ fun ColumnScope.RenderUIElement(element: UIElement) {
             renderMarkdown(element)
         }
         is ButtonElement -> {
-            renderButton(element)
+            renderButton(modifier = if(element.weight > 0)Modifier.weight(element.weight.toFloat())else Modifier, element)
         }
         is ColumnElement -> {
             renderColumn(element)
@@ -403,8 +407,8 @@ fun ColumnScope.RenderUIElement(element: UIElement) {
         is YoutubeElement -> {
             dynamicYoutube(modifier = if (element.weight > 0) {Modifier.weight(element.weight.toFloat())} else {Modifier})
         }
-        is GodotElement -> {
-            dynamicGodot(modifier = if (element.weight > 0) {Modifier.weight(element.weight.toFloat())} else {Modifier})
+        is SceneElement -> {
+            dynamicScene(modifier = if (element.weight > 0) {Modifier.weight(element.weight.toFloat())} else {Modifier}, element.width, element.height)
         }
         else -> {
             println("Unsupported element: $element")
@@ -714,7 +718,7 @@ expect fun dynamicVideofromUrl(modifier: Modifier = Modifier)
 @Composable
 expect fun dynamicYoutube(modifier: Modifier = Modifier)
 @Composable
-expect fun dynamicGodot(modifier: Modifier = Modifier)
+expect fun dynamicScene(modifier: Modifier = Modifier, width: Int, height: Int)
 
 fun handleButtonClick(link: String) {
     when {

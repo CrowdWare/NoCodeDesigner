@@ -1,9 +1,7 @@
 # TODO
 
 ## Next release
-- Copy Godot files to assets.
 - When loading an asset or page use type to determine folder
-- When loading an app in browser, load all Godot files into GodotCache
 - Build APK has to change appId into something like at.crowdware.nocodebrowser.preCached
 - Build APK error handling
 - Browser App does not display the right colors, when pre cached

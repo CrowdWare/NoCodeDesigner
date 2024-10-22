@@ -3,6 +3,7 @@ package at.crowdware.nocodedesigner.view.desktop
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -116,10 +117,12 @@ actual fun dynamicYoutube(modifier: Modifier) {
 }
 
 @Composable
-actual fun dynamicGodot(modifier: Modifier) {
+actual fun dynamicScene(modifier: Modifier, width: Int, height: Int) {
     Image(
-        painter = painterResource("images/godot.png"),
+        painter = painterResource("images/scene.png"),
         contentDescription = "Description of the image",
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .then(if(width > 0) Modifier.width(width.dp) else Modifier)
+            .then(if(height > 0) Modifier.height(height.dp) else Modifier)
     )
 }

@@ -112,6 +112,7 @@ data class Page(
 
 sealed class UIElement {
     data object Zero : UIElement()
+
     @ElementAnnotation("With a **Text** element you can render text on the page.")
     data class TextElement(
         @StringAnnotation
@@ -122,6 +123,15 @@ sealed class UIElement {
 
         @IntAnnotation
         val fontSize: TextUnit,
+
+        @WeightAnnotation
+        val weight: Int,
+
+        @IntAnnotation
+        val width: Int,
+
+        @IntAnnotation
+        val height: Int,
 
         @StringAnnotation("Enter one of the following weights normal, extralight, thin, medium, bold, semibold, extrabold, black like **fontWeight: \"bold\"**")
         val fontWeight: FontWeight,
@@ -141,6 +151,15 @@ sealed class UIElement {
         @HexColorAnnotation
         val color: String,
 
+        @WeightAnnotation
+        val weight: Int,
+
+        @IntAnnotation
+        val width: Int,
+
+        @IntAnnotation
+        val height: Int,
+
         @LinkAnnotation
         val link: String) : UIElement()
 
@@ -155,6 +174,12 @@ sealed class UIElement {
         @WeightAnnotation
         val weight: Int,
 
+        @IntAnnotation
+        val width: Int,
+
+        @IntAnnotation
+        val height: Int,
+
         @LinkAnnotation
         val link: String) : UIElement()
 
@@ -163,22 +188,41 @@ sealed class UIElement {
         @IntAnnotation
         val amount: Int,
 
-        @WeightAnnotation()
-        val weight: Int) : UIElement()
+        @WeightAnnotation
+        val weight: Int
+
+        ) : UIElement()
 
     @ElementAnnotation("With a **Video** element you can show and play videos on the page.")
     data class VideoElement(
         @StringAnnotation("Enter the name of the video file like **src: \"sample.mp4\"**.\nThe video file should be imported into assets first.\nYou can also specify a URL to stream a video from an online source, like **src: \"http://example.com/sample.mp4\"**")
         val src: String,
+
         @WeightAnnotation
-        val weight: Int) : UIElement()
+        val weight: Int,
+
+        @IntAnnotation
+        val width: Int,
+
+        @IntAnnotation
+        val height: Int,
+
+        ) : UIElement()
 
     @ElementAnnotation("With a **Youtube** element you can show and play YouTube videos on the page.")
     data class YoutubeElement(
         @StringAnnotation("Enter the YouTube video id in quotes like **id:\"FCyiuG\"**")
         val id: String,
+
         @WeightAnnotation
-        val weight: Int) : UIElement()
+        val weight: Int,
+
+        @IntAnnotation
+        val width: Int,
+
+        @IntAnnotation
+        val height: Int
+        ) : UIElement()
 
     @ElementAnnotation("With a **Sound** element you can play sounds when the page is loaded.")
     data class SoundElement(
@@ -190,11 +234,29 @@ sealed class UIElement {
         @PaddingAnnotation
         val padding: Padding,
 
+        @WeightAnnotation
+        val weight: Int,
+
+        @IntAnnotation
+        val width: Int,
+
+        @IntAnnotation
+        val height: Int,
+
         val uiElements: MutableList<UIElement> = mutableListOf()) : UIElement()
     @ElementAnnotation("With a **Column** element you can arrange elements vertically on the page.")
     data class ColumnElement(
         @PaddingAnnotation
         val padding: Padding,
+
+        @WeightAnnotation
+        val weight: Int,
+
+        @IntAnnotation
+        val width: Int,
+
+        @IntAnnotation
+        val height: Int,
 
         val uiElements: MutableList<UIElement> = mutableListOf()) : UIElement()
 
@@ -213,16 +275,42 @@ sealed class UIElement {
         val fontWeight: FontWeight,
 
         @StringAnnotation("Enter one of the following alignments left, center, right like **textAlign: \"center\"**")
-        val textAlign: TextAlign
+        val textAlign: TextAlign,
+
+        @WeightAnnotation
+        val weight: Int,
+
+        @IntAnnotation
+        val width: Int,
+
+        @IntAnnotation
+        val height: Int,
 
     ) : UIElement()
 
-    @ElementAnnotation("With a **Godot** element you can plug in godot scenes. These scenes can be complete 2D or 3D games and also interactive scenes, tutorials, movies whatever you can imagine and build with godot.")
-    data class GodotElement(
+    @ElementAnnotation("With a **Scene** element you can render in 3D scenes. These scenes can also be interactive tutorials, movies whatever you can imagine and build with 3D models.")
+    data class SceneElement(
+
+        @WeightAnnotation
+        val weight: Int,
+
+        @IntAnnotation
+        val width: Int,
+
         @IntAnnotation
         val height: Int,
-        @WeightAnnotation
-        val weight: Int
+
+        @StringAnnotation("The name of the glb model object file to be rendered. Sample: **model: puppet.glb**")
+        val glb: String,
+
+        @StringAnnotation("The name of the gltf model object file to be rendered. Sample: **model: puppet.gltf**")
+        val gltf: String,
+
+        @StringAnnotation("The name of the indirect light source texture file to be rendered. KTX files can be rendered. Sample: **environment: light.ktx**")
+        val ibl: String,
+
+        @StringAnnotation("The name of the skybox texture file to be rendered. KTX files can be rendered. Sample: **environment: forest.ktx**")
+        val skybox: String
     ) : UIElement()
 }
 

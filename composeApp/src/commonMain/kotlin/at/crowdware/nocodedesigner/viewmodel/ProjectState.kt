@@ -259,8 +259,8 @@ abstract class ProjectState {
                 ),
                 expanded = mutableStateOf(true)
             )
-            is UIElement.GodotElement -> TreeNode(
-                title = mutableStateOf("Godot"),
+            is UIElement.SceneElement -> TreeNode(
+                title = mutableStateOf("Scene"),
                 type = NodeType.OTHER,
                 path = "",
                 children = mutableStateListOf(),
