@@ -7,7 +7,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import at.crowdware.nocodedesigner.utils.UIElement
 
 enum class NodeType {
-    DIRECTORY, OTHER, IMAGE, VIDEO, SOUND, XML, MD, SML
+    DIRECTORY, OTHER, IMAGE, VIDEO, SOUND, XML, MD, SML, MODEL
 }
 
 val extensionToNodeType = mapOf(
@@ -31,7 +31,11 @@ val extensionToNodeType = mapOf(
     "flv" to NodeType.VIDEO,
     "ts" to NodeType.VIDEO,
     "3gp" to NodeType.VIDEO,
-    "m4v" to NodeType.VIDEO
+    "m4v" to NodeType.VIDEO,
+    "glb" to NodeType.MODEL,
+    "gltf" to NodeType.MODEL,
+    "bin" to NodeType.MODEL,
+    "ktx" to NodeType.MODEL,
 )
 
 open class TreeNode(

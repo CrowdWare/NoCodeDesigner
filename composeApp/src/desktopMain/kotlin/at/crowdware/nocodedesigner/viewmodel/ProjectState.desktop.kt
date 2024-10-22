@@ -54,7 +54,7 @@ class DesktopProjectState : ProjectState() {
         }
 
         fun mapFileToTreeNode(file: File): TreeNode {
-            val allowedFolderNames = listOf("images", "videos", "sounds", "pages", "parts")
+            val allowedFolderNames = listOf("images", "videos", "sounds", "pages", "parts", "models")
             val nodeType = getNodeType(file)
             val children = if (file.isDirectory) {
                 file.listFiles()
@@ -90,6 +90,10 @@ class DesktopProjectState : ProjectState() {
                 soundsNode = node
             } else if (node.title.value == "parts") {
                 partsNode = node
+            } else if (node.title.value == "models") {
+                modelsNode = node
+            } else if (node.title.value == "textures") {
+                texturesNode = node
             }
             return node
         }
@@ -99,7 +103,7 @@ class DesktopProjectState : ProjectState() {
             ?.filter {
                 it.name != ".DS_Store" &&
                         !it.name.endsWith(".py") &&
-                        (it.isDirectory && it.name in listOf("pages", "parts", "images", "sounds", "videos")) ||
+                        (it.isDirectory && it.name in listOf("pages", "parts", "images", "sounds", "videos", "models", "textures")) ||
                         (it.isFile && it.name in listOf("app.sml", "book.sml")) // Füge die gewünschten Dateien hinzu
             }
             ?.map { mapFileToTreeNode(it) }
@@ -164,6 +168,12 @@ class DesktopProjectState : ProjectState() {
             videos.mkdirs()
             val sounds = File("$path$name/sounds")
             sounds.mkdirs()
+            val images = File("$path$name/images")
+            images.mkdirs()
+            val models = File("$path$name/models")
+            models.mkdirs()
+            val textures = File("$path$name/textures")
+            textures.mkdirs()
             val app = File("$path$name/app.sml")
             var appContent = "App {\n  smlVersion: \"1.0\"\n  name: \"$name\"\n  version: \"1.0\"\n  id: \"$appId.$name\"\n  icon: \"icon.png\"\n\n  Navigation {\n    type: \"HorizontalPager\"\n\n    Item { page: \"home\" }  \n  }\n"
             if(theme == "Light")

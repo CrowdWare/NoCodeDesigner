@@ -1,6 +1,7 @@
 # TODO
 
 ## Next release
+- Atm only one scene can be rendered
 - When loading an asset or page use type to determine folder
 - Build APK has to change appId into something like at.crowdware.nocodebrowser.preCached
 - Build APK error handling

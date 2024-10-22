@@ -404,6 +404,24 @@ fun main() = application {
                             if (platformFile != null)
                                 projectState.ImportSoundFile(platformFile.path)
                         }
+                        FilePicker(
+                            show = projectState.isImportModelDialogVisible,
+                            title = "Pick a model file to import",
+                            fileExtensions = listOf("glb", "gltf", "ktx", "bin")
+                        ) { platformFile ->
+                            projectState.isImportModelDialogVisible = false
+                            if (platformFile != null)
+                                projectState.ImportModelFile(platformFile.path)
+                        }
+                        FilePicker(
+                            show = projectState.isImportTextureDialogVisible,
+                            title = "Pick a texture file to import",
+                            fileExtensions = listOf("\"png\", \"jpg\", \"jpeg\", \"webp\", \"gif\", \"bmp\"")
+                        ) { platformFile ->
+                            projectState.isImportTextureDialogVisible = false
+                            if (platformFile != null)
+                                projectState.ImportTextureFile(platformFile.path)
+                        }
                     }
                 }
             }

@@ -113,7 +113,10 @@ fun projectStructure(currentProject: ProjectState) {
             if (expanded) {
                 val density = LocalDensity.current
                 val dpOffset = with(density) {
-                    DpOffset((treeNodeOffset.x + pointerOffset.x - 40).toDp(), (treeNodeOffset.y - treeViewSize.height - 60).toDp())
+                    DpOffset(
+                        (treeNodeOffset.x + pointerOffset.x - 40).toDp(),
+                        (treeNodeOffset.y - treeViewSize.height - 60).toDp()
+                    )
                 }
                 DropdownMenu(
                     modifier = Modifier
@@ -140,8 +143,7 @@ fun projectStructure(currentProject: ProjectState) {
                                 }) {
                                     Text(text = "Rename", fontSize = 12.sp)
                                 }
-                            }
-                            else if (treeNode.type == NodeType.MD) {
+                            } else if (treeNode.type == NodeType.MD) {
                                 DropdownMenuItem(onClick = {
                                     expanded = false
                                     currentProject.currentTreeNode = treeNode
@@ -157,16 +159,32 @@ fun projectStructure(currentProject: ProjectState) {
                                     val ext = treeNode.title.value.substringAfter(".")
                                     val type = extensionToNodeType[ext]
                                     var ins = ""
-                                    when(type) {
-                                        NodeType.SOUND -> {ins = "Sound { src: \"${treeNode.title.value}\" }\n"}
-                                        NodeType.IMAGE -> {ins = "Image { src: \"${treeNode.title.value}\" }\n"}
-                                        NodeType.VIDEO -> {ins = "Video { src: \"${treeNode.title.value}\" }\n"}
+                                    when (type) {
+                                        NodeType.SOUND -> {
+                                            ins = "Sound { src: \"${treeNode.title.value}\" }\n"
+                                        }
+
+                                        NodeType.IMAGE -> {
+                                            ins = "Image { src: \"${treeNode.title.value}\" }\n"
+                                        }
+
+                                        NodeType.VIDEO -> {
+                                            ins = "Video { src: \"${treeNode.title.value}\" }\n"
+                                        }
+
+                                        NodeType.MODEL -> {
+                                            ins = "Model { src: \"${treeNode.title.value}\" }\n"
+                                        }
+
                                         else -> {}
                                     }
 
                                     val cursorPosition = currentProject.currentFileContent.selection.start
                                     val currentText = currentProject.currentFileContent.text
-                                    val newTextValue = currentText.substring(0, cursorPosition) + ins + currentText.substring(cursorPosition)
+                                    val newTextValue =
+                                        currentText.substring(0, cursorPosition) + ins + currentText.substring(
+                                            cursorPosition
+                                        )
                                     currentProject.currentFileContent = currentProject.currentFileContent.copy(
                                         text = newTextValue,
                                         selection = TextRange(cursorPosition + ins.length)
@@ -223,11 +241,24 @@ fun projectStructure(currentProject: ProjectState) {
                         }) {
                             Text(text = "Import", fontSize = 12.sp)
                         }
+                    } else if (treeNode.title.value == "models") {
+                        DropdownMenuItem(onClick = {
+                            expanded = false
+                            currentProject.isImportModelDialogVisible = true
+                        }) {
+                            Text(text = "Import", fontSize = 12.sp)
+                        }
+                    } else if (treeNode.title.value == "textures") {
+                        DropdownMenuItem(onClick = {
+                            expanded = false
+                            currentProject.isImportTextureDialogVisible = true
+                        }) {
+                            Text(text = "Import", fontSize = 12.sp)
+                        }
                     }
                 }
             }
         }
-
         // Draggable Divider
         Box(
             modifier = Modifier
@@ -261,7 +292,7 @@ fun projectStructure(currentProject: ProjectState) {
                 tree = currentProject.elementData,
                 iconProvider = { node -> fileTreeIconProvider(node) },
                 onNodeDoubleClick = { node -> },
-                onNodeRightClick = { _,_,_-> },
+                onNodeRightClick = { _, _, _ -> },
                 onClick = { node ->
                     var clsName = ""
                     if (node.title.value == "Page") {
@@ -277,3 +308,4 @@ fun projectStructure(currentProject: ProjectState) {
         }
     }
 }
+

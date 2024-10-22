@@ -45,6 +45,8 @@ abstract class ProjectState {
     var isImportImageDialogVisible by mutableStateOf(false)
     var isImportVideoDialogVisible by mutableStateOf(false)
     var isImportSoundDialogVisible by mutableStateOf(false)
+    var isImportModelDialogVisible by mutableStateOf(false)
+    var isImportTextureDialogVisible by mutableStateOf(false)
     var isCreateEbookVisible by mutableStateOf(false)
     var isCreateAPKVisible by mutableStateOf(false)
     var isAboutDialogOpen by  mutableStateOf(false)
@@ -60,6 +62,8 @@ abstract class ProjectState {
     lateinit var videosNode: TreeNode
     lateinit var soundsNode: TreeNode
     lateinit var partsNode: TreeNode
+    lateinit var modelsNode: TreeNode
+    lateinit var texturesNode: TreeNode
     var app: App? by mutableStateOf(null)
     var book: Book? by mutableStateOf(null)
     var page: Page? by mutableStateOf(null)
@@ -118,6 +122,22 @@ abstract class ProjectState {
         copyAssetFile(path, target)
         val node = TreeNode(title = mutableStateOf(filename), path = path, type = getNodeType(path))
         soundsNode.children.add(node)
+    }
+
+    fun ImportModelFile(path: String) {
+        val filename = path.substringAfterLast("/")
+        val target  = "$folder/models/$filename"
+        copyAssetFile(path, target)
+        val node = TreeNode(title = mutableStateOf(filename), path = path, type = getNodeType(path))
+        modelsNode.children.add(node)
+    }
+
+    fun ImportTextureFile(path: String) {
+        val filename = path.substringAfterLast("/")
+        val target  = "$folder/textures/$filename"
+        copyAssetFile(path, target)
+        val node = TreeNode(title = mutableStateOf(filename), path = path, type = getNodeType(path))
+        texturesNode.children.add(node)
     }
 
     fun LoadFile(filePath: String) {
