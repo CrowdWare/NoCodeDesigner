@@ -267,18 +267,18 @@ fun main() = application {
                                     }
                                 })
                         }
-                        if (projectState.isRenamePageDialogVisible) {
+                        if (projectState.isRenameFileDialogVisible) {
                             val coroutineScope = rememberCoroutineScope()
                             val title = projectState.currentTreeNode?.title?.value?.substringBefore(".")
-                            var pageName by remember { mutableStateOf(title ?: "") }
-                            renamePageDialog(
-                                name = pageName,
-                                onNameChange = { pageName = it },
-                                onDismissRequest = { projectState.isRenamePageDialogVisible = false },
+                            var fileName by remember { mutableStateOf(title ?: "") }
+                            renameFileDialog(
+                                name = fileName,
+                                onNameChange = { fileName = it },
+                                onDismissRequest = { projectState.isRenameFileDialogVisible = false },
                                 onCreateRequest = {
-                                    projectState.isRenamePageDialogVisible = false
+                                    projectState.isRenameFileDialogVisible = false
                                     coroutineScope.launch {
-                                        projectState.renamePage(pageName)
+                                        projectState.renameFile(fileName)
                                     }
                                 })
                         }

@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 
 @Composable
-fun renamePageDialog(
+fun renameFileDialog(
     name: String,
     onNameChange: (String) -> Unit,
     onDismissRequest: () -> Unit,

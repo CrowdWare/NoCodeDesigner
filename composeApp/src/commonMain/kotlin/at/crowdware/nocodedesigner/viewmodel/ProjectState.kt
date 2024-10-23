@@ -6,7 +6,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
 import at.crowdware.nocodedesigner.utils.*
-import com.sun.source.tree.Tree
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,7 +37,7 @@ abstract class ProjectState {
         private set
     var isPageDialogVisible by mutableStateOf(false)
     var isPartDialogVisible by mutableStateOf(false)
-    var isRenamePageDialogVisible by mutableStateOf(false)
+    var isRenameFileDialogVisible by mutableStateOf(false)
     var isProjectStructureVisible by mutableStateOf(true)
     var isNewProjectDialogVisible by mutableStateOf(false)
     var isOpenProjectDialogVisible by mutableStateOf(false)
@@ -374,10 +373,12 @@ abstract class ProjectState {
         }
     }
 
-    fun renamePage(name: String) {
-        val newPath = "$folder/pages/$name.sml"
+    fun renameFile(name: String) {
+        val folder = currentTreeNode?.path?.substringBeforeLast("/")
+        val ext = currentTreeNode?.path?.substringAfterLast(".")
+        val newPath = "$folder/$name.$ext"
         renameFile(currentTreeNode?.path!!, newPath)
-        currentTreeNode!!.title.value = "$name.sml"
+        currentTreeNode!!.title.value = "$name.$ext"
         currentTreeNode!!.path = newPath
     }
 }
