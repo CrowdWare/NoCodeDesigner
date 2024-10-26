@@ -30,16 +30,16 @@ class CreateEbook {
             val tempDir = createTempDirectory().toFile()
             val guid = UUID.randomUUID().toString()
 
-            copyAssets(book.theme, tempDir)
-
             File(tempDir, "EPUB/parts").mkdirs()
             File(tempDir, "EPUB/images").mkdirs()
+            File(tempDir, "EPUB/css").mkdirs()
             File(tempDir, "META-INF").mkdirs()
 
-            copyImages(tempDir, source)
-            writeMimetype(tempDir)
-            writeContainer(tempDir)
 
+            copyAssets(book.theme, tempDir)
+            copyImages(tempDir, source)
+            writeContainer(tempDir)
+            writeMimetype(tempDir)
             generatePackage(tempDir, book, guid)
             val toc = generateParts(tempDir, book, source)
             generateToc(tempDir, book, toc)
@@ -63,7 +63,7 @@ class CreateEbook {
             val resourceURL = classLoader.getResource(resourcePath)
                 ?: throw IllegalArgumentException("Resource not found: $resourcePath")
 
-            copyDirectoryFromResources(classLoader, resourceURL, resourcePath, targetDir)
+            copyDirectoryFromResources(classLoader, resourceURL, resourcePath, File(targetDir, "EPUB"))
         }
 
         fun copyDirectoryFromResources(classLoader: ClassLoader, resourceURL: URL, resourcePath: String, targetDir: File) {
@@ -158,7 +158,7 @@ class CreateEbook {
 
             for (part in book.parts) {
                 if (!part.pdfOnly) {
-                    val name = part.name.replace(" ", "-").lowercase()
+                    val name = part.src.substringBefore(".").replace(" ", "-").lowercase()
                     if (name != "toc") {
                         val item = mutableMapOf<String, String>()
                         item["href"] = "parts/$name.xhtml"
@@ -224,7 +224,7 @@ class CreateEbook {
                     val partSourcePath = Paths.get(source, "parts", part.src).toFile()
 
                     val text = partSourcePath.readText(Charsets.UTF_8)
-                    val name = part.name.replace(" ", "-").lowercase()
+                    val name = part.src.substringBefore(".").replace(" ", "-").lowercase()
 
                     if (name != "toc") {
                         val options = MutableDataSet()
@@ -235,7 +235,7 @@ class CreateEbook {
                         val document = parser.parse(text)
                         val renderer = HtmlRenderer.builder(options).build()
                         // Markdown processing and table fixing
-                        val html = fixTables(renderer.render(document))
+                        val html = fixImagePaths(fixTables(renderer.render(document)))
 
                         val linkList = getLinks(html, name)
                         toc.addAll(linkList)
@@ -259,6 +259,10 @@ class CreateEbook {
             return toc
         }
 
+        private fun fixImagePaths(input: String): String {
+            return input.replace("src=\"", "src=\"../images/")
+        }
+
         fun getAllFiles(dir: File): List<File> {
             return dir.walk().filter { it.isFile }.toList()
         }
@@ -275,7 +279,8 @@ class CreateEbook {
 
         fun generateToc(dir: File, book: Book, parts: List<Map<String, Any>>) {
             val context = mutableMapOf<String, Any>()
-            context["parts"] = parts
+            if (parts.size > 0)
+                context["parts"] = parts
 
             val classLoader = Thread.currentThread().contextClassLoader
             val resourcePath = "themes/${book.theme}/layout/toc.xhtml"
@@ -319,6 +324,7 @@ class CreateEbook {
                     item["href"] = "$partName.xhtml#$id"
                     item["name"] = name
                     item["id"] = id
+                    item["hasparts"] = false
                     item["parts"] = mutableListOf<Map<String, Any>>()
 
                     if (nodes.size < c) {
@@ -330,6 +336,7 @@ class CreateEbook {
                     if (c == 1) {
                         linksList.add(item)
                     } else {
+                        (nodes[c - 2] as MutableMap<String, Any>)["hasparts"] = true
                         (nodes[c - 2]["parts"] as MutableList<Map<String, Any>>).add(item)
                     }
                 }

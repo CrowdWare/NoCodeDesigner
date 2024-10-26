@@ -19,16 +19,13 @@
 
 package at.crowdware.nocodedesigner.view.desktop
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -158,7 +155,47 @@ fun mobilePreview(currentProject: ProjectState?) {
                                         .verticalScroll(scrollState)
                                         .background(color = hexToColor("#F6F6F6"))
                                 ) {
-                                    renderMarkdown(md)
+                                    // we have to split the text to find out, where the images shall be rendered
+                                    val imagePattern = Regex("!\\[([^\\]]*)\\]\\s*\\(\\s*([^\\s)]+)\\s*\"?([^\"\\)]*)\"?\\)")
+
+                                    var currentIndex = 0
+                                    val matches = imagePattern.findAll(md.text).toList()
+
+                                    matches.forEach { match ->
+                                        val startIndex = match.range.first
+                                        val endIndex = match.range.last
+
+                                        if (currentIndex < startIndex) {
+                                            val textBeforeImage = md.text.substring(currentIndex, startIndex)
+
+                                            Text(
+                                                text = parseMarkdown(textBeforeImage),
+                                                style = TextStyle(
+                                                    color = hexToColor(
+                                                        md.color,
+                                                        colorNameToHex("onBackground")
+                                                    )
+                                                ),
+                                                fontSize = md.fontSize,
+                                                fontWeight = md.fontWeight,
+                                                textAlign = md.textAlign
+                                            )
+                                        }
+                                        val altText = match.groupValues[1]
+                                        val imageUrl = match.groupValues[2].trim()
+
+                                        dynamicImageFromAssets(modifier = Modifier, imageUrl, "fit", "")
+
+                                    currentIndex = endIndex + 1
+                                    }
+                                    val remainingText = md.text.substring(currentIndex)
+                                    Text(
+                                        text = parseMarkdown(remainingText),
+                                        style = TextStyle(color = hexToColor(md.color, colorNameToHex("onBackground"))),
+                                        fontSize = md.fontSize,
+                                        fontWeight = md.fontWeight,
+                                        textAlign = md.textAlign
+                                    )
                                 }
                             }
                         }
@@ -586,6 +623,7 @@ fun ColumnScope.RenderPage(page: Page) {
     }
 }
 
+
 fun parseMarkdown(markdown: String): AnnotatedString {
     val builder = AnnotatedString.Builder()
     val lines = markdown.split("\n") // Verarbeite alle Zeilen
@@ -593,6 +631,7 @@ fun parseMarkdown(markdown: String): AnnotatedString {
     for (i in lines.indices) {
         val line = lines[i]
         var j = 0
+
         while (j < line.length) {
             when {
                 line.startsWith("###### ", j) -> {
@@ -706,6 +745,8 @@ fun parseMarkdown(markdown: String): AnnotatedString {
 
     return builder.toAnnotatedString()
 }
+
+
 
 @Composable
 expect fun dynamicImageFromAssets(modifier: Modifier = Modifier, filename: String, scale: String, link: String)

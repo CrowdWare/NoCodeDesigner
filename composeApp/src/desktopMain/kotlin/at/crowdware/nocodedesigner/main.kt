@@ -47,6 +47,7 @@ import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import at.crowdware.nocodedesigner.viewmodel.createProjectState
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 
 
 import java.awt.Desktop
@@ -79,7 +80,7 @@ fun main() = application {
     var isAskingToClose by remember { mutableStateOf(false) }
 
     // setup logging, all println are stored in a log file
-    setupLogging()
+    //setupLogging()
 
     System.setProperty("apple.awt.application.name", appName)
     // Check if the desktop supports macOS actions (About, Quit, etc.)
@@ -376,33 +377,32 @@ fun main() = application {
                                 projectState.LoadProject(path, "", "")
                             }
                         }
-
-                        FilePicker(
+                        MultipleFilePicker(
                             show = projectState.isImportImageDialogVisible,
-                            title = "Pick an image file to import",
+                            title = "Pick one or more image files to import",
                             fileExtensions = listOf("png", "jpg", "jpeg", "webp", "gif", "bmp")
                         ) { platformFile ->
                             projectState.isImportImageDialogVisible = false
                             if (platformFile != null)
-                                projectState.ImportImageFile(platformFile.path)
+                                projectState.ImportImageFile(platformFile)
                         }
-                        FilePicker(
+                        MultipleFilePicker(
                             show = projectState.isImportVideoDialogVisible,
-                            title = "Pick a video file to import",
+                            title = "Pick one or more video files to import",
                             fileExtensions = listOf("mp4", "mkv", "webm", "avi", "mov", "flv", "ts", "3gp", "m4v")
                         ) { platformFile ->
                             projectState.isImportVideoDialogVisible = false
                             if (platformFile != null)
-                                projectState.ImportVideoFile(platformFile.path)
+                                projectState.ImportVideoFile(platformFile)
                         }
-                        FilePicker(
+                        MultipleFilePicker(
                             show = projectState.isImportSoundDialogVisible,
-                            title = "Pick a sound file to import",
+                            title = "Pick one or more sound files to import",
                             fileExtensions = listOf("wav", "mp3", "ogg", "flac", "aac", "amr", "opus", "midi")
                         ) { platformFile ->
                             projectState.isImportSoundDialogVisible = false
                             if (platformFile != null)
-                                projectState.ImportSoundFile(platformFile.path)
+                                projectState.ImportSoundFile(platformFile)
                         }
                         FilePicker(
                             show = projectState.isImportModelDialogVisible,

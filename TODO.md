@@ -1,6 +1,14 @@
 # TODO
 
 ## Next release
+- https://draft2digital.com/book/epubcheck/upload in docs
+- Convert images at import to .png for ebook 
+- Editor...scroll when editing the last line
+- Links are not rendered in preview
+- Credit all open source developers. 
+- Watermark on non commercial version.
+- Error when Youtube video is not found.
+- Insert asset for MD should be a bit different ;-)
 - Atm only one scene can be rendered
 - When loading an asset or page use type to determine folder
 - Build APK has to change appId into something like at.crowdware.nocodebrowser.preCached
@@ -50,14 +58,15 @@ STARTER 10,- month ebooks (epub2) only
 PRO     30,- month source code and .APK
 
 ## CrowdFunding
-at https://www.indiegogo.com/
-We need a pitch video.
-And a preview video where I demonstrate the app.
- 20,- one month Pro
- 50,- three months pro
- 50,- six months Starter
- 90,- one year Starter
-300,- one year Pro
+30,- three months Starter, min. 3 months
+48,- six months Starter 20 % off
+84,- one year Starter 30% off
+
+ 60,- three months Pro, min. 3 months
+ 96,- six months pro 20% off
+210,- one year Pro 30% off
+
+
 
 
 

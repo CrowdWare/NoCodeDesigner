@@ -197,7 +197,7 @@ class DesktopProjectState : ProjectState() {
             homemd.writeText("# BookTitle\nLorem ipsum dolor\n")
 
             val book = File("$path$name/book.sml")
-            var bookContent = "Ebook {\n  smlVersion: \"1.0\"\n  name: \"$name\"\n  version: \"1.0\"\n  theme: \"Epub3\"\n  creator: \"\"\n  language: \"en\"\n\n  Part {\n    src: \"home.md\"\n    name:\"Start\"\n  }\n}\n"
+            var bookContent = "Ebook {\n  smlVersion: \"1.0\"\n  name: \"$name\"\n  version: \"1.0\"\n  theme: \"Epub3\"\n  creator: \"\"\n  language: \"en\"\n\n  Part {\n    src: \"home.md\"\n  }\n}\n"
             book.writeText(bookContent)
         }
 
@@ -318,6 +318,7 @@ actual fun createPart(path: String) {
 }
 
 actual fun renameFile(pathBefore: String, pathAfter: String) {
+    println("rename: $pathBefore $pathAfter")
     File(pathBefore).renameTo(File(pathAfter))
 }
 

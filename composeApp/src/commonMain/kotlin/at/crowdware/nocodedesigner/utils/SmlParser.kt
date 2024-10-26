@@ -18,17 +18,11 @@
  */
 package at.crowdware.nocodedesigner.utils
 
-import androidx.annotation.RequiresApi
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
-import com.github.h0tk3y.betterParse.combinators.and
-import com.github.h0tk3y.betterParse.combinators.map
-import com.github.h0tk3y.betterParse.combinators.or
-import com.github.h0tk3y.betterParse.combinators.oneOrMore
-import com.github.h0tk3y.betterParse.combinators.zeroOrMore
+import com.github.h0tk3y.betterParse.combinators.*
 import com.github.h0tk3y.betterParse.grammar.Grammar
 import com.github.h0tk3y.betterParse.grammar.parseToEnd
 import com.github.h0tk3y.betterParse.grammar.parser
@@ -357,8 +351,7 @@ fun parseNestedBookElements(nestedElements: List<Any>, book: Book) {
                 when (elementName) {
                     "Part" -> {
                         book.parts.add(PartElement(
-                            src = (properties["src"] as? PropertyValue.StringValue)?.value ?: "",
-                            name = (properties["name"] as? PropertyValue.StringValue)?.value ?: ""))
+                            src = (properties["src"] as? PropertyValue.StringValue)?.value ?: ""))
                     }
                 }
             }

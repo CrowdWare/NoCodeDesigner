@@ -40,6 +40,7 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
@@ -49,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
+import at.crowdware.nocodedesigner.model.extensionToNodeType
 import at.crowdware.nocodedesigner.ui.TreeView
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import java.awt.Cursor
@@ -138,6 +140,35 @@ fun projectStructure(currentProject: ProjectState) {
                             }) {
                                 Text(text = "Rename", fontSize = 12.sp)
                             }
+
+                            if (treeNode.type != NodeType.SML && treeNode.type != NodeType.MD) {
+                                DropdownMenuItem(onClick = {
+                                    expanded = false
+
+                                    val ext = treeNode.title.value.substringAfter(".")
+                                    val type = extensionToNodeType[ext]
+                                    var ins = ""
+                                    when(type) {
+                                        NodeType.SOUND -> {ins = "Sound { src: \"${treeNode.title.value}\" }\n"}
+                                        NodeType.IMAGE -> {ins = "Image { src: \"${treeNode.title.value}\" }\n"}
+                                        NodeType.VIDEO -> {ins = "Video { src: \"${treeNode.title.value}\" }\n"}
+                                        else -> {}
+                                    }
+
+                                    val cursorPosition = currentProject.currentFileContent.selection.start
+                                    val currentText = currentProject.currentFileContent.text
+                                    val newTextValue = currentText.substring(0, cursorPosition) + ins + currentText.substring(cursorPosition)
+                                    currentProject.currentFileContent = currentProject.currentFileContent.copy(
+                                        text = newTextValue,
+                                        selection = TextRange(cursorPosition + ins.length)
+                                    )
+                                    currentProject.saveFileContent()
+                                    currentProject.reloadPage()
+                                }) {
+                                    Text(text = "Insert", fontSize = 12.sp)
+                                }
+                            }
+
                             DropdownMenuItem(
                                 modifier = Modifier.background(color = Color.DarkGray),
                                 onClick = {

@@ -10,50 +10,50 @@
     <nav epub:type="toc" id="toc">
     <h1>Inhaltsverzeichnis</h1>
     <ol>
-      {% for a in parts %}
-      <li id="{{ a.id }}"><a href="{{ a.href }}">{{ a.name }}</a>
-        {% if a.parts %}
+      {{#parts}}
+      <li id="{{{ id }}}"><a href="{{{ href }}}">{{ a.name }}</a>
+        {{#hasparts}}
         <ol>
-          {% for b in a.parts %}
-          <li><a href="{{ b.href }}">{{ b.name }}</a>
-            {% if b.parts %}
+          {{#parts}}
+          <li><a href="{{{ href }}}">{{{ name }}}</a>
+            {{#hasparts}}
             <ol>
-              {% for c in b.parts %}
-              <li><a href="{{ c.href }}">{{ c.name }}</a>
-                {% if c.parts %}
+              {{#parts}}
+              <li><a href="{{{ href }}}">{{{ name }}}</a>
+                {{#hasparts}}
                 <ol>
-                  {% for d in c.parts %}
-                  <li><a href="{{ d.href }}">{{ d.name }}</a>
-                    {% if d.parts %}
+                  {{#parts}}
+                  <li><a href="{{{ href }}}">{{{ name }}}</a>
+                    {{#hasparts}}
                     <ol>
-                      {% for e in d.parts %}
-                      <li><a href="{{ e.href }}">{{ e.name }}</a>
-                        {% if e.parts %}
+                      {{#parts}}
+                      <li><a href="{{{ href }}}">{{{ name }}}</a>
+                        {{#hasparts}}
                         <ol>
-                          {% for f in e.parts %}
-                          <li><a href="{{ f.href }}">{{ f.name }}</a>
+                          {{#parts}}
+                          <li><a href="{{{ href }}}">{{{ name }}}</a>
                           </li>
-                          {% endfor %}
+                          {{/parts}}
                         </ol>
-                        {% endif %}
+                        {{/hasparts}}
                       </li>
-                      {% endfor %}
+                      {{/parts}}
                     </ol>
-                    {% endif %}
+                    {{/hasparts}}
                   </li>
-                  {% endfor %}
+                  {{/parts}}
                 </ol>
-                {% endif %}
+                {{/hasparts}}
               </li>
-              {% endfor %}
+              {{/parts}}
             </ol>
-            {% endif %}
+            {{/hasparts}}
           </li>
-          {% endfor %}
+          {{/parts}}
         </ol>
-        {% endif %}
+        {{/hasparts}}
       </li>
-      {% endfor %}
+      {{/parts}}
     </ol>
     </nav>
 </body>

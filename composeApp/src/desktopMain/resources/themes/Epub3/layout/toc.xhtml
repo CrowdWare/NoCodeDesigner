@@ -9,42 +9,52 @@
 <body>
     <nav epub:type="toc" id="toc">
     <h1>Table of Contents</h1>
-    <ul>
+    <ol class="1">
       {{#parts}}
       <li id="{{{ id }}}"><a href="{{{ href }}}">{{{ name }}}</a>
-        {{#parts}}
-        <ul>
+        {{#hasparts}}
+        <ol class="2">
+          {{#parts}}
           <li><a href="{{{ href }}}">{{{ name }}}</a>
-            {{#parts}}
-            <ul>
+            {{#hasparts}}
+            <ol class="3">
+              {{#parts}}
               <li><a href="{{{ href }}}">{{{ name }}}</a>
-                <ul>
+                {{#hasparts}}
+                <ol class="4">
                   {{#parts}}
                   <li><a href="{{{ href }}}">{{{ name }}}</a>
-                    {{#parts}}
-                    <ul>
+                    {{#hasparts}}
+                    <ol class="5">
+                      {{#parts}}
                       <li><a href="{{{ href }}}">{{{ name }}}</a>
-                        {{#parts}}
-                        <ul>
+                        {{#hasparts}}
+                        <ol class="6">
+                          {{#parts}}
                           <li><a href="{{{ href }}}">{{{ name }}}</a>
                           </li>
-                        </ul>
-                        {{/parts}}
+                          {{/parts}}
+                        </ol>
+                        {{/hasparts}}
                       </li>
-                    </ul>
-                    {{/parts}}
+                      {{/parts}}
+                    </ol>
+                    {{/hasparts}}
                   </li>
                   {{/parts}}
-                </ul>
+                </ol>
+                {{/hasparts}}
               </li>
-            </ul>
-            {{/parts}}
+              {{/parts}}
+            </ol>
+            {{/hasparts}}
           </li>
-        </ul>
-        {{/parts}}
+          {{/parts}}
+        </ol>
+        {{/hasparts}}
       </li>
       {{/parts}}
-    </ul>
+    </ol>
     </nav>
 </body>
 </html>

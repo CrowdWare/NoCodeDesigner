@@ -6,6 +6,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
 import at.crowdware.nocodedesigner.utils.*
+import com.darkrockstudios.libraries.mpfilepicker.MPFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -99,28 +100,34 @@ abstract class ProjectState {
         }
     }
 
-    fun ImportImageFile(path: String) {
-        val filename = path.substringAfterLast("/")
-        val target  = "$folder/images/$filename"
-        copyAssetFile(path, target)
-        val node = TreeNode(title = mutableStateOf(filename), path = path, type = getNodeType(path))
-        imagesNode.children.add(node)
+    fun ImportImageFile(list: List<MPFile<Any>>) {
+        for (file in list) {
+            val filename = file.path.substringAfterLast("/")
+            val target = "$folder/images/$filename"
+            copyAssetFile(file.path, target)
+            val node = TreeNode(title = mutableStateOf(filename), path = file.path, type = getNodeType(file.path))
+            imagesNode.children.add(node)
+        }
     }
 
-    fun ImportVideoFile(path: String) {
-        val filename = path.substringAfterLast("/")
-        val target  = "$folder/videos/$filename"
-        copyAssetFile(path, target)
-        val node = TreeNode(title = mutableStateOf(filename), path = path, type = getNodeType(path))
-        videosNode.children.add(node)
+    fun ImportVideoFile(list: List<MPFile<Any>>) {
+        for (file in list) {
+            val filename = file.path.substringAfterLast("/")
+            val target = "$folder/videos/$filename"
+            copyAssetFile(file.path, target)
+            val node = TreeNode(title = mutableStateOf(filename), path = file.path, type = getNodeType(file.path))
+            videosNode.children.add(node)
+        }
     }
 
-    fun ImportSoundFile(path: String) {
-        val filename = path.substringAfterLast("/")
-        val target  = "$folder/sounds/$filename"
-        copyAssetFile(path, target)
-        val node = TreeNode(title = mutableStateOf(filename), path = path, type = getNodeType(path))
-        soundsNode.children.add(node)
+    fun ImportSoundFile(list: List<MPFile<Any>>) {
+        for (file in list) {
+            val filename = file.path.substringAfterLast("/")
+            val target = "$folder/sounds/$filename"
+            copyAssetFile(file.path, target)
+            val node = TreeNode(title = mutableStateOf(filename), path = file.path, type = getNodeType(file.path))
+            soundsNode.children.add(node)
+        }
     }
 
     fun ImportModelFile(path: String) {

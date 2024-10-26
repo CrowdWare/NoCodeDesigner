@@ -88,7 +88,7 @@ data class FileElement(val path: String, val time: LocalDateTime)
 
 data class ItemElement (val page: String)
 
-data class PartElement (val src: String, val name: String, val pdfOnly: Boolean = false)
+data class PartElement (val src: String, val pdfOnly: Boolean = false)
 
 @ElementAnnotation()
 data class Markdown (var dummy: String)
