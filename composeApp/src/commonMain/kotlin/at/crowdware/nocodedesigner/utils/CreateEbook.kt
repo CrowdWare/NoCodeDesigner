@@ -279,6 +279,7 @@ class CreateEbook {
 
         fun generateToc(dir: File, book: Book, parts: List<Map<String, Any>>) {
             val context = mutableMapOf<String, Any>()
+            context["title"] = if (book.language == "de") "Inhaltsverzeichnis" else "Table of Contents"
             if (parts.size > 0)
                 context["parts"] = parts
 

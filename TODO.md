@@ -31,14 +31,8 @@
 - IconButton {}
 - List { data: }
 - md referenz in text
-
 - Video Einführung
-- Video für Godot Plugin
-- Godot als Plugin implementieren für Desktop und Mobile
-- Abo für Godot um 15,-€ höher
-- Open Source Lizenz, Abo für non commercials free
 - Feature Voting via canny.io
-
 
 - Syntax-edit Grammar
   - Comments are not grayed out
