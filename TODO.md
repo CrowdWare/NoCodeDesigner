@@ -1,6 +1,8 @@
 # TODO
 
 ## Next release
+- LeseFortschritt speichern und laden
+- Entscheidung Pfad speichern, reset button
 - https://draft2digital.com/book/epubcheck/upload in docs
 - Convert images at import to .png for ebook 
 - Editor...scroll when editing the last line
@@ -22,6 +24,22 @@
 - Annotation for markdown has to be completed
 
 ## Nice to have
+
+- pager
+- Button { link: toggleSound:on|off }
+- Button { link: godot:start|stop|back }
+- IconButton {}
+- List { data: }
+- md referenz in text
+
+- Video Einführung
+- Video für Godot Plugin
+- Godot als Plugin implementieren für Desktop und Mobile
+- Abo für Godot um 15,-€ höher
+- Open Source Lizenz, Abo für non commercials free
+- Feature Voting via canny.io
+
+
 - Syntax-edit Grammar
   - Comments are not grayed out
   - No tabs anymore
@@ -53,31 +71,14 @@ https://youtrack.jetbrains.com/issue/CMP-2958/Expose-Undo-Redo-state-in-TextFiel
 
 
 ## Pricing
-FREE     0,- edit and preview
-STARTER 10,- month ebooks (epub2) only
-PRO     30,- month source code and .APK
+FREE - for non commercial usage
+STARTER - ebooks (epub2) only
+PRO - source code generation and .APK
 
-## CrowdFunding
-30,- three months Starter, min. 3 months
+30,- three months Starter
 48,- six months Starter 20 % off
 84,- one year Starter 30% off
 
- 60,- three months Pro, min. 3 months
- 96,- six months pro 20% off
+60,- three months Pro, min. 3 months
+96,- six months pro 20% off
 210,- one year Pro 30% off
-
-
-
-
-
-
-## Concurrency
-### Flutterflow
-30,- month SourceCode, APK
-70,- month one click playstore 
-
-### Thunkable
-0,-  month  2 APK downloads
-15,- month 25 APK downloads
-45,- month playstore, unlimited APK
-
