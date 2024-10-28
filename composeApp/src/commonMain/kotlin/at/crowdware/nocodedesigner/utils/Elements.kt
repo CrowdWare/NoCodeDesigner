@@ -38,8 +38,10 @@ data class Book (
     var smlVersion: String = "",
     var theme: String = "Epub3",
     var name: String = "",
-    var language: String = "",
+    var language: String = "en",
     var creator: String = "",
+    var creatorLink: String = "#",
+    var bookLink: String = "#",
     val parts: MutableList<PartElement> = mutableListOf()
 )
 

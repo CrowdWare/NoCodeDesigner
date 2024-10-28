@@ -5,7 +5,10 @@
       <dc:title>{{ title }}</dc:title>
       <dc:creator>{{ creator }}</dc:creator>
       <dc:language>{{ lang }}</dc:language>
+      <meta name="generator" content="{{ generator }}"/>
       <meta property="dcterms:modified">{{ date }}</meta>
+      <meta property="dcterms:creator">{{ creator }}</meta>
+      <meta property="dcterms:rights">{{ license }}</meta>
    </metadata>
    <manifest>
       <item href="parts/toc.xhtml" id="nav" media-type="application/xhtml+xml" properties="nav"/>{{#items}}

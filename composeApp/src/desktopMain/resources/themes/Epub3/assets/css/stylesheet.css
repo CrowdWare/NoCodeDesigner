@@ -50,3 +50,15 @@ pre .line-number span {
   padding: 0 .5em 0 1em;
   color: #ccc;
 }
+
+.page-break-before {
+    page-break-before: always;
+}
+
+.page-break-after {
+    page-break-after: always;
+}
+
+.no-page-break {
+    page-break-inside: avoid;
+}

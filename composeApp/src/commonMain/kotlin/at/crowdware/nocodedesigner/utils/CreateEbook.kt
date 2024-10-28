@@ -35,7 +35,6 @@ class CreateEbook {
             File(tempDir, "EPUB/css").mkdirs()
             File(tempDir, "META-INF").mkdirs()
 
-
             copyAssets(book.theme, tempDir)
             copyImages(tempDir, source)
             writeContainer(tempDir)
@@ -145,6 +144,7 @@ class CreateEbook {
 
         fun generatePackage(dir: File, book: Book, guid: String) {
             val context = mutableMapOf<String, Any>()
+            val isFreeVersion = true // TODO
 
             context["uuid"] = guid
             context["lang"] = book.language
@@ -152,7 +152,14 @@ class CreateEbook {
             context["date"] = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"))
             context["version"] = Version.version
             context["creator"] = book.creator
-
+            context["creatorLink"] = book.creatorLink
+            context["bookLink"] = book.bookLink
+            context["generator"] = "NoCodeDesigner v." + Version.version
+            if (isFreeVersion) {
+                context["license"] = "Non-commercial license"
+            } else {
+                context["license"] = "Commercial license"
+            }
             val items = mutableListOf<Map<String, String>>()
             val spine = mutableListOf<String>()
 
@@ -207,7 +214,6 @@ class CreateEbook {
 
         fun generateParts(dir: File, book: Book, source: String): List<Map<String, Any>> {
             val toc = mutableListOf<Map<String, Any>>()
-
             val item = mutableMapOf<String, Any>(
                 "href" to "toc.xhtml",
                 "name" to if (book.language == "de") "Inhaltsverzeichnis" else "Table of Contents",
@@ -235,7 +241,7 @@ class CreateEbook {
                         val document = parser.parse(text)
                         val renderer = HtmlRenderer.builder(options).build()
                         // Markdown processing and table fixing
-                        val html = fixImagePaths(fixTables(renderer.render(document)))
+                        var html = fixImagePaths(fixTables(renderer.render(document)))
 
                         val linkList = getLinks(html, name)
                         toc.addAll(linkList)
@@ -279,7 +285,40 @@ class CreateEbook {
 
         fun generateToc(dir: File, book: Book, parts: List<Map<String, Any>>) {
             val context = mutableMapOf<String, Any>()
-            context["title"] = if (book.language == "de") "Inhaltsverzeichnis" else "Table of Contents"
+            val isFreeVersion = false // TODO
+            context["lang"] = book.language
+            context["title"] = book.name
+            context["date"] = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"))
+            context["version"] = Version.version
+            context["creator"] = book.creator
+            context["creatorLink"] = book.creatorLink
+            context["bookLink"] = book.bookLink
+            context["generator"] = "NoCodeDesigner v." + Version.version
+            if (book.language == "de") {
+                context["isLicensedUnder"] = "ist lizenziert unter"
+                context["licenseInformation"] = "Lizenzinformationen"
+                context["from"] = "von"
+                context["softwareLicense"] = "Software Lizenz"
+                context["licenseTextA"] = "Dieses Buch wurde mit der"
+                context["licenseTextB"] = "Nicht-Kommerziellen Version"
+                context["licenseTextC"] = "des"
+                context["licenseTextD"] = " erstellt."
+            } else {
+                context["isLicensedUnder"] = "is licensed under"
+                context["licenseInformation"] = "License information"
+                context["from"] = "from"
+                context["softwareLicense"] = "Software License"
+                context["licenseTextA"] = "This book has been created with the"
+                context["licenseTextB"] = "non-commercial version"
+                context["licenseTextC"] = "of the"
+                context["licenseTextD"] = "."
+            }
+            if (isFreeVersion) {
+                context["license"] = "Non-commercial license"
+            } else {
+                context["license"] = "Commercial license"
+            }
+            context["pageTitle"] = if (book.language == "de") "Inhaltsverzeichnis" else "Table of Contents"
             if (parts.size > 0)
                 context["parts"] = parts
 

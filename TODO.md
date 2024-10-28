@@ -1,9 +1,12 @@
 # TODO
 
 ## Next release
-- LeseFortschritt speichern und laden
-- Entscheidung Pfad speichern, reset button
+- Book preview, render links in blue
+- When I open book.sml Page is displayed in tree
+- Save progress of reading and load that page next time
+- decision path save and reset
 - https://draft2digital.com/book/epubcheck/upload in docs
+- part name "toc" and "pdfOnly" in docs
 - Convert images at import to .png for ebook 
 - Editor...scroll when editing the last line
 - Links are not rendered in preview
@@ -24,7 +27,7 @@
 - Annotation for markdown has to be completed
 
 ## Nice to have
-
+- generate PDF
 - pager
 - Button { link: toggleSound:on|off }
 - Button { link: godot:start|stop|back }
@@ -76,3 +79,7 @@ PRO - source code generation and .APK
 60,- three months Pro, min. 3 months
 96,- six months pro 20% off
 210,- one year Pro 30% off
+
+
+# HTML for the epub version, license for free version
+ <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="http://[link to work]">[Title of Work]</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="http://[link to creator profile]">[Creator]</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1" alt=""></a></p> 
