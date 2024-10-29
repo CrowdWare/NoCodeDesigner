@@ -271,6 +271,8 @@ fun projectStructure(currentProject: ProjectState) {
                     var clsName = ""
                     if (node.title.value == "Page") {
                         clsName = "at.crowdware.nocodedesigner.utils.Page"
+                    } else if (node.title.value == "Book") {
+                        clsName = "at.crowdware.nocodedesigner.utils.Book"
                     } else {
                         clsName = "at.crowdware.nocodedesigner.utils.UIElement\$${node.title.value}Element"
                     }

@@ -2,7 +2,6 @@
 
 ## Next release
 - Book preview, render links in blue
-- When I open book.sml Page is displayed in tree
 - Save progress of reading and load that page next time
 - decision path save and reset
 - https://draft2digital.com/book/epubcheck/upload in docs
@@ -11,10 +10,9 @@
 - Editor...scroll when editing the last line
 - Links are not rendered in preview
 - Credit all open source developers. 
-- Watermark on non commercial version.
+- Watermark on non commercial version for app.
 - Error when Youtube video is not found.
 - Insert asset for MD should be a bit different ;-)
-- Atm only one scene can be rendered
 - When loading an asset or page use type to determine folder
 - Build APK has to change appId into something like at.crowdware.nocodebrowser.preCached
 - Build APK error handling

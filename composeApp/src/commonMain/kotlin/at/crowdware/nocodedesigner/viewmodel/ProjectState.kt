@@ -164,13 +164,19 @@ abstract class ProjectState {
             }
             val fileText = loadFileContent(path, "", "")
             if (extension == "sml") {
-                val result = parsePage(fileText)
-                page = result.first
-                parseError = result.second
-                if (page != null) {
-                    cachedPage = page
-                    isPageLoaded = true
-                    loadElementData ()
+                if (fileName == "book.sml") {
+                    loadElementData(Book())
+                } else if (fileName == "app.sml") {
+                    loadElementData(App())
+                } else {
+                    val result = parsePage(fileText)
+                    page = result.first
+                    parseError = result.second
+                    if (page != null) {
+                        cachedPage = page
+                        isPageLoaded = true
+                        loadElementData(page)
+                    }
                 }
             } else {
                 page = Page(color = "", backgroundColor = "", padding = Padding(0, 0, 0, 0), "false", elements = mutableListOf())
@@ -196,16 +202,32 @@ abstract class ProjectState {
             if (page != null) {
                 cachedPage = page
                 isPageLoaded = true
-                loadElementData()
+                loadElementData(page)
             }
         }
     }
 
-    private fun loadElementData() {
-        elementData = listOf(mapPageToTreeNodes(page!!))
-        var clsName = "at.crowdware.nocodedesigner.utils.Page"
-        val clazz = Class.forName(clsName).kotlin
-        actualElement = clazz
+    private fun loadElementData(obj: Any?) {
+        when (obj) {
+            is Page -> {
+                elementData = listOf(mapPageToTreeNodes(page!!))
+                val clsName = "at.crowdware.nocodedesigner.utils.Page"
+                val clazz = Class.forName(clsName).kotlin
+                actualElement = clazz
+            }
+            is App -> {
+                elementData = listOf(mapAppToTreeNode(obj!! as App))
+                val clsName = "at.crowdware.nocodedesigner.utils.App"
+                val clazz = Class.forName(clsName).kotlin
+                actualElement = clazz
+            }
+            is Book -> {
+                elementData = listOf(mapBookToTreeNode(obj!! as Book))
+                val clsName = "at.crowdware.nocodedesigner.utils.Book"
+                val clazz = Class.forName(clsName).kotlin
+                actualElement = clazz
+            }
+        }
     }
 
     fun mapUIElementToTreeNode(uiElement: UIElement): TreeNode {
@@ -302,9 +324,29 @@ abstract class ProjectState {
         }
     }
 
-    // Function to map a Page to TreeNode as the root, with all its elements as children
+    fun mapBookToTreeNode(book: Book): TreeNode {
+        val rootNode = TreeNode(
+            title = mutableStateOf("Book"),
+            type = mutableStateOf("Book"),
+            path = "",
+            children = mutableStateListOf(),
+            expanded = mutableStateOf(true)
+        )
+        return rootNode
+    }
+
+    fun mapAppToTreeNode(app: App): TreeNode {
+        val rootNode = TreeNode(
+            title = mutableStateOf("App"),
+            type = mutableStateOf("App"),
+            path = "",
+            children = mutableStateListOf(),
+            expanded = mutableStateOf(true)
+        )
+        return rootNode
+    }
+
     fun mapPageToTreeNodes(page: Page): TreeNode {
-        // Create the root node for the Page
         val rootNode = TreeNode(
             title = mutableStateOf("Page"),
             type = NodeType.DIRECTORY,
@@ -312,8 +354,6 @@ abstract class ProjectState {
             children = mutableStateListOf(),
             expanded = mutableStateOf(true)  // Root is expanded by default
         )
-
-        // Map each UIElement in the Page to a child TreeNode and add to rootNode
         rootNode.children.addAll(page.elements.map { mapUIElementToTreeNode(it) })
 
         return rootNode

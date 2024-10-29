@@ -25,9 +25,13 @@ import androidx.compose.ui.unit.TextUnit
 import java.time.LocalDateTime
 
 data class App(
+    @StringAnnotation("Name of the app.")
     var name: String = "",
+    @StringAnnotation("Icon for the app. Sample: icon.png")
     var icon: String = "",
-    var id: String = "",
+    @StringAnnotation("Unique Id of the app. Sample: com.example.appname")
+    var id: String = "1.1",
+    @StringAnnotation("Version of the current SML. default is 1.1")
     var smlVersion: String = "",
     var theme: ThemeElement = ThemeElement(),
     var navigation: NavigationElement = NavigationElement(),
@@ -35,12 +39,19 @@ data class App(
 )
 
 data class Book (
-    var smlVersion: String = "",
+    @StringAnnotation("Version of the current SML. Default is 1.1")
+    var smlVersion: String = "1.1",
+    @StringAnnotation("Theme for the book. Atm there is only \"Epub3\".")
     var theme: String = "Epub3",
+    @StringAnnotation("Name of the book")
     var name: String = "",
+    @StringAnnotation("Language of the book. Atm only \"en\" and \"de\"")
     var language: String = "en",
+    @StringAnnotation("Name of the author")
     var creator: String = "",
+    @StringAnnotation("Link to the website of the author")
     var creatorLink: String = "#",
+    @StringAnnotation("Link to the book.")
     var bookLink: String = "#",
     val parts: MutableList<PartElement> = mutableListOf()
 )
