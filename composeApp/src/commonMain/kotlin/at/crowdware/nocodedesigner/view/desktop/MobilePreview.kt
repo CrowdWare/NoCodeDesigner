@@ -670,6 +670,27 @@ fun parseMarkdown(markdown: String): AnnotatedString {
                     }
                     j = line.length
                 }
+                // Link-Erkennung
+                line.startsWith("[", j) -> {
+                    val endBracket = line.indexOf("]", j)
+                    val startParen = line.indexOf("(", endBracket)
+                    val endParen = line.indexOf(")", startParen)
+
+                    if (endBracket != -1 && startParen == endBracket + 1 && endParen != -1) {
+                        val linkText = line.substring(j + 1, endBracket)
+                        val linkUrl = line.substring(startParen + 1, endParen)
+
+                        builder.pushStringAnnotation(tag = "URL", annotation = linkUrl)
+                        builder.withStyle(SpanStyle(color = Color.Blue, textDecoration = TextDecoration.Underline)) {
+                            append(linkText)
+                        }
+                        builder.pop()
+                        j = endParen + 1
+                    } else {
+                        builder.append(line[j])
+                        j++
+                    }
+                }
                 line.startsWith("***", j) -> {
                     val endIndex = line.indexOf("***", j + 3)
                     if (endIndex != -1) {

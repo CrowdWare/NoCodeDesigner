@@ -1,7 +1,6 @@
 # TODO
 
 ## Next release
-- Book preview, render links in blue
 - Save progress of reading and load that page next time
 - decision path save and reset
 - https://draft2digital.com/book/epubcheck/upload in docs
