@@ -80,7 +80,7 @@ fun main() = application {
     var isAskingToClose by remember { mutableStateOf(false) }
 
     // setup logging, all println are stored in a log file
-    //setupLogging()
+    //setupLogging() // TODO
 
     System.setProperty("apple.awt.application.name", appName)
     // Check if the desktop supports macOS actions (About, Quit, etc.)
@@ -126,49 +126,7 @@ fun main() = application {
                     isMaximized = (window.extendedState == Frame.MAXIMIZED_BOTH)
                 }
             }
-            /*
-            fun closeWindow() {
-                onAppClose(window, projectState.folder)
-                exitApplication()
-            }
-*/
-            MenuBar {
-                Menu("File", mnemonic = 'F') {
-                    Item("Create Project", onClick = {
-                        projectState.isNewProjectDialogVisible = true
-                    })
-                    Item("Create Page", onClick = {
-                        projectState.isPageDialogVisible = true
-                    })
-                    Item("Import Image", onClick = {
-                        projectState.isImportImageDialogVisible = true
-                    })
-                    Item("Import Video", onClick = {
-                        projectState.isImportVideoDialogVisible = true
-                    })
-                    Item("Import Sound", onClick = {
-                        projectState.isImportSoundDialogVisible = true
-                    })
-                    Separator()
-                    Item("Open", onClick = {
-                        projectState.isOpenProjectDialogVisible = true
-                    })
-                    if (isWindows) {
-                        Separator()
-                        Item("Quit Application", onClick = {
-                            onAppClose(window, projectState.folder)
-                            exitApplication()
-                        })
-                    }
-                }
-                if (isWindows) {
-                    Menu("Help", mnemonic = 'H') {
-                        Item("About NoCodeBuilder", onClick = {
-                            projectState.isAboutDialogOpen = true
-                        })
-                    }
-                }
-            }
+
             AppTheme(darkTheme = projectState.darkMode) {
                 var shape = RectangleShape
                 var borderShape = RectangleShape

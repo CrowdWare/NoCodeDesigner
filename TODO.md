@@ -1,29 +1,28 @@
 # TODO
 
 ## Next release
-- Save progress of reading and load that page next time
-- decision path save and reset
-- https://draft2digital.com/book/epubcheck/upload in docs
+### Epub Part
 - part name "toc" and "pdfOnly" in docs
 - Convert images at import to .png for ebook 
 - Editor...scroll when editing the last line
-- Links are not rendered in preview
-- Credit all open source developers. 
+- Insert asset for MD should be a bit different ;-)
+- Annotation for markdown has to be completed
+### App Part
 - Watermark on non commercial version for app.
 - Error when Youtube video is not found.
-- Insert asset for MD should be a bit different ;-)
-- When loading an asset or page use type to determine folder
+- Save progress of reading and load that page next time
+- decision path save and reset
 - Build APK has to change appId into something like at.crowdware.nocodebrowser.preCached
 - Build APK error handling
 - Browser App does not display the right colors, when pre cached
 - Theme, FontSize, FontFamily
 - FontSize changeable from end user in book app
-- TopAppBar in app.sml
-- Page: barTitle
-- Hyperlinks like buttons
-- Annotation for markdown has to be completed
 
 ## Nice to have
+- Hyperlinks like buttons
+- TopAppBar in app.sml
+- Page: barTitle
+- Credit all open source developers.
 - generate PDF
 - pager
 - Button { link: toggleSound:on|off }
@@ -33,7 +32,6 @@
 - md referenz in text
 - Video Einführung
 - Feature Voting via canny.io
-
 - Syntax-edit Grammar
   - Comments are not grayed out
   - No tabs anymore
@@ -58,6 +56,9 @@
 - Drag and drop tree node to editor (button) 
 - WebService in KTOR also for Desktop
 - Code Generator
+
+## Docs
+- https://draft2digital.com/book/epubcheck/upload in docs
 
 ## Known bugs
 Open a file and press undo, text field gets empty.
