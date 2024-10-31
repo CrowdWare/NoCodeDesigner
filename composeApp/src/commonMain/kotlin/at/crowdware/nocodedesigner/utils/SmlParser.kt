@@ -16,6 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with NoCodeDesigner.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package at.crowdware.nocodedesigner.utils
 
 import androidx.compose.ui.text.font.FontWeight

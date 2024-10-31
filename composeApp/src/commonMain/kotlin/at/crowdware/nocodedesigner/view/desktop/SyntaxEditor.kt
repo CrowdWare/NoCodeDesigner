@@ -23,10 +23,13 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,9 +44,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.crowdware.nocodedesigner.theme.ExtendedColors
-import at.crowdware.nocodedesigner.theme.ExtendedTheme
-import at.crowdware.nocodedesigner.ui.CustomSelectionColors
-import at.crowdware.nocodedesigner.ui.SMLTokenMaker
 import at.crowdware.nocodedesigner.ui.SMLTokenMakerFactory
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import kotlinx.coroutines.CoroutineScope
@@ -211,5 +211,17 @@ fun RowScope.syntaxEditor(
         Box(modifier = Modifier.fillMaxSize().weight(1F), contentAlignment = Alignment.Center) {
             Text(text = "No file open")
         }
+    }
+}
+
+@Composable
+fun CustomSelectionColors(content: @Composable () -> Unit) {
+    val customSelectionColors = TextSelectionColors(
+        handleColor = Color.Magenta,
+        backgroundColor = Color.LightGray.copy(alpha = 0.4f)
+    )
+
+    CompositionLocalProvider(LocalTextSelectionColors provides customSelectionColors) {
+        content()
     }
 }
