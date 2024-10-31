@@ -27,9 +27,7 @@ repositories {
 
     mavenCentral()
     google()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") // JetBrains Compose Repository
-    maven { url = uri("https://kotlin.bintray.com/kotlinx") }
-
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
 kotlin {
@@ -58,6 +56,7 @@ kotlin {
                 implementation("com.darkrockstudios:mpfilepicker:3.1.0")
                 implementation("net.pwall.mustache:kotlin-mustache:0.12")
                 implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
+                implementation("com.fifesoft:rsyntaxtextarea:3.3.4")
                 kotlin.srcDir(layout.buildDirectory.dir("generated/version"))
             }
         }

@@ -37,6 +37,9 @@ import at.crowdware.nocodedesigner.model.NodeType
 import at.crowdware.nocodedesigner.model.TreeNode
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -51,16 +54,14 @@ fun fileTreeIconProvider(node: TreeNode) {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun desktop() {
-    // create a singletons for the app and project state
     val currentProject = GlobalProjectState.projectState
     var textFieldValue by remember { mutableStateOf(currentProject?.currentFileContent ?: "") }
-
-    // Sync with the singleton state when the composable is recomposed
+    //var text by remember { mutableStateOf(currentProject?.currentFileContent?.text ?: "") }
     LaunchedEffect(currentProject?.currentFileContent) {
         textFieldValue = currentProject?.currentFileContent ?: ""
+        println("reassigned")
     }
 
     Row(
@@ -75,11 +76,12 @@ fun desktop() {
         else
             widgetPalette(currentProject)
         syntaxEditor(
-            currentProject, textFieldValue = textFieldValue as TextFieldValue
-        ) { newValue ->
-            textFieldValue = newValue
-            currentProject?.currentFileContent = newValue
-        }
+            currentProject, //textFieldValue = textFieldValue as TextFieldValue
+            textFieldValue = textFieldValue as TextFieldValue
+        )/* { newValue ->
+            //textFieldValue = newValue
+            //currentProject?.currentFileContent = newValue
+        }*/
         mobilePreview(currentProject)
         propertyPanel(currentProject)
     }

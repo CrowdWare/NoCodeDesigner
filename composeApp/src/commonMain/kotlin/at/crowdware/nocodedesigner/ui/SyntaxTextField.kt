@@ -38,6 +38,7 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -108,19 +109,40 @@ fun SyntaxTextField(
                         .fillMaxHeight()
                         .heightIn(min = 640.dp)
                         .background(Color.Transparent)
+
+
                         .onKeyEvent { keyEvent ->
-                        when {
-                            keyEvent.key == Key.DirectionUp && keyEvent.type == KeyEventType.KeyUp -> {
-                                println("Pfeiltaste nach oben gedrückt")
-                                true
+                            println("Key Event: ${keyEvent.key} - ${keyEvent.type}")
+                            when {
+                                keyEvent.key == Key.DirectionUp && keyEvent.type == KeyEventType.KeyUp -> {
+                                    val text = textFieldValue.text
+                                    val currentPos = textFieldValue.selection.start
+
+                                    val currentLineStart = text.lastIndexOf('\n', currentPos).let {
+                                        if (it == -1) 0 else it + 1
+                                    }
+
+                                    val column = if (currentPos >= text.length) 0 else currentPos - currentLineStart
+
+                                    val previousLineEnd = text.lastIndexOf('\n', currentLineStart - 1)
+                                    if (previousLineEnd != -1) {
+                                        val previousLineStart = text.lastIndexOf('\n', previousLineEnd - 1).let {
+                                            if (it == -1) 0 else it + 1
+                                        }
+
+                                        val targetPos = (previousLineStart + column).coerceIn(previousLineStart, previousLineEnd)
+
+                                        onValueChange(textFieldValue.copy(
+                                            selection = TextRange(targetPos)
+                                        ))
+                                    }
+                                    true
+                                }
+                                else -> false
                             }
-                            keyEvent.key == Key.DirectionDown && keyEvent.type == KeyEventType.KeyUp -> {
-                                println("Pfeiltaste nach unten gedrückt")
-                                true
-                            }
-                            else -> false
-                        }
-                    },
+
+
+                        },
                     textStyle = TextStyle(fontSize = 14.sp, color = MaterialTheme.colors.onSurface, fontFamily = FontFamily.Monospace),
                     cursorBrush = SolidColor(cursorColor),
                     visualTransformation = when(extension) {
@@ -144,8 +166,11 @@ fun SyntaxTextField(
 }
 
 class SmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
+    private val TAB_SIZE = 4
+
     override fun filter(text: AnnotatedString): TransformedText {
-        val builder = AnnotatedString.Builder(text)
+        val expandedText = text.text.replace("\t", " ".repeat(TAB_SIZE))
+        val builder = AnnotatedString.Builder(expandedText)
 
         // Highlight SML elements
         val elementRegex = Regex("(\\w+)\\s*\\{")
@@ -178,7 +203,10 @@ class SmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
             }
         }
 
-        return TransformedText(builder.toAnnotatedString(), OffsetMapping.Identity)
+        return TransformedText(
+            builder.toAnnotatedString(),
+            TabExpandingOffsetMapping(text.text, TAB_SIZE)
+        )
     }
 
     private fun isWithinString(text: CharSequence, index: Int): Boolean {
@@ -189,6 +217,29 @@ class SmlSyntaxHighlighter(val colors: ExtendedColors) : VisualTransformation {
             }
         }
         return inString
+    }
+}
+
+private class TabExpandingOffsetMapping(
+    private val originalText: String,
+    private val tabSize: Int
+) : OffsetMapping {
+    override fun originalToTransformed(offset: Int): Int {
+        var pos = 0
+        for (i in 0 until offset) {
+            pos += if (originalText[i] == '\t') tabSize else 1
+        }
+        return pos
+    }
+
+    override fun transformedToOriginal(offset: Int): Int {
+        var originalPos = 0
+        var transformedPos = 0
+        while (transformedPos < offset && originalPos < originalText.length) {
+            transformedPos += if (originalText[originalPos] == '\t') tabSize else 1
+            originalPos++
+        }
+        return originalPos
     }
 }
 
