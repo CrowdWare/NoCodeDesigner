@@ -23,6 +23,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -38,13 +40,17 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import at.crowdware.nocodedesigner.theme.ExtendedColors
+import at.crowdware.nocodedesigner.theme.ExtendedTheme
 import at.crowdware.nocodedesigner.ui.CustomSelectionColors
+import at.crowdware.nocodedesigner.ui.SMLTokenMaker
+import at.crowdware.nocodedesigner.ui.SMLTokenMakerFactory
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
+import org.fife.ui.rsyntaxtextarea.*
 import org.fife.ui.rtextarea.RTextScrollPane
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -52,10 +58,16 @@ import javax.swing.SwingUtilities
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
+fun Color.toAwtColor(): java.awt.Color {
+    return java.awt.Color(red, green, blue, alpha)
+}
+
 @Composable
 fun RowScope.syntaxEditor(
     currentProject: ProjectState?,
-    textFieldValue: TextFieldValue
+    textFieldValue: TextFieldValue,
+    colors: Colors,
+    extendedColors: ExtendedColors
 ) {
     if (currentProject != null && currentProject.isEditorVisible) {
         Column(modifier = Modifier.weight(1F).fillMaxHeight()) {
@@ -68,10 +80,27 @@ fun RowScope.syntaxEditor(
                     overflow = TextOverflow.Ellipsis
                 )
                 val editor = remember {
+                    AbstractTokenMakerFactory.setDefaultInstance(SMLTokenMakerFactory())
                     val textArea = RSyntaxTextArea(20, 60).apply {
-                        syntaxEditingStyle = "text/plain"
-                        background = java.awt.Color.WHITE
-                        foreground = java.awt.Color.BLACK
+
+                        val scheme = SyntaxScheme(true).apply {
+                            styles[Token.RESERVED_WORD] = Style(extendedColors.syntaxColor.toAwtColor())
+                            styles[Token.SEPARATOR] = Style(extendedColors.bracketColor.toAwtColor())
+                            styles[Token.IDENTIFIER] = Style(extendedColors.attributeNameColor.toAwtColor())
+                            styles[Token.LITERAL_STRING_DOUBLE_QUOTE] = Style(extendedColors.attributeValueColor.toAwtColor())
+                        }
+                        syntaxScheme = scheme
+                        syntaxEditingStyle = SMLTokenMakerFactory.SYNTAX_STYLE_SML
+                        background = colors.surface.toAwtColor()
+                        foreground = colors.onSurface.toAwtColor()
+                        currentLineHighlightColor = colors.surface.copy(
+                            red = colors.surface.red + 0.05f,
+                            green = colors.surface.green + 0.05f,
+                            blue = colors.surface.blue + 0.05f
+                        ).toAwtColor()
+                        caretColor = colors.onSurface.toAwtColor()
+                        selectionColor = extendedColors.accentColor.toAwtColor()
+                        selectedTextColor = java.awt.Color.WHITE
                         font = java.awt.Font("Monospaced", java.awt.Font.PLAIN, 14)
                         text = textFieldValue.text
                         caretPosition = 0

@@ -58,10 +58,9 @@ fun fileTreeIconProvider(node: TreeNode) {
 fun desktop() {
     val currentProject = GlobalProjectState.projectState
     var textFieldValue by remember { mutableStateOf(currentProject?.currentFileContent ?: "") }
-    //var text by remember { mutableStateOf(currentProject?.currentFileContent?.text ?: "") }
+
     LaunchedEffect(currentProject?.currentFileContent) {
         textFieldValue = currentProject?.currentFileContent ?: ""
-        println("reassigned")
     }
 
     Row(
@@ -76,12 +75,11 @@ fun desktop() {
         else
             widgetPalette(currentProject)
         syntaxEditor(
-            currentProject, //textFieldValue = textFieldValue as TextFieldValue
-            textFieldValue = textFieldValue as TextFieldValue
-        )/* { newValue ->
-            //textFieldValue = newValue
-            //currentProject?.currentFileContent = newValue
-        }*/
+            currentProject,
+            textFieldValue = textFieldValue as TextFieldValue,
+            colors = MaterialTheme.colors,
+            extendedColors = ExtendedTheme.colors
+        )
         mobilePreview(currentProject)
         propertyPanel(currentProject)
     }
