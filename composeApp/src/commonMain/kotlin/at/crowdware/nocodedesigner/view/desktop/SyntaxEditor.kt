@@ -46,6 +46,8 @@ import androidx.compose.ui.unit.sp
 import at.crowdware.nocodedesigner.theme.ExtendedColors
 import at.crowdware.nocodedesigner.ui.MarkdownTokenMakerFactory
 import at.crowdware.nocodedesigner.ui.SMLTokenMakerFactory
+import at.crowdware.nocodedesigner.ui.createEditor
+import at.crowdware.nocodedesigner.ui.toAwtColor
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,9 +67,6 @@ import javax.swing.plaf.basic.BasicScrollBarUI
 import kotlin.math.min
 
 
-fun Color.toAwtColor(): java.awt.Color {
-    return java.awt.Color(red, green, blue, alpha)
-}
 
 @Composable
 fun RowScope.syntaxEditor(
@@ -86,7 +85,7 @@ fun RowScope.syntaxEditor(
                     style = TextStyle(color = MaterialTheme.colors.onPrimary),
                     overflow = TextOverflow.Ellipsis
                 )
-                val smlEditor = remember {
+                /*val smlEditor = remember {
                     AbstractTokenMakerFactory.setDefaultInstance(SMLTokenMakerFactory())
 
                     val textArea = RSyntaxTextArea(20, 60).apply {
@@ -213,12 +212,10 @@ fun RowScope.syntaxEditor(
                                 }
                             }
                         }
-
-
                     }
                     textArea to scrollPane
-                }
-                val mdEditor = remember {
+                }*/
+                /*val mdEditor = remember {
                     AbstractTokenMakerFactory.setDefaultInstance(MarkdownTokenMakerFactory())
 
                     val textArea = RSyntaxTextArea(20, 60).apply {
@@ -338,8 +335,42 @@ fun RowScope.syntaxEditor(
                         }
                     }
                     textArea to scrollPane
+                }*/
+
+                val smlEditor = remember {
+                    createEditor(
+                        textFieldValue,
+                        colors,
+                        extendedColors,
+                        SMLTokenMakerFactory.SYNTAX_STYLE_SML,
+                        { scheme ->
+                            scheme.styles[Token.RESERVED_WORD] = Style(extendedColors.syntaxColor.toAwtColor())
+                            scheme.styles[Token.SEPARATOR] = Style(extendedColors.bracketColor.toAwtColor())
+                            scheme.styles[Token.IDENTIFIER] = Style(extendedColors.attributeNameColor.toAwtColor())
+                            scheme.styles[Token.LITERAL_STRING_DOUBLE_QUOTE] = Style(extendedColors.attributeValueColor.toAwtColor())
+                        },
+                        { AbstractTokenMakerFactory.setDefaultInstance(SMLTokenMakerFactory()) }
+                    )
                 }
 
+                val mdEditor = remember {
+                    createEditor(
+                        textFieldValue,
+                        colors,
+                        extendedColors,
+                        MarkdownTokenMakerFactory.SYNTAX_STYLE_MARKDOWN,
+                        { scheme ->
+                            scheme.styles[Token.RESERVED_WORD] = Style(extendedColors.syntaxColor.toAwtColor())
+                            scheme.styles[Token.SEPARATOR] = Style(extendedColors.bracketColor.toAwtColor())
+                            scheme.styles[Token.IDENTIFIER] = Style(extendedColors.attributeNameColor.toAwtColor())
+                            scheme.styles[Token.LITERAL_STRING_DOUBLE_QUOTE] = Style(extendedColors.attributeValueColor.toAwtColor())
+                            scheme.styles[Token.MARKUP_TAG_DELIMITER] = Style(extendedColors.attributeValueColor.toAwtColor())
+                            scheme.styles[Token.MARKUP_TAG_ATTRIBUTE] = Style(extendedColors.linkColor.toAwtColor())
+                            scheme.styles[Token.MARKUP_TAG_NAME] = Style(extendedColors.attributeNameColor.toAwtColor())
+                        },
+                        { AbstractTokenMakerFactory.setDefaultInstance(MarkdownTokenMakerFactory()) }
+                    )
+                }
                 if (textFieldValue.text.isNotEmpty()) {
                     if (currentProject.fileName.endsWith(".sml")) {
                         SwingPanel(
