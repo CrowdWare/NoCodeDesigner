@@ -82,42 +82,6 @@ class SMLTokenMakerFactory : AbstractTokenMakerFactory() {
         putMapping(SYNTAX_STYLE_SML, "at.crowdware.nocodedesigner.syntax.SMLTokenMaker")
     }
 }
-/*
-class SMLTokenMaker : AbstractTokenMaker() {
-    override fun getWordsToHighlight(): TokenMap {
-        return TokenMap()
-    }
-
-    private val pageSyntax = PageSyntax()
-
-
-    override fun getTokenList(text: Segment, initialTokenType: Int, startOffset: Int): Token {
-        resetTokenList()
-        val array = text.array
-        val offset = text.offset
-        val count = text.count
-
-        val content = String(array, offset, count)
-        val words = content.split(Regex("\\b"))
-
-        var currentOffset = offset
-        for (word in words) {
-            if (word.isNotEmpty()) {
-                val tokenType = if (pageSyntax.isValidElement(word.trim())) {
-                    Token.RESERVED_WORD
-                } else {
-                    Token.IDENTIFIER
-                }
-                addToken(array, currentOffset, currentOffset + word.length - 1, tokenType, startOffset + currentOffset - offset)
-                currentOffset += word.length
-            }
-        }
-
-        addNullToken()
-        return firstToken
-    }
-}
-*/
 
 class SMLTokenMaker : AbstractTokenMaker() {
     override fun getWordsToHighlight(): TokenMap {

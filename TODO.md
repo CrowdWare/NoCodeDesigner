@@ -1,6 +1,10 @@
 # TODO
 
 ## Next release
+MD syntax highlighting
+SML syntax highlighting
+Editor, Scrollbar colors
+MD preview via webView in AWT
 ### Epub Part
 - part name "toc" and "pdfOnly" in docs
 - Convert images at import to .png for ebook 

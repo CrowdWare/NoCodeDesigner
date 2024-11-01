@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.crowdware.nocodedesigner.theme.ExtendedColors
 import at.crowdware.nocodedesigner.ui.SMLTokenMakerFactory
+import at.crowdware.nocodedesigner.ui.MarkdownTokenMakerFactory
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,6 +58,7 @@ import java.awt.event.MouseEvent
 import javax.swing.SwingUtilities
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
+import kotlin.math.min
 
 fun Color.toAwtColor(): java.awt.Color {
     return java.awt.Color(red, green, blue, alpha)
@@ -79,15 +81,17 @@ fun RowScope.syntaxEditor(
                     style = TextStyle(color = MaterialTheme.colors.onPrimary),
                     overflow = TextOverflow.Ellipsis
                 )
-                val editor = remember {
+                val smlEditor = remember {
                     AbstractTokenMakerFactory.setDefaultInstance(SMLTokenMakerFactory())
-                    val textArea = RSyntaxTextArea(20, 60).apply {
 
+                    val textArea = RSyntaxTextArea(20, 60).apply {
                         val scheme = SyntaxScheme(true).apply {
                             styles[Token.RESERVED_WORD] = Style(extendedColors.syntaxColor.toAwtColor())
                             styles[Token.SEPARATOR] = Style(extendedColors.bracketColor.toAwtColor())
                             styles[Token.IDENTIFIER] = Style(extendedColors.attributeNameColor.toAwtColor())
                             styles[Token.LITERAL_STRING_DOUBLE_QUOTE] = Style(extendedColors.attributeValueColor.toAwtColor())
+                            styles[Token.MARKUP_TAG_DELIMITER] = Style(extendedColors.syntaxColor.toAwtColor())
+                            styles[Token.MARKUP_TAG_ATTRIBUTE] = Style(extendedColors.attributeNameColor.toAwtColor())
                         }
                         syntaxScheme = scheme
                         syntaxEditingStyle = SMLTokenMakerFactory.SYNTAX_STYLE_SML
@@ -110,9 +114,16 @@ fun RowScope.syntaxEditor(
 
                         addMouseListener(object : MouseAdapter() {
                             override fun mousePressed(e: MouseEvent) {
-                                val pos = viewToModel(e.point)
-                                caretPosition = pos
-                                requestFocusInWindow()
+                                try {
+                                    val pos = viewToModel(e.point)
+                                    // Ensure position is within valid range
+                                    if (pos >= 0 && pos <= document.length) {
+                                        caretPosition = pos
+                                        requestFocusInWindow()
+                                    }
+                                } catch (ex: Exception) {
+                                    // Ignore invalid positions
+                                }
                             }
                         })
 
@@ -125,7 +136,10 @@ fun RowScope.syntaxEditor(
                                 // invoke after caretPos has been changed
                                 SwingUtilities.invokeLater {
                                     val oldText = textFieldValue.text
-                                    val newValue = TextFieldValue(text, TextRange(caretPosition))
+                                    val newValue = TextFieldValue(
+                                        text = text,
+                                        selection = TextRange(min(caretPosition, text.length))
+                                    )
                                     currentProject.currentFileContent = newValue
 
                                     if (oldText != text) {
@@ -153,17 +167,101 @@ fun RowScope.syntaxEditor(
                     }
                     textArea to RTextScrollPane(textArea)
                 }
+                val mdEditor = remember {
+                    AbstractTokenMakerFactory.setDefaultInstance(MarkdownTokenMakerFactory())
+
+                    val textArea = RSyntaxTextArea(20, 60).apply {
+                        val scheme = SyntaxScheme(true).apply {
+                            styles[Token.RESERVED_WORD] = Style(extendedColors.syntaxColor.toAwtColor())
+                            styles[Token.SEPARATOR] = Style(extendedColors.bracketColor.toAwtColor())
+                            styles[Token.IDENTIFIER] = Style(extendedColors.attributeNameColor.toAwtColor())
+                            styles[Token.LITERAL_STRING_DOUBLE_QUOTE] = Style(extendedColors.attributeValueColor.toAwtColor())
+                            styles[Token.MARKUP_TAG_DELIMITER] = Style(extendedColors.syntaxColor.toAwtColor())
+                            styles[Token.MARKUP_TAG_ATTRIBUTE] = Style(extendedColors.attributeNameColor.toAwtColor())
+                        }
+                        syntaxScheme = scheme
+                        syntaxEditingStyle = MarkdownTokenMakerFactory.SYNTAX_STYLE_MARKDOWN
+                        background = colors.surface.toAwtColor()
+                        foreground = colors.onSurface.toAwtColor()
+                        currentLineHighlightColor = colors.surface.copy(
+                            red = colors.surface.red + 0.05f,
+                            green = colors.surface.green + 0.05f,
+                            blue = colors.surface.blue + 0.05f
+                        ).toAwtColor()
+                        caretColor = colors.onSurface.toAwtColor()
+                        selectionColor = extendedColors.accentColor.toAwtColor()
+                        selectedTextColor = java.awt.Color.WHITE
+                        font = java.awt.Font("Monospaced", java.awt.Font.PLAIN, 14)
+                        text = textFieldValue.text
+                        caretPosition = 0
+                        isFocusable = true
+                        isRequestFocusEnabled = true
+                        paintTabLines = true
+
+                        addMouseListener(object : MouseAdapter() {
+                            override fun mousePressed(e: MouseEvent) {
+                                try {
+                                    val pos = viewToModel(e.point)
+                                    // Ensure position is within valid range
+                                    if (pos >= 0 && pos <= document.length) {
+                                        caretPosition = pos
+                                        requestFocusInWindow()
+                                    }
+                                } catch (ex: Exception) {
+                                    // Ignore invalid positions
+                                }
+                            }
+                        })
+
+                        document.addDocumentListener(object : DocumentListener {
+                            override fun insertUpdate(e: DocumentEvent) = updateValue()
+                            override fun removeUpdate(e: DocumentEvent) = updateValue()
+                            override fun changedUpdate(e: DocumentEvent) = updateValue()
+
+                            fun updateValue() {
+                                // invoke after caretPos has been changed
+                                SwingUtilities.invokeLater {
+                                    val oldText = textFieldValue.text
+                                    val newValue = TextFieldValue(
+                                        text = text,
+                                        selection = TextRange(min(caretPosition, text.length))
+                                    )
+                                    currentProject.currentFileContent = newValue
+
+                                    if (oldText != text) {
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            delay(500)
+                                            currentProject.saveFileContent()
+                                            currentProject.reloadPage()
+                                        }
+                                    }
+                                }
+                            }
+                        })
+                    }
+                    textArea to RTextScrollPane(textArea)
+                }
 
                 if (textFieldValue.text.isNotEmpty()) {
-                    SwingPanel(
-                        modifier = Modifier.fillMaxSize(),
-                        factory = { editor.second }
-                    )
+                    if (currentProject.fileName.endsWith(".sml")) {
+                        SwingPanel(
+                            modifier = Modifier.fillMaxSize(),
+                            factory = { smlEditor.second }
+                        )
+                    } else {
+                        SwingPanel(
+                            modifier = Modifier.fillMaxSize(),
+                            factory = { mdEditor.second }
+                        )
+                    }
                 }
 
                 LaunchedEffect(textFieldValue.text) {
-                    if (editor.first.text != textFieldValue.text) {
-                        editor.first.text = textFieldValue.text
+                    if (smlEditor.first.text != textFieldValue.text && currentProject.fileName.endsWith(".sml")) {
+                        smlEditor.first.text = textFieldValue.text
+                    }
+                    if (mdEditor.first.text != textFieldValue.text && currentProject.fileName.endsWith(".md")) {
+                        mdEditor.first.text = textFieldValue.text
                     }
                 }
             }
@@ -173,8 +271,8 @@ fun RowScope.syntaxEditor(
                     Row (modifier = Modifier.weight(.5f)){
                         Box(
                             modifier = Modifier
-                                .weight(1f) // Allow the text field to take the remaining space
-                                .verticalScroll(scrollState) // Enable vertical scrolling
+                                .weight(1f)
+                                .verticalScroll(scrollState)
                         ) {
                             BasicTextField(
                                 value = currentProject.parseError!!,
