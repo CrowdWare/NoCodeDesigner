@@ -4,163 +4,116 @@ import org.fife.ui.rsyntaxtextarea.AbstractTokenMaker
 import org.fife.ui.rsyntaxtextarea.Token
 import org.fife.ui.rsyntaxtextarea.TokenMap
 import org.fife.ui.rsyntaxtextarea.TokenTypes
+import java.util.stream.IntStream.range
 import javax.swing.text.Segment
 
 class MarkdownTokenMaker : AbstractTokenMaker() {
-    
-    companion object {
-        private val KEYWORDS = arrayOf(
-            "#", "##", "###", "####", "#####", "######",  // Headers
-            "*", "**", "_", "__",                         // Emphasis
-            "-", "+", ">",                                // Lists and blockquotes
-            "`", "```",                                   // Code blocks
-            "[", "]", "(", ")",                          // Links
-            "!", "---", "***"                            // Images and horizontal rules
-        )
-    }
-
     override fun getWordsToHighlight(): TokenMap {
-        val words = TokenMap()
-        for (keyword in KEYWORDS) {
-            words.put(keyword, Token.RESERVED_WORD)
+        val tokenMap = TokenMap()
+
+        val keywords = arrayOf("**", "*", "#", "`", "[]()", "[]")
+
+        for (word in keywords) {
+            tokenMap.put(word, Token.RESERVED_WORD)
         }
-        return words
+
+        return tokenMap
     }
 
     override fun getTokenList(text: Segment?, initialTokenType: Int, startOffset: Int): Token {
         resetTokenList()
-        
-        if (text == null) {
-            addNullToken()
-            return firstToken
-        }
 
-        var offset = text.offset
+        if (text == null) return firstToken
+
+        val array = text.array
+        val offset = text.offset
         val count = text.count
+        var current = offset
         val end = offset + count
 
-        var start = offset
-        var current = offset
+        var start = current
 
         while (current < end) {
-            val c = text.array[current]
+            val c = array[current]
 
             when {
-                c == '#' -> {
-                    // Handle headers
-                    if (start < current) {
-                        addToken(text, start, current - 1, Token.IDENTIFIER, startOffset + start)
-                    }
+                c == '#' && (current == offset || array[current - 1] == '\n') -> {
+                    // Header (#)
+                    addToken(array, start, current - 1, Token.IDENTIFIER, startOffset + start - offset)
                     start = current
-                    while (current < end && text.array[current] == '#') {
-                        current++
-                    }
-                    addToken(text, start, current - 1, Token.RESERVED_WORD, startOffset + start)
+                    current = endOfHeader(array, current, end)
+                    addToken(array, start, current - 1, Token.RESERVED_WORD, startOffset + start - offset)
                     start = current
                 }
 
-                c == '*' || c == '_' -> {
-                    // Handle emphasis
-                    if (start < current) {
-                        addToken(text, start, current - 1, Token.IDENTIFIER, startOffset + start)
-                    }
-                    start = current
-                    if (current + 1 < end && text.array[current + 1] == c) {
+                c == '*' -> {
+                    // Bold or Italic
+                    if (current + 1 < end && array[current + 1] == '*') {
+                        addToken(array, start, current - 1, Token.IDENTIFIER, startOffset + start - offset)
+                        start = current
                         current += 2
+                        current = endOfBoldText(array, current, end)
+                        addToken(array, start, current - 1, Token.MARKUP_TAG_DELIMITER, startOffset + start - offset)
+                        start = current
                     } else {
+                        addToken(array, start, current - 1, Token.IDENTIFIER, startOffset + start - offset)
+                        start = current
                         current++
+                        current = endOfItalicText(array, current, end)
+                        addToken(array, start, current - 1, Token.MARKUP_TAG_DELIMITER, startOffset + start - offset)
+                        start = current
                     }
-                    addToken(text, start, current - 1, Token.MARKUP_TAG_DELIMITER, startOffset + start)
-                    start = current
                 }
 
                 c == '`' -> {
-                    // Handle code blocks
-                    if (start < current) {
-                        addToken(text, start, current - 1, Token.IDENTIFIER, startOffset + start)
-                    }
+                    // Code block
+                    addToken(array, start, current - 1, Token.IDENTIFIER, startOffset + start - offset)
                     start = current
-                    if (current + 2 < end && 
-                        text.array[current + 1] == '`' && 
-                        text.array[current + 2] == '`') {
-                        current += 3
-                        while (current + 2 < end) {
-                            if (text.array[current] == '`' && 
-                                text.array[current + 1] == '`' && 
-                                text.array[current + 2] == '`') {
-                                current += 3
-                                break
-                            }
-                            current++
-                        }
-                    } else {
-                        current++
-                        while (current < end && text.array[current] != '`') {
-                            current++
-                        }
-                        if (current < end) current++
-                    }
-                    addToken(text, start, current - 1, Token.LITERAL_STRING_DOUBLE_QUOTE, startOffset + start)
+                    current = endOfCodeBlock(array, current, end)
+                    addToken(array, start, current - 1, Token.LITERAL_BACKQUOTE, startOffset + start - offset)
                     start = current
                 }
 
                 c == '[' -> {
-                    // Handle opening bracket
-                    if (start < current) {
-                        addToken(text, start, current - 1, Token.IDENTIFIER, startOffset + start)
-                    }
-                    addToken(text, current, current, Token.SEPARATOR, startOffset + current)
-                    current++
+                    // Start of a link
+                    addToken(array, start, current - 1, Token.IDENTIFIER, startOffset + start - offset)
                     start = current
-                }
+                    current++ // Move past the '['
 
-                c == ']' -> {
-                    // Handle closing bracket
-                    if (start < current) {
-                        addToken(text, start, current - 1, Token.IDENTIFIER, startOffset + start)
+                    // Capture the link name until we find the closing bracket
+                    while (current < end && array[current] != ']') {
+                        current++
                     }
-                    addToken(text, current, current, Token.SEPARATOR, startOffset + current)
-                    current++
-                    start = current
-                }
 
-                c == '(' -> {
-                    // Handle opening parenthesis
-                    if (start < current) {
-                        addToken(text, start, current - 1, Token.IDENTIFIER, startOffset + start)
-                    }
-                    addToken(text, current, current, Token.SEPARATOR, startOffset + current)
-                    current++
-                    start = current
-                }
+                    if (current < end && array[current] == ']') {
+                        // Found the closing bracket
+                        // Now, we need to style the link name
+                        addToken(array, start, current, Token.MARKUP_TAG_NAME, startOffset + start - offset) // This token could represent the link name styled in green
+                        start = current + 1 // Move past the ']'
+                        current++ // Move to the next character after ']'
 
-                c == ')' -> {
-                    // Handle closing parenthesis
-                    if (start < current) {
-                        addToken(text, start, current - 1, Token.IDENTIFIER, startOffset + start)
-                    }
-                    addToken(text, current, current, Token.SEPARATOR, startOffset + current)
-                    current++
-                    start = current
-                }
+                        // Check for the URL after the closing bracket
+                        if (current < end && array[current] == '(') {
+                            start = current // Remember where the URL starts
+                            current++ // Move past the '('
 
-                c == '-' && current + 2 < end && 
-                text.array[current + 1] == '-' && 
-                text.array[current + 2] == '-' -> {
-                    // Handle horizontal rules
-                    if (start < current) {
-                        addToken(text, start, current - 1, Token.IDENTIFIER, startOffset + start)
+                            // Capture the URL until we find the closing parenthesis
+                            while (current < end && array[current] != ')') {
+                                current++
+                            }
+
+                            if (current < end && array[current] == ')') {
+                                // Found the closing parenthesis for the URL
+                                addToken(array, start, current, Token.MARKUP_TAG_ATTRIBUTE, startOffset + start - offset) // Token for the URL
+                                start = current + 1 // Move past the ')'
+                            }
+                        }
                     }
-                    current += 3
-                    addToken(text, start, current - 1, Token.RESERVED_WORD, startOffset + start)
-                    start = current
                 }
 
                 Character.isWhitespace(c) -> {
-                    if (start < current) {
-                        addToken(text, start, current - 1, Token.IDENTIFIER, startOffset + start)
-                    }
-                    addToken(text, current, current, Token.WHITESPACE, startOffset + current)
+                    addToken(array, start, current - 1, Token.IDENTIFIER, startOffset + start - offset)
+                    addToken(array, current, current, Token.WHITESPACE, startOffset + current - offset)
                     current++
                     start = current
                 }
@@ -170,10 +123,68 @@ class MarkdownTokenMaker : AbstractTokenMaker() {
         }
 
         if (start < end) {
-            addToken(text, start, end - 1, Token.IDENTIFIER, startOffset + start)
+            addToken(array, start, end - 1, Token.IDENTIFIER, startOffset + start - offset)
         }
 
         addNullToken()
         return firstToken
+    }
+
+    private fun endOfHeader(array: CharArray, start: Int, end: Int): Int {
+        var current = start
+        while (current < end && array[current] != '\n') {
+            current++
+        }
+        return current
+    }
+
+    private fun endOfBoldText(array: CharArray, start: Int, end: Int): Int {
+        var current = start
+        while (current < end - 1) {
+            if (array[current] == '*' && array[current + 1] == '*') {
+                return current + 2
+            }
+            current++
+        }
+        return end
+    }
+
+    private fun endOfItalicText(array: CharArray, start: Int, end: Int): Int {
+        var current = start
+        while (current < end) {
+            if (array[current] == '*') {
+                return current + 1
+            }
+            current++
+        }
+        return end
+    }
+
+    private fun endOfCodeBlock(array: CharArray, start: Int, end: Int): Int {
+        var current = start + 1
+        while (current < end) {
+            if (array[current] == '`') {
+                return current + 1
+            }
+            current++
+        }
+        return end
+    }
+
+    private fun endOfLink(array: CharArray, start: Int, end: Int): Int {
+        var current = start
+        while (current < end) {
+            if (array[current] == ']') {
+                current++
+                if (current < end && array[current] == '(') {
+                    while (current < end && array[current] != ')') {
+                        current++
+                    }
+                    return current + 1
+                }
+            }
+            current++
+        }
+        return end
     }
 }

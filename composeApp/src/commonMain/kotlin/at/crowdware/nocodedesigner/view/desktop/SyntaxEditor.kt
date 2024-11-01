@@ -44,8 +44,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.crowdware.nocodedesigner.theme.ExtendedColors
-import at.crowdware.nocodedesigner.ui.SMLTokenMakerFactory
 import at.crowdware.nocodedesigner.ui.MarkdownTokenMakerFactory
+import at.crowdware.nocodedesigner.ui.SMLTokenMakerFactory
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,12 +53,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.fife.ui.rsyntaxtextarea.*
 import org.fife.ui.rtextarea.RTextScrollPane
+import java.awt.Dimension
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.io.IOException
+import javax.swing.BorderFactory
 import javax.swing.SwingUtilities
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
+import javax.swing.plaf.basic.BasicScrollBarUI
 import kotlin.math.min
+
 
 fun Color.toAwtColor(): java.awt.Color {
     return java.awt.Color(red, green, blue, alpha)
@@ -90,8 +95,6 @@ fun RowScope.syntaxEditor(
                             styles[Token.SEPARATOR] = Style(extendedColors.bracketColor.toAwtColor())
                             styles[Token.IDENTIFIER] = Style(extendedColors.attributeNameColor.toAwtColor())
                             styles[Token.LITERAL_STRING_DOUBLE_QUOTE] = Style(extendedColors.attributeValueColor.toAwtColor())
-                            styles[Token.MARKUP_TAG_DELIMITER] = Style(extendedColors.syntaxColor.toAwtColor())
-                            styles[Token.MARKUP_TAG_ATTRIBUTE] = Style(extendedColors.attributeNameColor.toAwtColor())
                         }
                         syntaxScheme = scheme
                         syntaxEditingStyle = SMLTokenMakerFactory.SYNTAX_STYLE_SML
@@ -165,7 +168,55 @@ fun RowScope.syntaxEditor(
                             }
                         })
                     }
-                    textArea to RTextScrollPane(textArea)
+                    val scrollPane = RTextScrollPane(textArea).apply {
+                        background = colors.surface.toAwtColor()
+                        border = BorderFactory.createEmptyBorder(5, 5, 5, 5)
+
+                        horizontalScrollBar.ui = object : BasicScrollBarUI() {
+                            override fun configureScrollBarColors() {
+                                thumbColor = colors.primary.toAwtColor()
+                                trackColor = colors.surface.toAwtColor()
+                            }
+
+                            override fun createIncreaseButton(direction: Int) = object : javax.swing.JButton() {
+                                init {
+                                    isVisible = false
+                                    preferredSize = Dimension(0, 0)
+                                }
+                            }
+
+                            override fun createDecreaseButton(direction: Int) = object : javax.swing.JButton() {
+                                init {
+                                    isVisible = false
+                                    preferredSize = Dimension(0, 0)
+                                }
+                            }
+                        }
+
+                        verticalScrollBar.ui = object : BasicScrollBarUI() {
+                            override fun configureScrollBarColors() {
+                                thumbColor = colors.primary.toAwtColor()
+                                trackColor = colors.surface.toAwtColor()
+                            }
+
+                            override fun createIncreaseButton(direction: Int) = object : javax.swing.JButton() {
+                                init {
+                                    isVisible = false
+                                    preferredSize = Dimension(0, 0)
+                                }
+                            }
+
+                            override fun createDecreaseButton(direction: Int) = object : javax.swing.JButton() {
+                                init {
+                                    isVisible = false
+                                    preferredSize = Dimension(0, 0)
+                                }
+                            }
+                        }
+
+
+                    }
+                    textArea to scrollPane
                 }
                 val mdEditor = remember {
                     AbstractTokenMakerFactory.setDefaultInstance(MarkdownTokenMakerFactory())
@@ -176,8 +227,9 @@ fun RowScope.syntaxEditor(
                             styles[Token.SEPARATOR] = Style(extendedColors.bracketColor.toAwtColor())
                             styles[Token.IDENTIFIER] = Style(extendedColors.attributeNameColor.toAwtColor())
                             styles[Token.LITERAL_STRING_DOUBLE_QUOTE] = Style(extendedColors.attributeValueColor.toAwtColor())
-                            styles[Token.MARKUP_TAG_DELIMITER] = Style(extendedColors.syntaxColor.toAwtColor())
-                            styles[Token.MARKUP_TAG_ATTRIBUTE] = Style(extendedColors.attributeNameColor.toAwtColor())
+                            styles[Token.MARKUP_TAG_DELIMITER] = Style(extendedColors.attributeValueColor.toAwtColor())
+                            styles[Token.MARKUP_TAG_ATTRIBUTE] = Style(extendedColors.linkColor.toAwtColor())
+                            styles[Token.MARKUP_TAG_NAME] = Style(extendedColors.attributeNameColor.toAwtColor())
                         }
                         syntaxScheme = scheme
                         syntaxEditingStyle = MarkdownTokenMakerFactory.SYNTAX_STYLE_MARKDOWN
@@ -232,14 +284,60 @@ fun RowScope.syntaxEditor(
                                         CoroutineScope(Dispatchers.IO).launch {
                                             delay(500)
                                             currentProject.saveFileContent()
-                                            currentProject.reloadPage()
+                                            //currentProject.reloadPage()
                                         }
                                     }
                                 }
                             }
                         })
                     }
-                    textArea to RTextScrollPane(textArea)
+                    val scrollPane = RTextScrollPane(textArea).apply {
+                        background = colors.surface.toAwtColor()
+                        border = BorderFactory.createEmptyBorder(5, 5, 5, 5)
+
+                        horizontalScrollBar.ui = object : BasicScrollBarUI() {
+                            override fun configureScrollBarColors() {
+                                thumbColor = colors.primary.toAwtColor()
+                                trackColor = colors.surface.toAwtColor()
+                            }
+
+                            override fun createIncreaseButton(direction: Int) = object : javax.swing.JButton() {
+                                init {
+                                    isVisible = false
+                                    preferredSize = Dimension(0, 0)
+                                }
+                            }
+
+                            override fun createDecreaseButton(direction: Int) = object : javax.swing.JButton() {
+                                init {
+                                    isVisible = false
+                                    preferredSize = Dimension(0, 0)
+                                }
+                            }
+                        }
+
+                        verticalScrollBar.ui = object : BasicScrollBarUI() {
+                            override fun configureScrollBarColors() {
+                                thumbColor = colors.primary.toAwtColor()
+                                trackColor = colors.surface.toAwtColor()
+                            }
+
+                            override fun createIncreaseButton(direction: Int) = object : javax.swing.JButton() {
+                                init {
+                                    isVisible = false
+                                    preferredSize = Dimension(0, 0)
+                                }
+                            }
+
+                            override fun createDecreaseButton(direction: Int) = object : javax.swing.JButton() {
+                                init {
+                                    isVisible = false
+                                    preferredSize = Dimension(0, 0)
+                                }
+                            }
+                        }
+                    }
+                    textArea to scrollPane
                 }
 
                 if (textFieldValue.text.isNotEmpty()) {

@@ -1,8 +1,6 @@
 # TODO
 
 ## Next release
-MD syntax highlighting
-SML syntax highlighting
 Editor, Scrollbar colors
 MD preview via webView in AWT
 ### Epub Part
@@ -23,6 +21,8 @@ MD preview via webView in AWT
 - FontSize changeable from end user in book app
 
 ## Nice to have
+- MD syntax highlighting more detailed
+- SML syntax highlighting more detailed
 - Hyperlinks like buttons
 - TopAppBar in app.sml
 - Page: barTitle
