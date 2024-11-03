@@ -1,6 +1,7 @@
 package at.crowdware.nocodedesigner.utils
 
 import at.crowdware.nocodedesigner.utils.CreateEbook.Companion
+import at.crowdware.nocodedesigner.utils.CreateEbook.Companion.copyImages
 import at.crowdware.nocodedesigner.utils.CreateEbook.Companion.copyStreamToFile
 import at.crowdware.nocodedesigner.utils.CreateEbook.Companion.fixTables
 import at.crowdware.nocodedesigner.utils.UIElement.*
@@ -29,6 +30,7 @@ class CreateHTML {
             assets.mkdirs()
 
             copyAssets(assets)
+            copyImages(dir, source)
 
             // create a html file for all pages
             val sourceDir = File(source, "pages")
@@ -39,12 +41,9 @@ class CreateHTML {
                         val name = file.name.substringBeforeLast(".sml")
                         val html = getHtmlContent(page.first!!)
                         val context = mutableMapOf<String, Any>()
-                        println("first: ${page.first}")
 
                         context["title"] = page.first!!.title
                         context["content"] = html
-
-                        println("html: $html")
 
                         val classLoader = Thread.currentThread().contextClassLoader
                         val resourcePath = "templates/page.html"
@@ -58,6 +57,20 @@ class CreateHTML {
                         val outputFile = Paths.get(dir.path, "$name.html").toFile()
                         outputFile.writeText(xhtml, Charsets.UTF_8)
                     }
+                }
+            }
+        }
+
+        fun copyImages(dir: File, source: String) {
+            val sourceDir = File(source, "images")
+            val targetDir = File(dir, "assets/images")
+            if (!targetDir.exists()) {
+                targetDir.mkdirs()
+            }
+            sourceDir.walkTopDown().forEach { file ->
+                if (file.isFile) {
+                    val targetFile = File(targetDir, file.name)
+                    Files.copy(file.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
                 }
             }
         }
@@ -153,6 +166,10 @@ class CreateHTML {
                 }
                 is SpacerElement -> {
                     html += "<div style=\"margin-top: 20px;\"></div>\n"
+                }
+                is ImageElement -> {
+                    html += "<img class=\"img-fluid\" src=\"assets/images/${element.src}\"/>\n"
+
                 }
                 else -> {
                     // ignore for now
