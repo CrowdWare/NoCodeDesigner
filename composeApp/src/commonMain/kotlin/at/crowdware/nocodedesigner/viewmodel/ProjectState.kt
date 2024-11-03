@@ -38,7 +38,7 @@ expect fun saveFileContent(path: String, uuid: String, pid: String, content: Str
 expect fun createProjectState(): ProjectState
 expect fun fileExists(path: String): Boolean
 expect fun deleteFile(path: String)
-expect fun createPage(path: String)
+expect fun createPage(path: String, title: String)
 expect fun createPart(path: String)
 expect fun renameFile(pathBefore: String, pathAfter: String)
 expect fun copyAssetFile(path: String, target: String)
@@ -187,6 +187,7 @@ abstract class ProjectState {
                 path = "$filePath.$extension"
             }
             val fileText = loadFileContent(path, "", "")
+            println("ext: $extension")
             if (extension == "sml") {
                 if (fileName == "book.sml") {
                     loadElementData(Book())
@@ -203,7 +204,7 @@ abstract class ProjectState {
                     }
                 }
             } else {
-                page = Page(color = "", backgroundColor = "", padding = Padding(0, 0, 0, 0), "false", elements = mutableListOf())
+                page = Page(color = "", backgroundColor = "", title = "", padding = Padding(0, 0, 0, 0), scrollable =  "false", elements = mutableListOf())
                 elementData = emptyList()
                 val clsName = "at.crowdware.nocodedesigner.utils.Markdown"
                 val clazz = Class.forName(clsName).kotlin
@@ -390,7 +391,7 @@ abstract class ProjectState {
 
     fun addPage(name: String) {
         val path = "$folder/pages/$name.sml"
-        createPage(path)
+        createPage(path, name)
 
         val newNode = TreeNode(title = mutableStateOf( "${name}.sml"), path = path, type= NodeType.SML)
         val updatedChildren = pageNode.children + newNode

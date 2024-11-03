@@ -108,6 +108,9 @@ data class Markdown (var dummy: String)
 
 @ElementAnnotation("A **Page** is the base element of the NoCodeApp. You can put all other Elements inside a Page.")
 data class Page(
+    @StringAnnotation("Give the page a title which will be the headline in the book reader.")
+    var title: String,
+
     @HexColorAnnotation
     var color: String,
 
@@ -277,6 +280,9 @@ sealed class UIElement {
     data class MarkdownElement(
         @MarkdownAnnotation
         val text: String,
+
+        @StringAnnotation("Name of the part (from the ebook project) which will be inserted here. Like: home.md")
+        val part: String,
 
         @HexColorAnnotation
         val color: String,

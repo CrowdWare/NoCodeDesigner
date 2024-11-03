@@ -51,6 +51,7 @@ import at.crowdware.nocodedesigner.utils.UIElement
 import at.crowdware.nocodedesigner.utils.UIElement.*
 import androidx.compose.ui.unit.*
 import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
+import java.io.File
 
 @Composable
 fun mobilePreview(currentProject: ProjectState?) {
@@ -137,6 +138,7 @@ fun mobilePreview(currentProject: ProjectState?) {
                             // markdown here
                             val md = MarkdownElement(
                                 text = currentProject.currentFileContent.text,
+                                part = "",
                                 color = "#000000",
                                 14.sp,
                                 FontWeight.Normal,
@@ -220,7 +222,18 @@ fun renderText(element: TextElement) {
 
 @Composable
 fun renderMarkdown(element: MarkdownElement) {
-    val parsedMarkdown = parseMarkdown(element.text)
+    var txt = ""
+    val currentProject = GlobalProjectState.projectState
+    if (element.part.isNotEmpty() && currentProject != null) {
+        try {
+            txt = File(currentProject.folder + "/parts", element.part).readText()
+        } catch(e: Exception) {
+            println("An error occurred in RenderMarkdown: ${e.message}")
+        }
+    } else {
+        txt = element.text
+    }
+    val parsedMarkdown = parseMarkdown(txt)
     Text(
         text = parsedMarkdown,
         style = TextStyle(color = hexToColor(element.color, colorNameToHex("onBackground"))),
@@ -786,7 +799,7 @@ fun handleButtonClick(link: String) {
     when {
         link.startsWith("page:") -> {
             val pageId = link.removePrefix("page:")
-            loadPage(pageId)
+            loadPage("$pageId.sml")
         }
         link.startsWith("web:") -> {
             val url = link.removePrefix("web:")

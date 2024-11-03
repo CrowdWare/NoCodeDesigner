@@ -324,10 +324,10 @@ actual fun deleteFile(path: String) {
     File(path).delete()
 }
 
-actual fun createPage(path: String) {
+actual fun createPage(path: String, title: String) {
     val file = File(path)
     file.createNewFile()
-    file.writeText("Page {\n\n}")
+    file.writeText("Page {\n\ttitle:\"$title\"\n}")
 }
 
 actual fun createPart(path: String) {

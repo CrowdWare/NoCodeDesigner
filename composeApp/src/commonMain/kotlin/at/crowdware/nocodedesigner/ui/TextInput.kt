@@ -40,6 +40,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -49,15 +53,40 @@ import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 
 
 @Composable
+fun SimpleTextInput(
+    text: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val focusRequester = remember { FocusRequester() }
+    var isFocused by remember { mutableStateOf(false) }
+
+    BasicTextField(
+        value = text,
+        onValueChange = onValueChange,
+        modifier = modifier
+            .focusRequester(focusRequester)
+            .onFocusChanged { focusState -> isFocused = focusState.isFocused }
+            .border(
+                1.dp,
+                if (isFocused) Color.Red else Color.Gray,
+                RoundedCornerShape(4.dp)
+            )
+            .padding(8.dp),
+        textStyle = TextStyle(color = Color.Black)
+    )
+}
+
+@Composable
 fun TextInput(text: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, hasIcon: Boolean = false) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     var showDirectoryPicker by remember { mutableStateOf(false) }
 
     val borderColor = if (isFocused) {
-        ExtendedTheme.colors.accentColor  // Farbe bei Fokus
+        ExtendedTheme.colors.accentColor
     } else {
-        MaterialTheme.colors.onPrimary    // Standardfarbe
+        MaterialTheme.colors.onPrimary
     }
 
     val customSelectionColors = TextSelectionColors(
@@ -69,7 +98,7 @@ fun TextInput(text: String, onValueChange: (String) -> Unit, modifier: Modifier 
         Row(
             modifier = modifier.border(
                 width = 1.dp,
-                color = borderColor,  // Dynamische Farbe je nach Fokus
+                color = borderColor,
                 shape = RoundedCornerShape(4.dp)
             )
         ) {

@@ -36,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
@@ -49,23 +48,8 @@ import at.crowdware.nocodedesigner.ui.SMLTokenMakerFactory
 import at.crowdware.nocodedesigner.ui.createEditor
 import at.crowdware.nocodedesigner.ui.toAwtColor
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.fife.ui.rsyntaxtextarea.*
-import org.fife.ui.rtextarea.RTextScrollPane
-import java.awt.Dimension
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
-import java.io.IOException
-import javax.swing.BorderFactory
-import javax.swing.SwingUtilities
-import javax.swing.event.DocumentEvent
-import javax.swing.event.DocumentListener
-import javax.swing.plaf.basic.BasicScrollBarUI
-import kotlin.math.min
-
 
 
 @Composable
@@ -98,7 +82,8 @@ fun RowScope.syntaxEditor(
                             scheme.styles[Token.IDENTIFIER] = Style(extendedColors.attributeNameColor.toAwtColor())
                             scheme.styles[Token.LITERAL_STRING_DOUBLE_QUOTE] = Style(extendedColors.attributeValueColor.toAwtColor())
                         },
-                        { AbstractTokenMakerFactory.setDefaultInstance(SMLTokenMakerFactory()) }
+                        { AbstractTokenMakerFactory.setDefaultInstance(SMLTokenMakerFactory()) },
+                        currentProject
                     )
                 }
 
@@ -117,16 +102,20 @@ fun RowScope.syntaxEditor(
                             scheme.styles[Token.MARKUP_TAG_ATTRIBUTE] = Style(extendedColors.linkColor.toAwtColor())
                             scheme.styles[Token.MARKUP_TAG_NAME] = Style(extendedColors.attributeNameColor.toAwtColor())
                         },
-                        { AbstractTokenMakerFactory.setDefaultInstance(MarkdownTokenMakerFactory()) }
+                        { AbstractTokenMakerFactory.setDefaultInstance(MarkdownTokenMakerFactory()) },
+                        currentProject
                     )
                 }
                 if (textFieldValue.text.isNotEmpty()) {
+                    println("render: ${currentProject.fileName}")
                     if (currentProject.fileName.endsWith(".sml")) {
+                        println("render sml")
                         SwingPanel(
                             modifier = Modifier.fillMaxSize(),
                             factory = { smlEditor.second }
                         )
                     } else {
+                        println("render md")
                         SwingPanel(
                             modifier = Modifier.fillMaxSize(),
                             factory = { mdEditor.second }

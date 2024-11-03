@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import at.crowdware.nocodedesigner.theme.ExtendedColors
+import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme
 import org.fife.ui.rtextarea.RTextScrollPane
@@ -48,9 +49,10 @@ fun createEditor(
     extendedColors: ExtendedColors,
     syntaxStyle: String,
     configureScheme: (SyntaxScheme) -> Unit,
-    setFactory: () -> Unit // Funktion zum Setzen der TokenMakerFactory
+    setFactory: () -> Unit,
+    currentProject: ProjectState
 ): Pair<RSyntaxTextArea, RTextScrollPane> {
-    setFactory() // TokenMakerFactory initialisieren
+    setFactory()
 
     val textArea = RSyntaxTextArea(20, 60).apply {
         val scheme = SyntaxScheme(true).apply(configureScheme)
@@ -99,7 +101,11 @@ fun createEditor(
                         text = text,
                         selection = TextRange(min(caretPosition, text.length))
                     )
-                    // aktuelle Datei-Text-Inhalte updaten
+                    if (oldText != text) {
+                        currentProject.currentFileContent = newValue
+                        currentProject.saveFileContent()
+                        currentProject.reloadPage()
+                    }
                 }
             }
         })

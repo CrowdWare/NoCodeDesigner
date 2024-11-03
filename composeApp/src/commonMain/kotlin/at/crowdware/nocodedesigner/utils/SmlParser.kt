@@ -145,7 +145,7 @@ fun extractChildElements(element: Any): List<Any> {
 }
 
 fun deserializePage(parsedResult: List<Any>): Page {
-    val page = Page(color = "", backgroundColor = "", padding = Padding(0, 0, 0, 0), "false", elements = mutableListOf())
+    val page = Page(color = "", backgroundColor = "", title="", padding = Padding(0, 0, 0, 0), scrollable =  "false", elements = mutableListOf())
     val currentProject = GlobalProjectState.projectState
     val theme = currentProject?.app?.theme
 
@@ -157,7 +157,7 @@ fun deserializePage(parsedResult: List<Any>): Page {
 
                 when (elementName) {
                     "Page" -> {
-
+                        page.title = (properties["title"] as? PropertyValue.StringValue)?.value ?: ""
                         page.color = (properties["color"] as? PropertyValue.StringValue)?.value ?: (theme?.onBackground ?: "no")
                         page.backgroundColor = (properties["backgroundColor"] as? PropertyValue.StringValue)?.value ?: (theme?.background ?: "n0")
                         page.padding = parsePadding((properties["padding"] as? PropertyValue.StringValue)?.value ?: "0")
@@ -255,7 +255,8 @@ fun parseNestedElements(nestedElements: List<Any>, elements: MutableList<UIEleme
                                     ?: ""] ?: TextAlign.Unspecified,
                                 weight = (properties["weight"] as? PropertyValue.IntValue)?.value ?: 0,
                                 height = (properties["height"] as? PropertyValue.IntValue)?.value ?: 0,
-                                width = (properties["width"] as? PropertyValue.IntValue)?.value ?: 0
+                                width = (properties["width"] as? PropertyValue.IntValue)?.value ?: 0,
+                                part = (properties["part"] as? PropertyValue.StringValue)?.value ?: ""
                             )
                             elements.add(ele)
                         }
