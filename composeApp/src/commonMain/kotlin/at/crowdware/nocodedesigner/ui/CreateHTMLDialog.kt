@@ -19,30 +19,35 @@
 
 package at.crowdware.nocodedesigner.ui
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import at.crowdware.nocodedesigner.theme.ExtendedTheme
+
 
 @Composable
-fun CheckboxItem(modifier: Modifier = Modifier, color: Color, label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onCheckedChange(checked) }
+fun createHTMLDialog(
+    name: String,
+    onNameChange: (String) -> Unit,
+    folder: String,
+    onFolderChange: (String) -> Unit,
+    onDismissRequest: () -> Unit,
+    onCreateRequest: () -> Unit
+) {
+    CustomDialog(
+        title = "Create HTML",
+        onDismissRequest = onDismissRequest,
+        onConfirmRequest = onCreateRequest,
+        confirmButtonText = "Create",
+        cancelButtonText = "Cancel",
+        height = 200
     ) {
-        Checkbox(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            colors = CheckboxDefaults.colors(checkedColor = ExtendedTheme.colors.accentColor)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = label, color = color)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        InputRow(label = "Name:", value = name, onValueChange = onNameChange)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        InputRow(label = "Folder:", value = folder, onValueChange = onFolderChange, hasIcon = true)
     }
 }

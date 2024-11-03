@@ -27,11 +27,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 
 @Composable
-fun RadioButtonItem(modifier: Modifier = Modifier, label: String, selected: Boolean, onClick: () -> Unit) {
+fun RadioButtonItem(modifier: Modifier = Modifier, color: Color, label: String, selected: Boolean, onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -44,6 +45,6 @@ fun RadioButtonItem(modifier: Modifier = Modifier, label: String, selected: Bool
             colors = RadioButtonDefaults.colors(selectedColor = ExtendedTheme.colors.accentColor)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text = label)
+        Text(text = label, color = color)
     }
 }

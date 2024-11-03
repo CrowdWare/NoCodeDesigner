@@ -89,10 +89,10 @@ fun toolbar(currentProject: ProjectState?) {
             if (currentProject.book != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 HoverableIcon(
-                    onClick = { currentProject?.isCreateEbookVisible = true },
+                    onClick = { currentProject.isCreateEbookVisible = true },
                     painter = painterResource("drawable/book.xml"),
                     tooltipText = "Create Ebook",
-                    isSelected = currentProject?.isCreateEbookVisible == true
+                    isSelected = currentProject.isCreateEbookVisible == true
                 )
             }
         }
@@ -104,6 +104,17 @@ fun toolbar(currentProject: ProjectState?) {
                     painter = painterResource("drawable/android.xml"),
                     tooltipText = "Create APK",
                     isSelected = currentProject?.isCreateAPKVisible == true
+                )
+            }
+        }
+        if (currentProject != null) {
+            if( currentProject.app != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                HoverableIcon(
+                    onClick = { currentProject.isCreateHTMLVisible = true },
+                    painter = painterResource("drawable/html.xml"),
+                    tooltipText = "Create HTML",
+                    isSelected = currentProject.isCreateHTMLVisible == true
                 )
             }
         }

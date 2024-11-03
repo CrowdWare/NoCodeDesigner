@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 
+
 @Composable
 fun createProjectDialog(
     name: String,
@@ -45,89 +46,85 @@ fun createProjectDialog(
     onThemeChanged: (String) -> Unit,
     onCheckBookChanged: (Boolean) -> Unit,
     onCheckAppChanged: (Boolean) -> Unit,
-    onDismissRequest: () -> Unit,
-    onCreateRequest: () -> Unit,
     app: Boolean,
-    book: Boolean
+    book: Boolean,
+    onDismissRequest: () -> Unit,
+    onCreateRequest: () -> Unit
 ) {
-    AlertDialog(
+    CustomDialog(
+        title = "Create Project",
         onDismissRequest = onDismissRequest,
-        title = {
-            Text(text = "Create Project")
-        },
-        text = {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = "Type:", modifier = Modifier.align(Alignment.CenterVertically).weight(1f))
-                    CheckboxItem(
-                        modifier = Modifier.weight(1f),
-                        checked = book,
-                        onCheckedChange = onCheckBookChanged,
-                        label = "Book")
-                    CheckboxItem(modifier = Modifier.weight(1f),
-                        checked = app,
-                        onCheckedChange = onCheckAppChanged,
-                        label = "App")
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = "Name:", modifier = Modifier.align(Alignment.CenterVertically).weight(1F))
-                    Spacer(modifier = Modifier.width(16.dp))
-                    TextInput(name, onNameChange, modifier = Modifier.weight(3F))
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                if(app) {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(text = "AppId:", modifier = Modifier.align(Alignment.CenterVertically).weight(1F))
-                        Spacer(modifier = Modifier.width(16.dp))
-                        TextInput(id, onIdChange, modifier = Modifier.weight(3F))
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = "Folder:", modifier = Modifier.align(Alignment.CenterVertically).weight(1F))
-                    Spacer(modifier = Modifier.width(16.dp))
-                    TextInput(folder, onFolderChange, modifier = Modifier.weight(3F), hasIcon = true)
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                if (app) {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(text = "Theme:", modifier = Modifier.align(Alignment.CenterVertically).weight(1f))
-                        RadioButtonItem(modifier = Modifier.weight(1f),
-                            label = "Light",
-                            selected = theme == "Light",
-                            onClick = { onThemeChanged("Light") }
-                        )
-                        RadioButtonItem(modifier = Modifier.weight(1f),
-                            label = "Dark",
-                            selected = theme == "Dark",
-                            onClick = { onThemeChanged("Dark") }
-                        )
-                    }
-                }
+        onConfirmRequest = onCreateRequest,
+        confirmButtonText = "Create",
+        cancelButtonText = "Cancel",
+        height = 400
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Type:",
+                    color = MaterialTheme.colors.onPrimary,
+                    modifier = Modifier.align(Alignment.CenterVertically).weight(1f))
+                CheckboxItem(
+                    modifier = Modifier.weight(1f),
+                    checked = book,
+                    onCheckedChange = onCheckBookChanged,
+                    label = "Book", color = MaterialTheme.colors.onPrimary)
+                CheckboxItem(modifier = Modifier.weight(1f),
+                    checked = app,
+                    onCheckedChange = onCheckAppChanged,
+                    label = "App", color = MaterialTheme.colors.onPrimary)
             }
-        },
-        confirmButton = {
-            Button(
-                enabled = (book || app) && name.isNotEmpty() && folder.isNotEmpty() && (id.isNotEmpty() || !app),
-                onClick = onCreateRequest,
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = ExtendedTheme.colors.accentColor,
-                    contentColor = ExtendedTheme.colors.onAccentColor
-                )
-            ) {
-                Text("Create")
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Name:",
+                    color = MaterialTheme.colors.onPrimary,
+                    modifier = Modifier.align(Alignment.CenterVertically).weight(1F))
+                Spacer(modifier = Modifier.width(16.dp))
+                TextInput(name, onNameChange, modifier = Modifier.weight(3F))
             }
-        },
-        dismissButton = {
-            Button(
-                onClick = onDismissRequest
-            ) {
-                Text("Cancel")
+            Spacer(modifier = Modifier.height(16.dp))
+            if(app) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "AppId:",
+                        color = MaterialTheme.colors.onPrimary,
+                        modifier = Modifier.align(Alignment.CenterVertically).weight(1F))
+                    Spacer(modifier = Modifier.width(16.dp))
+                    TextInput(id, onIdChange, modifier = Modifier.weight(3F))
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Folder:",
+                    color = MaterialTheme.colors.onPrimary,
+                    modifier = Modifier.align(Alignment.CenterVertically).weight(1F))
+                Spacer(modifier = Modifier.width(16.dp))
+                TextInput(folder, onFolderChange, modifier = Modifier.weight(3F), hasIcon = true)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            if (app) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Theme:",
+                        color = MaterialTheme.colors.onPrimary,
+                        modifier = Modifier.align(Alignment.CenterVertically).weight(1f))
+                    RadioButtonItem(modifier = Modifier.weight(1f),
+                        label = "Light",
+                        selected = theme == "Light",
+                        color = MaterialTheme.colors.onPrimary,
+                        onClick = { onThemeChanged("Light") }
+                    )
+                    RadioButtonItem(modifier = Modifier.weight(1f),
+                        label = "Dark",
+                        selected = theme == "Dark",
+                        color = MaterialTheme.colors.onPrimary,
+                        onClick = { onThemeChanged("Dark") }
+                    )
+                }
             }
         }
-    )
+    }
 }
-
-
-

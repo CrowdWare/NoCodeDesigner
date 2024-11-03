@@ -42,6 +42,32 @@ fun createEbookDialog(
     onDismissRequest: () -> Unit,
     onCreateRequest: () -> Unit
 ) {
+    CustomDialog(
+        title = "Create Ebook",
+        onDismissRequest = onDismissRequest,
+        onConfirmRequest = onCreateRequest,
+        confirmButtonText = "Create",
+        cancelButtonText = "Cancel",
+        height = 200
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
+        InputRow(label = "Name:", value = name, onValueChange = onNameChange)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        InputRow(label = "Folder:", value = folder, onValueChange = onFolderChange, hasIcon = true)
+    }
+}
+/*
+@Composable
+fun createEbookDialog(
+    name: String,
+    onNameChange: (String) -> Unit,
+    folder: String,
+    onFolderChange: (String) -> Unit,
+    onDismissRequest: () -> Unit,
+    onCreateRequest: () -> Unit
+) {
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -85,6 +111,4 @@ fun createEbookDialog(
         }
     )
 }
-
-
-
+*/

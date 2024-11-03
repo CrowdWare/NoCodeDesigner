@@ -326,6 +326,27 @@ fun main() = application {
                                 })
                         }
 
+                        if (projectState.isCreateHTMLVisible) {
+                            val appName = projectState.app?.name!!
+                            val coroutineScope = rememberCoroutineScope()
+                            var title by remember { mutableStateOf(appName) }
+                            var folder by remember { mutableStateOf(System.getProperty("user.home") + "/NoCodeDesigner") }
+                            createHTMLDialog(
+                                name = title,
+                                folder = folder,
+                                onFolderChange = { folder = it },
+                                onNameChange = { title = it },
+                                onDismissRequest = { projectState.isCreateHTMLVisible = false },
+                                onCreateRequest = {
+                                    projectState.isCreateHTMLVisible = false
+                                    coroutineScope.launch {
+                                        if (!folder.endsWith("/"))
+                                            folder += "/"
+                                        projectState.createHTML(title, folder)
+                                    }
+                                })
+                        }
+
                         DirectoryPicker(
                             show = projectState.isOpenProjectDialogVisible,
                             title = "Pick a project folder to be opened"

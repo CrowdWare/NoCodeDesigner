@@ -104,3 +104,13 @@ val DarkExtendedColors = ExtendedColors(
     commentColor = Color.Gray,
     bracketColor = Color(0xFFF5D52E)
 )
+
+
+fun darkenColor(color: Color, factor: Float): Color {
+    return Color(
+        red = (color.red * factor).coerceIn(0f, 1f),
+        green = (color.green * factor).coerceIn(0f, 1f),
+        blue = (color.blue * factor).coerceIn(0f, 1f),
+        alpha = color.alpha
+    )
+}

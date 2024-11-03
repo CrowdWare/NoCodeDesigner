@@ -91,7 +91,7 @@ fun TextInput(text: String, onValueChange: (String) -> Unit, modifier: Modifier 
             )
             if (hasIcon) {
                 IconButton(onClick = {}, modifier = Modifier.size(24.dp)) {
-                    Icon(Icons.Default.Folder, contentDescription = "Folder", modifier = Modifier.clickable {
+                    Icon(Icons.Default.Folder, contentDescription = "Folder", tint=MaterialTheme.colors.onPrimary, modifier = Modifier.clickable {
                         showDirectoryPicker = true
                     })
                 }

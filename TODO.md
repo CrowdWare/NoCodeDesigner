@@ -1,8 +1,7 @@
 # TODO
 
 ## Next release
-Editor, Scrollbar colors
-MD preview via webView in AWT
+- Create HTML for reading a book in a web browser
 ### Epub Part
 - part name "toc" and "pdfOnly" in docs
 - Convert images at import to .png for ebook 

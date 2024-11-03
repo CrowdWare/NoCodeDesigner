@@ -68,6 +68,7 @@ abstract class ProjectState {
     var isImportTextureDialogVisible by mutableStateOf(false)
     var isCreateEbookVisible by mutableStateOf(false)
     var isCreateAPKVisible by mutableStateOf(false)
+    var isCreateHTMLVisible by mutableStateOf(false)
     var isAboutDialogOpen by  mutableStateOf(false)
     var isEditorVisible by mutableStateOf(false)
     var darkMode by mutableStateOf(false)
@@ -108,6 +109,10 @@ abstract class ProjectState {
 
     fun createAPK(title: String, folder: String) {
         app?.let { CreateAPK.start(title, folder, this.folder, it, this) }
+    }
+
+    fun createHTML(title: String, folder: String) {
+        app?.let { CreateHTML.start(title, folder, this.folder, it) }
     }
 
     fun LoadProject(path: String = folder, uuid: String, pid: String) {
