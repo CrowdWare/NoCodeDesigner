@@ -1,11 +1,26 @@
+/*
+ * Copyright (C) 2024 CrowdWare
+ *
+ * This file is part of NoCodeDesigner.
+ *
+ *  NoCodeDesigner is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  NoCodeDesigner is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with NoCodeDesigner.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package at.crowdware.nocodedesigner.utils
 
-import at.crowdware.nocodedesigner.utils.CreateEbook.Companion
-import at.crowdware.nocodedesigner.utils.CreateEbook.Companion.copyImages
 import at.crowdware.nocodedesigner.utils.CreateEbook.Companion.copyStreamToFile
-import at.crowdware.nocodedesigner.utils.CreateEbook.Companion.fixTables
 import at.crowdware.nocodedesigner.utils.UIElement.*
-import at.crowdware.nocodedesigner.view.desktop.*
 import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.data.MutableDataSet
@@ -22,9 +37,8 @@ class CreateHTML {
         var dir = File("")
         var sourceDir = File("")
 
-        fun start(title: String, folder: String, source: String, app: App) {
-            dir = File(folder, title)
-            dir.mkdirs()
+        fun start(folder: String, source: String, app: App) {
+            dir = File(folder)
             sourceDir = File(source)
             val assets = File(dir, "assets")
             assets.mkdirs()
@@ -42,7 +56,9 @@ class CreateHTML {
                         val html = getHtmlContent(page.first!!)
                         val context = mutableMapOf<String, Any>()
 
-                        context["title"] = page.first!!.title
+                        context["name"] = app.name
+                        context["description"] = app.description
+                        context["title"] = app.name + " - " + page.first!!.title
                         context["content"] = html
 
                         val classLoader = Thread.currentThread().contextClassLoader

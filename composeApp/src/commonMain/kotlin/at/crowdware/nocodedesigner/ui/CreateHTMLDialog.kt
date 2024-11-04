@@ -28,8 +28,6 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun createHTMLDialog(
-    name: String,
-    onNameChange: (String) -> Unit,
     folder: String,
     onFolderChange: (String) -> Unit,
     onDismissRequest: () -> Unit,
@@ -45,8 +43,6 @@ fun createHTMLDialog(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
-        InputRow(label = "Name:", value = name, onValueChange = onNameChange)
-        Spacer(modifier = Modifier.height(16.dp))
 
         InputRow(label = "Folder:", value = folder, onValueChange = onFolderChange, hasIcon = true)
     }

@@ -1,7 +1,9 @@
 # TODO
 
 ## Next release
-- Create HTML for reading a book in a web browser
+- Rename of new inserted assets is not working correctly
+- Serialize App does not write Theme
+- Input field has problems with cursor. Enter "12345" will become "21345" or similar.
 ### Epub Part
 - part name "toc" and "pdfOnly" in docs
 - Convert images at import to .png for ebook 

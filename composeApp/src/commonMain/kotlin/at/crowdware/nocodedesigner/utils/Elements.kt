@@ -16,20 +16,24 @@
  *  You should have received a copy of the GNU General Public License
  *  along with NoCodeDesigner.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package at.crowdware.nocodedesigner.utils
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import java.time.LocalDateTime
 
 data class App(
-    @StringAnnotation("Name of the app.")
+    @StringAnnotation("Name of the book.")
     var name: String = "",
-    @StringAnnotation("Icon for the app. Sample: icon.png")
+    @StringAnnotation("Put a description about the book here.")
+    var description: String = "",
+    @StringAnnotation("The folder name where you want to deploy the HTML output.")
+    var deployDirHtml: String ="",
+    @StringAnnotation("Icon for the book. Sample: icon.png")
     var icon: String = "",
-    @StringAnnotation("Unique Id of the app. Sample: com.example.appname")
+    @StringAnnotation("Unique Id of the app. Sample: com.example.bookname")
     var id: String = "1.1",
     @StringAnnotation("Version of the current SML. default is 1.1")
     var smlVersion: String = "",

@@ -95,6 +95,8 @@ fun deserializeApp(parsedResult: List<Any>): App {
                         app.id = (properties["id"] as? PropertyValue.StringValue)?.value ?: ""
                         app.icon = (properties["icon"] as? PropertyValue.StringValue)?.value ?: ""
                         app.name = (properties["name"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.description = (properties["description"] as? PropertyValue.StringValue)?.value ?: ""
+                        app.deployDirHtml = (properties["deployDirHtml"] as? PropertyValue.StringValue)?.value ?: ""
                         app.smlVersion = (properties["smlVersion"] as? PropertyValue.StringValue)?.value ?: ""
                         parseNestedAppElements(extractChildElements(tuple), app)
                     }

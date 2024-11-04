@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{{content}}}</title>
+    <title>{{{ title }}}</title>
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+
     <style>
-        /* Prevent overflow on body */
+        /* Basic layout */
         body, html {
             height: 100%;
             margin: 0;
@@ -15,10 +18,37 @@
             align-items: center;
             justify-content: center;
             overflow-x: hidden;
-            background-color: #f8f9fa;
         }
 
-        /* Scaled-up tablet container */
+        /* Dark and Light Theme for page */
+        .dark-theme {
+            background-color: #181818;
+            color: #f8f9fa;
+        }
+
+        .light-theme {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        /* Main container layout */
+        .main-container {
+            display: flex;
+            width: 90%;
+            max-width: 1800px;
+            gap: 50px;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            text-align: left;
+        }
+
+        /* Tablet mockup styling */
         .tablet {
             width: 500px;
             height: 800px;
@@ -28,15 +58,15 @@
             background-color: #444;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             display: flex;
-            overflow: hidden; /* Enforce boundary */
+            overflow: hidden;
         }
 
-        /* Inner screen area with scroll control */
+        /* Screen area styling */
         .screen {
             width: 100%;
             height: 100%;
             overflow-y: auto;
-            overflow-x: hidden; /* Disable horizontal scroll */
+            overflow-x: hidden;
             border-radius: 20px;
             background-color: #fff;
             padding: 20px;
@@ -45,32 +75,188 @@
             flex-direction: column;
         }
 
-        /* Content area with strict wrapping */
+        /* Dark theme for book content */
+        .book-dark-theme {
+            background-color: #333;
+            color: #f8f9fa;
+        }
+
+        /* Light theme for book content */
+        .book-light-theme {
+            background-color: #fff;
+            color: #333;
+        }
+
+        /* Book content */
         .book-content {
             font-size: 1rem;
             line-height: 1.6;
-            color: #333;
             white-space: normal;
             word-wrap: break-word;
             overflow-wrap: break-word;
-            max-width: 100%; /* Force content to respect container width */
+            max-width: 100%;
         }
 
-        /* Hide scrollbar for clean look */
+        /* Hide scrollbar for screen */
         .screen::-webkit-scrollbar {
             display: none;
         }
+
+        /* Theme toggle button styling */
+        .theme-toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        /* Book theme toggle button styling */
+        .book-theme-toggle-btn {
+            position: fixed;
+            top: 60px; /* Placed below main theme button */
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        /* Button styles for dark theme */
+        .dark-theme .theme-toggle-btn,
+        .dark-theme .book-theme-toggle-btn {
+            color: #f8f9fa;
+        }
     </style>
 </head>
-<body>
+<body class="dark-theme"> <!-- Startet mit Dark Theme -->
 
-<div class="tablet">
-    <div class="screen">
-        <div class="book-content">
-            {{{content}}}
+<div class="main-container">
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+        <h3>{{{ name }}}</h3>
+        <p>{{{ description }}}</p>
+    </div>
+
+    <!-- Tablet Mockup -->
+    <div class="tablet">
+        <div class="screen book-dark-theme" id="bookScreen"> <!-- Standardmäßig das dunkle Buch-Theme aktiv -->
+            <div class="book-content">
+                <section class="container">
+                   {{{ content }}}
+                </section>
+            </div>
         </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="sidebar">
+        <h3>Informationen</h3>
+        <p>
+            Dieses Buch wurde mit dem <a target="_blank" href="https://nocode.crowdware.at/">NoCodeDesigner</a> erstellt.<br>
+            Der NoCodeDesigner ist ein Desktop-Tool, das Ihnen hilft, eBooks zu erstellen.<br>
+            Diese eBooks können als EPUB3 exportiert werden, die dann beispielsweise bei Amazon veröffentlicht werden können.<br>
+            Es kann auch als Website veröffentlicht werden, wie diese Seite.<br>
+            Und Sie können Ihr Buch auch als Android-App veröffentlichen, in die Sie auch Videos, Ton, Schaltflächen, 3D-Objekte usw. integrieren können.
+        </p>
     </div>
 </div>
 
+<!-- Theme toggle icon button for page theme -->
+<button class="theme-toggle-btn" onclick="togglePageTheme()" id="themeIcon">
+    <i class="bi bi-moon-fill"></i> <!-- Initial icon for Dark Theme -->
+</button>
+
+<!-- Theme toggle icon button for book theme -->
+<button class="book-theme-toggle-btn" onclick="toggleBookTheme()" id="bookThemeIcon">
+    <i class="bi bi-book-half"></i> <!-- Initial icon for Light Book Theme -->
+</button>
+
+<script>
+
+    function setThemeCookie(theme) {
+        document.cookie = "theme=" + theme + "; path=/; max-age=" + (60 * 60 * 24 * 30); // 30 Tage gültig
+    }
+
+    function setBookThemeCookie(theme) {
+        document.cookie = "bookTheme=" + theme + "; path=/; max-age=" + (60 * 60 * 24 * 30); // 30 Tage gültig
+    }
+
+    function getThemeCookie() {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; theme=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function getBookThemeCookie() {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; bookTheme=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function togglePageTheme() {
+        const body = document.body;
+        const icon = document.getElementById("themeIcon").querySelector("i");
+
+        body.classList.toggle('dark-theme');
+        body.classList.toggle('light-theme');
+
+        if (body.classList.contains('dark-theme')) {
+            icon.classList.remove('bi-sun-fill');
+            icon.classList.add('bi-moon-fill');
+            setThemeCookie('dark');
+        } else {
+            icon.classList.remove('bi-moon-fill');
+            icon.classList.add('bi-sun-fill');
+            setThemeCookie('light');
+        }
+    }
+
+    function toggleBookTheme() {
+        const screen = document.getElementById("bookScreen");
+        const bookIcon = document.getElementById("bookThemeIcon").querySelector("i");
+
+        if (screen.classList.contains('book-dark-theme')) {
+            screen.classList.remove('book-dark-theme');
+            screen.classList.add('book-light-theme');
+            bookIcon.classList.remove('bi-book');
+            bookIcon.classList.add('bi-book-half');
+            setBookThemeCookie('book-light');
+        } else {
+            screen.classList.remove('book-light-theme');
+            screen.classList.add('book-dark-theme');
+            bookIcon.classList.remove('bi-book-half');
+            bookIcon.classList.add('bi-book');
+            setBookThemeCookie('book-dark');
+        }
+    }
+
+    window.onload = function() {
+        const theme = getThemeCookie();
+        if (theme === 'light') {
+            document.body.classList.remove('dark-theme');
+            document.body.classList.add('light-theme');
+            document.getElementById("themeIcon").querySelector("i").classList.replace("bi-moon-fill", "bi-sun-fill");
+        } else if (theme === 'dark') {
+            document.body.classList.add('dark-theme');
+            document.getElementById("themeIcon").querySelector("i").classList.replace("bi-sun-fill", "bi-moon-fill");
+        }
+
+        const bookTheme = getBookThemeCookie();
+        const bookScreen = document.getElementById("bookScreen");
+        if (bookTheme === 'book-light') {
+            bookScreen.classList.remove('book-dark-theme');
+            bookScreen.classList.add('book-light-theme');
+            document.getElementById("bookThemeIcon").querySelector("i").classList.replace("bi-book", "bi-book-half");
+        } else if (bookTheme === 'book-dark') {
+            bookScreen.classList.add('book-dark-theme');
+            document.getElementById("bookThemeIcon").querySelector("i").classList.replace("bi-book-half", "bi-book");
+        }
+    };
+</script>
 </body>
 </html>

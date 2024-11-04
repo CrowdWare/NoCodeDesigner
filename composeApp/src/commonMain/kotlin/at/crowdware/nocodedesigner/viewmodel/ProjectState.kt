@@ -29,6 +29,7 @@ import com.darkrockstudios.libraries.mpfilepicker.MPFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 import kotlin.reflect.KClass
 
 
@@ -111,8 +112,10 @@ abstract class ProjectState {
         app?.let { CreateAPK.start(title, folder, this.folder, it, this) }
     }
 
-    fun createHTML(title: String, folder: String) {
-        app?.let { CreateHTML.start(title, folder, this.folder, it) }
+    fun createHTML(folder: String) {
+        app!!.deployDirHtml  = folder
+        save(app!!)
+        app?.let { CreateHTML.start(folder, this.folder, it) }
     }
 
     fun LoadProject(path: String = folder, uuid: String, pid: String) {
@@ -132,6 +135,52 @@ abstract class ProjectState {
             val node = TreeNode(title = mutableStateOf(filename), path = file.path, type = getNodeType(file.path))
             imagesNode.children.add(node)
         }
+    }
+
+    fun save(app: App) {
+        // TODO: Add Theme
+        val file = File(folder, "app.sml")
+        var sml = "App {\n"
+        sml += "\tsmlVersion: \"${app.smlVersion}\"\n"
+        sml += "\tname: \"${app.name}\"\n"
+        sml += "\tdescription: \"${app.description}\"\n"
+        sml += "\tid: \"${app.id}\"\n"
+        sml += "\ticon: \"${app.icon}\"\n"
+        sml += "\tdeployDirHtml: \"${app.deployDirHtml}\"\n"
+        sml += "\n"
+        sml += "\tTheme {\n"
+        sml += "\t\tprimary: \"" + app.theme.primary.toString() + "\"\n"
+        sml += "\t\tonPrimary: \"" + app.theme.onPrimary.toString() + "\"\n"
+        sml += "\t\tprimaryContainer: \"" + app.theme.primaryContainer.toString() + "\"\n"
+        sml += "\t\tonPrimaryContainer: \"" + app.theme.onPrimaryContainer.toString() + "\"\n"
+        sml += "\t\tsecondary: \"" + app.theme.secondary.toString() + "\"\n"
+        sml += "\t\tonSecondary: \"" + app.theme.onSecondary.toString() + "\"\n"
+        sml += "\t\tsecondaryContainer: \"" + app.theme.secondaryContainer.toString() + "\"\n"
+        sml += "\t\tonSecondaryContainer: \"" + app.theme.onSecondaryContainer.toString() + "\"\n"
+        sml += "\t\ttertiary: \"" + app.theme.tertiary.toString() + "\"\n"
+        sml += "\t\tonTertiary: \"" + app.theme.onTertiary.toString() + "\"\n"
+        sml += "\t\ttertiaryContainer: \"" + app.theme.tertiaryContainer.toString() + "\"\n"
+        sml += "\t\tonTertiaryContainer: \"" + app.theme.onTertiaryContainer.toString() + "\"\n"
+        sml += "\t\terror: \"" + app.theme.error.toString() + "\"\n"
+        sml += "\t\terrorContainer: \"" + app.theme.errorContainer.toString() + "\"\n"
+        sml += "\t\tonError: \"" + app.theme.onError.toString() + "\"\n"
+        sml += "\t\tonErrorContainer: \"" + app.theme.onErrorContainer.toString() + "\"\n"
+        sml += "\t\tbackground: \"" + app.theme.background.toString() + "\"\n"
+        sml += "\t\tonBackground: \"" + app.theme.onBackground.toString() + "\"\n"
+        sml += "\t\tsurface: \"" + app.theme.surface.toString() + "\"\n"
+        sml += "\t\tonSurface: \"" + app.theme.onSurface.toString() + "\"\n"
+        sml += "\t\tsurfaceVariant: \"" + app.theme.surfaceVariant.toString() + "\"\n"
+        sml += "\t\tonSurfaceVariant: \"" + app.theme.onSurfaceVariant.toString() + "\"\n"
+        sml += "\t\toutline: \"" + app.theme.outline.toString() + "\"\n"
+        sml += "\t\tinverseOnSurface: \"" + app.theme.inverseOnSurface.toString() + "\"\n"
+        sml += "\t\tinverseSurface: \"" + app.theme.inverseSurface.toString() + "\"\n"
+        sml += "\t\tinversePrimary: \"" + app.theme.inversePrimary.toString() + "\"\n"
+        sml += "\t\tsurfaceTint: \"" + app.theme.surfaceTint.toString() + "\"\n"
+        sml += "\t\toutlineVariant: \"" + app.theme.outlineVariant.toString() + "\"\n"
+        sml += "\t\tscrim: \"" + app.theme.scrim.toString() + "\"\n"
+        sml += "\t}\n"
+        sml += "}\n"
+        file.writeText(sml)
     }
 
     fun ImportVideoFile(list: List<MPFile<Any>>) {
