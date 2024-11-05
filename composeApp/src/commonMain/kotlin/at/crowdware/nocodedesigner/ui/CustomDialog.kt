@@ -56,8 +56,8 @@ fun CustomDialog(
     DialogWindow(
         onCloseRequest = onDismissRequest,
         state = dlgState.value,
-        undecorated = true,
-        transparent = true,
+        undecorated = false,
+        transparent = false,
         resizable = false
     ) {
         projectState?.let {
