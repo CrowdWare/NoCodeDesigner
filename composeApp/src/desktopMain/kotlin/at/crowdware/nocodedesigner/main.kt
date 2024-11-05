@@ -82,7 +82,7 @@ fun main() = application {
     var isAskingToClose by remember { mutableStateOf(false) }
 
     // setup logging, all println are stored in a log file
-    //setupLogging() // TODO
+    setupLogging() // TODO
 
     System.setProperty("apple.awt.application.name", appName)
     // Check if the desktop supports macOS actions (About, Quit, etc.)
@@ -432,15 +432,20 @@ fun onAppClose(frame: ComposeWindow, folder: String) {
 
 fun setupLogging() {
     val userHome = System.getProperty("user.home")
-    val configDirectory = File("$userHome/Library/Application Support/NoCodeDesigner")
-    val tempFile = File("$configDirectory/NoCodeDesigner.log")
-    if(!configDirectory.exists()) {
+    val configDirectory = if (System.getProperty("os.name").contains("Windows")) {
+        File("$userHome/AppData/Local/NoCodeDesigner")
+    } else {
+        File("$userHome/Library/Application Support/NoCodeDesigner")
+    }
+    val tempFile = File(configDirectory, "NoCodeDesigner.log")
+
+    if (!configDirectory.exists()) {
         configDirectory.mkdirs()
     }
     if (!tempFile.exists()) {
         tempFile.createNewFile()
     }
-
+    
     // Redirect stdout and stderr to the file
     val logStream = PrintStream(tempFile.outputStream())
     System.setOut(logStream)
