@@ -61,9 +61,9 @@ fun createEditor(
         background = colors.surface.toAwtColor()
         foreground = colors.onSurface.toAwtColor()
         currentLineHighlightColor = colors.surface.copy(
-            red = colors.surface.red + 0.05f,
-            green = colors.surface.green + 0.05f,
-            blue = colors.surface.blue + 0.05f
+            red = kotlin.math.min(colors.surface.red + 0.05f, 1f),
+            green = kotlin.math.min(colors.surface.green + 0.05f, 1f),
+            blue = kotlin.math.min(colors.surface.blue + 0.05f, 1f)
         ).toAwtColor()
         caretColor = colors.onSurface.toAwtColor()
         selectionColor = extendedColors.accentColor.toAwtColor()
