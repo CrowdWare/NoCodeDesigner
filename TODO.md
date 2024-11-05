@@ -3,7 +3,6 @@
 ## Next release
 
 ### App Part
-- Create project, use tab instead of blanks
 - Create APK on Windows failed, we need error handling
 - On Windows all path operations looking for "/" fail, like ![icon](C:\Users\art\SourceCode\est\images\icon.png), we have to use os-separator instead
 - Widget palette should insert into editor instead...also other insert for MD...hide palette for MD

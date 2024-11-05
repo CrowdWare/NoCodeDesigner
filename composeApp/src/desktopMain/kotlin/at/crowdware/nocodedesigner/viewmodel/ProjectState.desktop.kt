@@ -194,7 +194,7 @@ class DesktopProjectState : ProjectState() {
             val textures = File("$path$name/textures")
             textures.mkdirs()
             val app = File("$path$name/app.sml")
-            var appContent = "App {\n  smlVersion: \"1.0\"\n  name: \"$name\"\n  version: \"1.0\"\n  id: \"$appId.$name\"\n  icon: \"icon.png\"\n\n  Navigation {\n    type: \"HorizontalPager\"\n\n    Item { page: \"home\" }  \n  }\n"
+            var appContent = "App {\n\tsmlVersion: \"1.0\"\n\tname: \"$name\"\n\tversion: \"1.0\"\n\tid: \"$appId.$name\"\n\ticon: \"icon.png\"\n\n"
             if(theme == "Light")
                 appContent += writeLightTheme()
             else
@@ -203,7 +203,8 @@ class DesktopProjectState : ProjectState() {
             app.writeText(appContent)
 
             val home = File("$path$name/pages/home.sml")
-            home.writeText("Page {\n  padding: \"8\"\n\n  Column {\n    padding: \"8\"\n\n    Text { text: \"Home\" }\n  }\n}\n")
+            home.writeText("Page {\n\tpadding: \"8\"\n\n\tColumn {\n\t\tpadding: \"8\"\n\n\t\tText { text: \"Home\" }\n\t}\n}\n")
+            println("create: $path, $name")
             copyResourceToFile("python/server.py", "$path/$name/server.py")
             copyResourceToFile("python/upd_deploy.py", "$path/$name/upd_deploy.py")
             copyResourceToFile("icons/default.icon.png", "$path/$name/images/icon.png")
@@ -216,7 +217,7 @@ class DesktopProjectState : ProjectState() {
             homemd.writeText("# BookTitle\nLorem ipsum dolor\n")
 
             val book = File("$path$name/book.sml")
-            var bookContent = "Ebook {\n  smlVersion: \"1.0\"\n  name: \"$name\"\n  version: \"1.0\"\n  theme: \"Epub3\"\n  creator: \"\"\n  language: \"en\"\n\n  Part {\n    src: \"home.md\"\n  }\n}\n"
+            var bookContent = "Ebook {\n\tsmlVersion: \"1.0\"\n\tname: \"$name\"\n\tversion: \"1.0\"\n\ttheme: \"Epub3\"\n\tcreator: \"\"\n\tlanguage: \"en\"\n\n\tPart {\n\t\tsrc: \"home.md\"\n\t}\n}\n"
             book.writeText(bookContent)
         }
 
@@ -229,73 +230,73 @@ class DesktopProjectState : ProjectState() {
 
 fun writeDarkTheme(): String {
     var content = "\n"
-    content += "  Theme {\n"
-    content += "    primary: \"#FFB951\"\n"
-    content += "    onPrimary: \"#452B00\"\n"
-    content += "    primaryContainer: \"#633F00\"\n"
-    content += "    onPrimaryContainer: \"#FFDDB3\"\n"
-    content += "    secondary: \"#DDC2A1\"\n"
-    content += "    onSecondary: \"#3E2D16\"\n"
-    content += "    secondaryContainer: \"#56442A\"\n"
-    content += "    onSecondaryContainer: \"#FBDEBC\"\n"
-    content += "    tertiary: \"#B8CEA1\"\n"
-    content += "    onTertiary: \"#243515\"\n"
-    content += "    tertiaryContainer: \"#3A4C2A\"\n"
-    content += "    onTertiaryContainer: \"#D4EABB\"\n"
-    content += "    error: \"#FFB4AB\"\n"
-    content += "    errorContainer: \"#93000A\"\n"
-    content += "    onError: \"#690005\"\n"
-    content += "    onErrorContainer: \"#FFDAD6\"\n"
-    content += "    background: \"#1F1B16\"\n"
-    content += "    onBackground: \"#EAE1D9\"\n"
-    content += "    surface: \"#1F1B16\"\n"
-    content += "    onSurface: \"#EAE1D9\"\n"
-    content += "    surfaceVariant: \"#4F4539\"\n"
-    content += "    onSurfaceVariant: \"#D3C4B4\"\n"
-    content += "    outline: \"#9C8F80\"\n"
-    content += "    inverseOnSurface: \"#1F1B16\"\n"
-    content += "    inverseSurface: \"#EAE1D9\"\n"
-    content += "    inversePrimary: \"#825500\"\n"
-    content += "    surfaceTint: \"#FFB951\"\n"
-    content += "    outlineVariant: \"#4F4539\"\n"
-    content += "    scrim: \"#000000\"\n"
-    content += "  }\n\n"
+    content += "\tTheme {\n"
+    content += "\t\tprimary: \"#FFB951\"\n"
+    content += "\t\tonPrimary: \"#452B00\"\n"
+    content += "\t\tprimaryContainer: \"#633F00\"\n"
+    content += "\t\tonPrimaryContainer: \"#FFDDB3\"\n"
+    content += "\t\tsecondary: \"#DDC2A1\"\n"
+    content += "\t\tonSecondary: \"#3E2D16\"\n"
+    content += "\t\tsecondaryContainer: \"#56442A\"\n"
+    content += "\t\tonSecondaryContainer: \"#FBDEBC\"\n"
+    content += "\t\ttertiary: \"#B8CEA1\"\n"
+    content += "\t\tonTertiary: \"#243515\"\n"
+    content += "\t\ttertiaryContainer: \"#3A4C2A\"\n"
+    content += "\t\tonTertiaryContainer: \"#D4EABB\"\n"
+    content += "\t\terror: \"#FFB4AB\"\n"
+    content += "\t\terrorContainer: \"#93000A\"\n"
+    content += "\t\tonError: \"#690005\"\n"
+    content += "\t\tonErrorContainer: \"#FFDAD6\"\n"
+    content += "\t\tbackground: \"#1F1B16\"\n"
+    content += "\t\tonBackground: \"#EAE1D9\"\n"
+    content += "\t\tsurface: \"#1F1B16\"\n"
+    content += "\t\tonSurface: \"#EAE1D9\"\n"
+    content += "\t\tsurfaceVariant: \"#4F4539\"\n"
+    content += "\t\tonSurfaceVariant: \"#D3C4B4\"\n"
+    content += "\t\toutline: \"#9C8F80\"\n"
+    content += "\t\tinverseOnSurface: \"#1F1B16\"\n"
+    content += "\t\tinverseSurface: \"#EAE1D9\"\n"
+    content += "\t\tinversePrimary: \"#825500\"\n"
+    content += "\t\tsurfaceTint: \"#FFB951\"\n"
+    content += "\t\toutlineVariant: \"#4F4539\"\n"
+    content += "\t\tscrim: \"#000000\"\n"
+    content += "\t}\n\n"
     return content
 }
 
 fun writeLightTheme(): String {
     var content = "\n"
-    content += "  Theme {\n"
-    content += "    primary: \"#825500\"\n"
-    content += "    onPrimary: \"#FFFFFF\"\n"
-    content += "    primaryContainer: \"#FFDDB3\"\n"
-    content += "    onPrimaryContainer: \"#291800\"\n"
-    content += "    secondary: \"#6F5B40\"\n"
-    content += "    onSecondary: \"#FFFFFF\"\n"
-    content += "    secondaryContainer: \"#FBDEBC\"\n"
-    content += "    onSecondaryContainer: \"#271904\"\n"
-    content += "    tertiary: \"#51643F\"\n"
-    content += "    onTertiary: \"#FFFFFF\"\n"
-    content += "    tertiaryContainer: \"#D4EABB\"\n"
-    content += "    onTertiaryContainer: \"#102004\"\n"
-    content += "    error: \"#BA1A1A\"\n"
-    content += "    errorContainer: \"#FFDAD6\"\n"
-    content += "    onError: \"#FFFFFF\"\n"
-    content += "    onErrorContainer: \"#410002\"\n"
-    content += "    background: \"#FFFBFF\"\n"
-    content += "    onBackground: \"#1F1B16\"\n"
-    content += "    surface: \"#FFFBFF\"\n"
-    content += "    onSurface: \"#1F1B16\"\n"
-    content += "    surfaceVariant: \"#F0E0CF\"\n"
-    content += "    onSurfaceVariant: \"#4F4539\"\n"
-    content += "    outline: \"#817567\"\n"
-    content += "    inverseOnSurface: \"#F9EFE7\"\n"
-    content += "    inverseSurface: \"#34302A\"\n"
-    content += "    inversePrimary: \"#FFB951\"\n"
-    content += "    surfaceTint: \"#825500\"\n"
-    content += "    utlineVariant: \"#D3C4B4\"\n"
-    content += "    scrim: \"#000000\"\n"
-    content += "  }\n\n"
+    content += "\tTheme {\n"
+    content += "\t\tprimary: \"#825500\"\n"
+    content += "\t\tonPrimary: \"#FFFFFF\"\n"
+    content += "\t\tprimaryContainer: \"#FFDDB3\"\n"
+    content += "\t\tonPrimaryContainer: \"#291800\"\n"
+    content += "\t\tsecondary: \"#6F5B40\"\n"
+    content += "\t\tonSecondary: \"#FFFFFF\"\n"
+    content += "\t\tsecondaryContainer: \"#FBDEBC\"\n"
+    content += "\t\tonSecondaryContainer: \"#271904\"\n"
+    content += "\t\ttertiary: \"#51643F\"\n"
+    content += "\t\tonTertiary: \"#FFFFFF\"\n"
+    content += "\t\ttertiaryContainer: \"#D4EABB\"\n"
+    content += "\t\tonTertiaryContainer: \"#102004\"\n"
+    content += "\t\terror: \"#BA1A1A\"\n"
+    content += "\t\terrorContainer: \"#FFDAD6\"\n"
+    content += "\t\tonError: \"#FFFFFF\"\n"
+    content += "\t\tonErrorContainer: \"#410002\"\n"
+    content += "\t\tbackground: \"#FFFBFF\"\n"
+    content += "\t\tonBackground: \"#1F1B16\"\n"
+    content += "\t\tsurface: \"#FFFBFF\"\n"
+    content += "\t\tonSurface: \"#1F1B16\"\n"
+    content += "\t\tsurfaceVariant: \"#F0E0CF\"\n"
+    content += "\t\tonSurfaceVariant: \"#4F4539\"\n"
+    content += "\t\toutline: \"#817567\"\n"
+    content += "\t\tinverseOnSurface: \"#F9EFE7\"\n"
+    content += "\t\tinverseSurface: \"#34302A\"\n"
+    content += "\t\tinversePrimary: \"#FFB951\"\n"
+    content += "\t\tsurfaceTint: \"#825500\"\n"
+    content += "\t\tutlineVariant: \"#D3C4B4\"\n"
+    content += "\t\tscrim: \"#000000\"\n"
+    content += "\t}\n\n"
     return content
 }
 

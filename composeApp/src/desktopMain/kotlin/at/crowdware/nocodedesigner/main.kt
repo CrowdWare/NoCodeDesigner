@@ -250,7 +250,7 @@ fun main() = application {
                         if (projectState.isNewProjectDialogVisible) {
                             val coroutineScope = rememberCoroutineScope()
                             var projectName by remember { mutableStateOf(TextFieldValue("")) }
-                            var appId by remember { mutableStateOf(TextFieldValue("com.sample.app)")) }
+                            var appId by remember { mutableStateOf(TextFieldValue("com.sample.app")) }
                             var projectFolder by remember { mutableStateOf(TextFieldValue("")) }
                             var theme by remember { mutableStateOf("Light") }
                             var createBook by remember { mutableStateOf(false) }
@@ -273,7 +273,7 @@ fun main() = application {
                                 onCreateRequest = {
                                     projectState.isNewProjectDialogVisible = false
                                     coroutineScope.launch {
-                                        var folder = ""
+                                        var folder = projectFolder.text
                                         if (!projectFolder.text.endsWith("/"))
                                             folder = projectFolder.text + "/"
                                         projectState.createProjectFiles(
