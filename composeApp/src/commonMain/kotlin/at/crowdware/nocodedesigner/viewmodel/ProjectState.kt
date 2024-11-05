@@ -29,6 +29,7 @@ import com.darkrockstudios.libraries.mpfilepicker.MPFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -49,6 +50,7 @@ expect fun copyResourceToFile(resourcePath: String, outputPath: String)
 
 abstract class ProjectState {
     var currentFileContent by mutableStateOf(TextFieldValue(""))
+    var editor by mutableStateOf(RSyntaxTextArea())
     var projectName by mutableStateOf("")
         private set
     var fileName by mutableStateOf("No file loaded")
@@ -136,12 +138,14 @@ abstract class ProjectState {
             copyAssetFile(file.path, target)
             val pngTarget = if (!target.endsWith(".png")) {
                 val pngPath = target.substringBeforeLast(".") + ".png"
+                val tar = File(target)
                 convertToPng(File(target), File(pngPath))
+                tar.delete()
                 pngPath
             } else {
                 target
             }
-            val node = TreeNode(title = mutableStateOf(filename), path = pngTarget, type = getNodeType(target))
+            val node = TreeNode(title = mutableStateOf(pngTarget.substringAfterLast("/")), path = pngTarget, type = getNodeType(pngTarget))
             imagesNode.children.add(node)
         }
     }

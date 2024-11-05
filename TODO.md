@@ -2,10 +2,6 @@
 
 ## Next release
 ### Epub Part
-- part name "toc" and "pdfOnly" in docs
-- Convert images at import to .png for ebook 
-- Editor...scroll when editing the last line
-- Insert asset for MD should be a bit different ;-)
 - Annotation for markdown has to be completed
 ### App Part
 - Watermark on non commercial version for app.
@@ -59,6 +55,8 @@
 - Drag and drop tree node to editor (button) 
 - WebService in KTOR also for Desktop
 - Code Generator
+### EPUB
+- part name "toc" and "pdfOnly" in docs
 
 ## Docs
 - https://draft2digital.com/book/epubcheck/upload in docs

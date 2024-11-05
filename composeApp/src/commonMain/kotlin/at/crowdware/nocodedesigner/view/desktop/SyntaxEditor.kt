@@ -108,11 +108,13 @@ fun RowScope.syntaxEditor(
                 }
                 if (textFieldValue.text.isNotEmpty()) {
                     if (currentProject.fileName.endsWith(".sml")) {
+                        currentProject.editor = smlEditor.first
                         SwingPanel(
                             modifier = Modifier.fillMaxSize(),
                             factory = { smlEditor.second }
                         )
                     } else {
+                        currentProject.editor = mdEditor.first
                         SwingPanel(
                             modifier = Modifier.fillMaxSize(),
                             factory = { mdEditor.second }

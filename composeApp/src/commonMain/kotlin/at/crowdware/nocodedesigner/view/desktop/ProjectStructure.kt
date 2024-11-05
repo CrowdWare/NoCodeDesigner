@@ -148,22 +148,47 @@ fun projectStructure(currentProject: ProjectState) {
                                     val ext = treeNode.title.value.substringAfter(".")
                                     val type = extensionToNodeType[ext]
                                     var ins = ""
-                                    when(type) {
-                                        NodeType.SOUND -> {ins = "Sound { src: \"${treeNode.title.value}\" }\n"}
-                                        NodeType.IMAGE -> {ins = "Image { src: \"${treeNode.title.value}\" }\n"}
-                                        NodeType.VIDEO -> {ins = "Video { src: \"${treeNode.title.value}\" }\n"}
-                                        else -> {}
+                                    if (currentProject.extension == "sml") {
+                                        when (type) {
+                                            NodeType.SOUND -> {
+                                                ins = "Sound { src: \"${treeNode.title.value}\" }\n"
+                                            }
+
+                                            NodeType.IMAGE -> {
+                                                ins = "Image { src: \"${treeNode.title.value}\" }\n"
+                                            }
+
+                                            NodeType.VIDEO -> {
+                                                ins = "Video { src: \"${treeNode.title.value}\" }\n"
+                                            }
+
+                                            else -> {}
+                                        }
+                                    } else if(currentProject.extension == "md") {
+                                        when (type) {
+                                            NodeType.IMAGE -> {
+                                                ins = "![${treeNode.title.value.substringBefore(".")}](${treeNode.path.substringAfterLast("/")})\n"
+                                            }
+                                            else -> {}
+                                        }
                                     }
 
-                                    val cursorPosition = currentProject.currentFileContent.selection.start
-                                    val currentText = currentProject.currentFileContent.text
+                                    //val cursorPosition = currentProject.currentFileContent.selection.start
+                                    val cursorPosition = currentProject.editor.caretPosition
+                                    currentProject.editor.insert(ins, cursorPosition)
+                                    currentProject.editor.caretPosition = cursorPosition + ins.length
+
+
+                                    /*val currentText = currentProject.currentFileContent.text
                                     val newTextValue = currentText.substring(0, cursorPosition) + ins + currentText.substring(cursorPosition)
                                     currentProject.currentFileContent = currentProject.currentFileContent.copy(
                                         text = newTextValue,
                                         selection = TextRange(cursorPosition + ins.length)
                                     )
-                                    currentProject.saveFileContent()
-                                    currentProject.reloadPage()
+*/
+
+                                    //currentProject.saveFileContent()
+                                    //currentProject.reloadPage()
                                 }) {
                                     Text(text = "Insert", fontSize = 12.sp)
                                 }
