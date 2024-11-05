@@ -24,13 +24,14 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 
 @Composable
 fun partDialog(
-    name: String,
-    onNameChange: (String) -> Unit,
+    name: TextFieldValue,
+    onNameChange: (TextFieldValue) -> Unit,
     onDismissRequest: () -> Unit,
     onCreateRequest: () -> Unit
 ) {

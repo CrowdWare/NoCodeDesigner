@@ -23,13 +23,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 
 
 @Composable
 fun createHTMLDialog(
-    folder: String,
-    onFolderChange: (String) -> Unit,
+    folder: TextFieldValue,
+    onFolderChange: (TextFieldValue) -> Unit,
     onDismissRequest: () -> Unit,
     onCreateRequest: () -> Unit
 ) {

@@ -30,18 +30,19 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 
 
 @Composable
 fun createProjectDialog(
-    name: String,
-    onNameChange: (String) -> Unit,
-    folder: String,
-    onFolderChange: (String) -> Unit,
-    id: String,
-    onIdChange: (String) -> Unit,
+    name: TextFieldValue,
+    onNameChange: (TextFieldValue) -> Unit,
+    folder: TextFieldValue,
+    onFolderChange: (TextFieldValue) -> Unit,
+    id: TextFieldValue,
+    onIdChange: (TextFieldValue) -> Unit,
     theme: String,
     onThemeChanged: (String) -> Unit,
     onCheckBookChanged: (Boolean) -> Unit,

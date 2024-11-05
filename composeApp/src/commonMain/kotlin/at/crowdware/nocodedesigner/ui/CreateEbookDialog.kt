@@ -30,15 +30,16 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 
 @Composable
 fun createEbookDialog(
-    name: String,
-    onNameChange: (String) -> Unit,
-    folder: String,
-    onFolderChange: (String) -> Unit,
+    name: TextFieldValue,
+    onNameChange: (TextFieldValue) -> Unit,
+    folder: TextFieldValue,
+    onFolderChange: (TextFieldValue) -> Unit,
     onDismissRequest: () -> Unit,
     onCreateRequest: () -> Unit
 ) {

@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -32,6 +33,7 @@ import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Window
@@ -191,6 +193,7 @@ fun main() = application {
                             }
                         }
                         desktop()
+
                         if (projectState.isAboutDialogOpen) {
                             aboutDialog(
                                 appName = appName,
@@ -200,7 +203,7 @@ fun main() = application {
                         }
                         if (projectState.isPageDialogVisible) {
                             val coroutineScope = rememberCoroutineScope()
-                            var pageName by remember { mutableStateOf("") }
+                            var pageName by remember { mutableStateOf(TextFieldValue("")) }
                             pageDialog(
                                 name = pageName,
                                 onNameChange = { pageName = it },
@@ -208,13 +211,13 @@ fun main() = application {
                                 onCreateRequest = {
                                     projectState.isPageDialogVisible = false
                                     coroutineScope.launch {
-                                        projectState.addPage(pageName)
+                                        projectState.addPage(pageName.text)
                                     }
                                 })
                         }
                         if (projectState.isPartDialogVisible) {
                             val coroutineScope = rememberCoroutineScope()
-                            var partName by remember { mutableStateOf("") }
+                            var partName by remember { mutableStateOf(TextFieldValue("")) }
                             partDialog(
                                 name = partName,
                                 onNameChange = { partName = it },
@@ -222,14 +225,14 @@ fun main() = application {
                                 onCreateRequest = {
                                     projectState.isPartDialogVisible = false
                                     coroutineScope.launch {
-                                        projectState.addPart(partName)
+                                        projectState.addPart(partName.text)
                                     }
                                 })
                         }
                         if (projectState.isRenameFileDialogVisible) {
                             val coroutineScope = rememberCoroutineScope()
                             val title = projectState.currentTreeNode?.title?.value?.substringBefore(".")
-                            var fileName by remember { mutableStateOf(title ?: "") }
+                            var fileName by rememberSaveable { mutableStateOf(TextFieldValue(title ?: "")) }
                             renameFileDialog(
                                 name = fileName,
                                 onNameChange = { fileName = it },
@@ -237,16 +240,16 @@ fun main() = application {
                                 onCreateRequest = {
                                     projectState.isRenameFileDialogVisible = false
                                     coroutineScope.launch {
-                                        projectState.renameFile(fileName)
+                                        projectState.renameFile(fileName.text)
                                     }
                                 })
                         }
 
                         if (projectState.isNewProjectDialogVisible) {
                             val coroutineScope = rememberCoroutineScope()
-                            var projectName by remember { mutableStateOf("") }
-                            var appId by remember { mutableStateOf("com.sample.app") }
-                            var projectFolder by remember { mutableStateOf("") }
+                            var projectName by remember { mutableStateOf(TextFieldValue("")) }
+                            var appId by remember { mutableStateOf(TextFieldValue("com.sample.app)")) }
+                            var projectFolder by remember { mutableStateOf(TextFieldValue("")) }
                             var theme by remember { mutableStateOf("Light") }
                             var createBook by remember { mutableStateOf(false) }
                             var createApp by remember { mutableStateOf(false) }
@@ -268,14 +271,15 @@ fun main() = application {
                                 onCreateRequest = {
                                     projectState.isNewProjectDialogVisible = false
                                     coroutineScope.launch {
-                                        if (!projectFolder.endsWith("/"))
-                                            projectFolder += "/"
+                                        var folder = ""
+                                        if (!projectFolder.text.endsWith("/"))
+                                            folder = projectFolder.text + "/"
                                         projectState.createProjectFiles(
-                                            projectFolder,
+                                            folder,
                                             "",
                                             "",
-                                            projectName,
-                                            appId,
+                                            projectName.text,
+                                            appId.text,
                                             theme,
                                             createBook,
                                             createApp
@@ -287,8 +291,8 @@ fun main() = application {
                         if (projectState.isCreateEbookVisible) {
                             val bookName = projectState.book?.name!!
                             val coroutineScope = rememberCoroutineScope()
-                            var title by remember { mutableStateOf(bookName) }
-                            var folder by remember { mutableStateOf(System.getProperty("user.home") + "/NoCodeDesigner") }
+                            var title by remember { mutableStateOf(TextFieldValue(bookName)) }
+                            var folder by remember { mutableStateOf(TextFieldValue(System.getProperty("user.home") + "/NoCodeDesigner")) }
                             createEbookDialog(
                                 name = title,
                                 folder = folder,
@@ -298,9 +302,10 @@ fun main() = application {
                                 onCreateRequest = {
                                     projectState.isCreateEbookVisible = false
                                     coroutineScope.launch {
-                                        if (!folder.endsWith("/"))
-                                            folder += "/"
-                                        projectState.createEbook(title, folder)
+                                        var f = folder.text
+                                        if (!folder.text.endsWith("/"))
+                                            f += "/"
+                                        projectState.createEbook(title.text, f)
                                     }
                                 })
                         }
@@ -308,8 +313,8 @@ fun main() = application {
                         if (projectState.isCreateAPKVisible) {
                             val appName = projectState.app?.name!!
                             val coroutineScope = rememberCoroutineScope()
-                            var title by remember { mutableStateOf(appName) }
-                            var folder by remember { mutableStateOf(System.getProperty("user.home") + "/NoCodeDesigner") }
+                            var title by remember { mutableStateOf(TextFieldValue(appName)) }
+                            var folder by remember { mutableStateOf(TextFieldValue(System.getProperty("user.home") + "/NoCodeDesigner")) }
                             createAPKDialog(
                                 name = title,
                                 folder = folder,
@@ -319,9 +324,10 @@ fun main() = application {
                                 onCreateRequest = {
                                     projectState.isCreateAPKVisible = false
                                     coroutineScope.launch {
-                                        if (!folder.endsWith("/"))
-                                            folder += "/"
-                                        projectState.createAPK(title, folder)
+                                        var f = folder.text
+                                        if (!folder.text.endsWith("/"))
+                                            f += "/"
+                                        projectState.createAPK(title.text, f)
                                     }
                                 })
                         }
@@ -333,7 +339,7 @@ fun main() = application {
                                 deployMentDir = System.getProperty("user.home") + "/NoCodeDesigner"
                             }
                             val coroutineScope = rememberCoroutineScope()
-                            var folder by remember { mutableStateOf(deployMentDir) }
+                            var folder by remember { mutableStateOf(TextFieldValue(deployMentDir)) }
                             createHTMLDialog(
                                 folder = folder,
                                 onFolderChange = { folder = it },
@@ -341,9 +347,10 @@ fun main() = application {
                                 onCreateRequest = {
                                     projectState.isCreateHTMLVisible = false
                                     coroutineScope.launch {
-                                        if (!folder.endsWith("/"))
-                                            folder += "/"
-                                        projectState.createHTML(folder)
+                                        var f = folder.text
+                                        if (!folder.text.endsWith("/"))
+                                            f += "/"
+                                        projectState.createHTML(f)
                                     }
                                 })
                         }

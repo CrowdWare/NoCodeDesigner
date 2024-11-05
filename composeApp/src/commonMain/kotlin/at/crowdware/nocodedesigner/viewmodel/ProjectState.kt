@@ -138,7 +138,7 @@ abstract class ProjectState {
     }
 
     fun save(app: App) {
-        // TODO: Add Theme
+        // TODO: Navigation is missing, but not used yet
         val file = File(folder, "app.sml")
         var sml = "App {\n"
         sml += "\tsmlVersion: \"${app.smlVersion}\"\n"

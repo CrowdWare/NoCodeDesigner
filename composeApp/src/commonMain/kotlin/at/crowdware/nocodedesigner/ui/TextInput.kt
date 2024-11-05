@@ -46,6 +46,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
@@ -53,32 +54,11 @@ import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 
 
 @Composable
-fun SimpleTextInput(
-    text: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val focusRequester = remember { FocusRequester() }
-    var isFocused by remember { mutableStateOf(false) }
-
-    BasicTextField(
-        value = text,
-        onValueChange = onValueChange,
-        modifier = modifier
-            .focusRequester(focusRequester)
-            .onFocusChanged { focusState -> isFocused = focusState.isFocused }
-            .border(
-                1.dp,
-                if (isFocused) Color.Red else Color.Gray,
-                RoundedCornerShape(4.dp)
-            )
-            .padding(8.dp),
-        textStyle = TextStyle(color = Color.Black)
-    )
-}
-
-@Composable
-fun TextInput(text: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, hasIcon: Boolean = false) {
+fun TextInput(
+    text: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier,
+    hasIcon: Boolean = false) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     var showDirectoryPicker by remember { mutableStateOf(false) }
@@ -120,7 +100,10 @@ fun TextInput(text: String, onValueChange: (String) -> Unit, modifier: Modifier 
             )
             if (hasIcon) {
                 IconButton(onClick = {}, modifier = Modifier.size(24.dp)) {
-                    Icon(Icons.Default.Folder, contentDescription = "Folder", tint=MaterialTheme.colors.onPrimary, modifier = Modifier.clickable {
+                    Icon(Icons.Default.Folder,
+                        contentDescription = "Folder",
+                        tint = MaterialTheme.colors.onPrimary,
+                        modifier = Modifier.clickable {
                         showDirectoryPicker = true
                     })
                 }
@@ -131,7 +114,7 @@ fun TextInput(text: String, onValueChange: (String) -> Unit, modifier: Modifier 
     DirectoryPicker(showDirectoryPicker, title = "Pick a folder") { path ->
         if (!path.isNullOrEmpty()) {
             showDirectoryPicker = false
-            onValueChange(path)
+            onValueChange(TextFieldValue(path))
         }
     }
 }
