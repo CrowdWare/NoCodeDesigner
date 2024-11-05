@@ -7,3 +7,12 @@ buttons for interactions.
 
 # Platforms
 This desktop app will be available for Mac, Window, Linux.
+
+# Build
+**Windows**
+`gradlew packageDistributionForCurrentOS`
+Find the MSI file in composeApp/build/compose/binaries/main/msi
+
+**Mac**
+`./gradlew packageDistributionForCurrentOS`
+Find the DMG file in composeApp/build/compose/binaries/main/dmg
