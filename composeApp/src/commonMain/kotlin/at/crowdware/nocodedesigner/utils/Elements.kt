@@ -107,8 +107,52 @@ data class ItemElement (val page: String)
 
 data class PartElement (val src: String, val pdfOnly: Boolean = false)
 
-@ElementAnnotation("**TODO**")
-data class Markdown (var dummy: String)
+
+data class Markdown (
+    @StringAnnotation("Headers in Markdown allow you to define section titles and headings." +
+            "They are created using the `#` symbol, with the number of `#` symbols corresponding to the header level. " +
+            "For example:\n" +
+            "# Header 1\n"+
+            "## Header 2\n" +
+            "### Header 3\n")
+    var Headers: String,
+
+    @StringAnnotation("Markdown provides various options for styling text, such as bold, italic, and strikethrough. " +
+            "These styles help to emphasize important parts of the text.\n" +
+            "- **Bold**: Use double asterisks `**text**` or double underscores `__text__` to make text bold.\n" +
+            "```\n" +
+            "**This is bold text**\n" +
+            "```\n" +
+            "- **Italic**: Use a single asterisk `*text*` or a single underscore `_text_` for italics.\n" +
+            "```\n" +
+            "*This is italic text*\n" +
+            "```\n" +
+            "- **Strikethrough**: Use double tildes `~~text~~` for strikethrough text.\n" +
+            "```\n" +
+            "~~This text is crossed out~~\n" +
+            "```\n")
+    var Styling: String,
+
+    @StringAnnotation("Markdown also allows the creation of hyperlinks, which link to external or internal content. \n" +
+            "Use square brackets `[]` for the link text and parentheses `()` for the URL.\n" +
+            "**Syntax:**\n" +
+            "`[Link Text](https://example.com)`\n" +
+            "**Example:**\n" +
+            "For more information, visit the [Markdown Guide](https://www.markdownguide.org).\n")
+    var Hyperlinks: String,
+
+    @StringAnnotation("Images can be embedded in Markdown similarly to hyperlinks, with an exclamation mark ! at the beginning, " +
+            "followed by the alt text in square brackets `[]` and the image URL in parentheses `().\n" +
+            "**Syntax:**\n" +
+            "`![Alt Text](https://example.com/image.jpg)`\n")
+    var Images: String,
+
+    @StringAnnotation("We have implemented some of the possible special characters.\n" +
+            "`(c)` renders a © copyright symbol\n" +
+            "`(r)` renders a ® registered brand symbol\n" +
+            "`(tm)` renders a ™ trademark symbol ")
+    var Special: String
+)
 
 @ElementAnnotation("A **Page** is the base element of the NoCodeApp. You can put all other Elements inside a Page.")
 data class Page(

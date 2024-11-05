@@ -1,8 +1,7 @@
 # TODO
 
 ## Next release
-### Epub Part
-- Annotation for markdown has to be completed
+
 ### App Part
 - Watermark on non commercial version for app.
 - Error when Youtube video is not found.

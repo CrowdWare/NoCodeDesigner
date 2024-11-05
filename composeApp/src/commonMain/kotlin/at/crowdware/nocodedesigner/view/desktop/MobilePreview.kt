@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -636,7 +637,7 @@ fun ColumnScope.RenderPage(page: Page) {
     }
 }
 
-
+/*
 fun parseMarkdown(markdown: String): AnnotatedString {
     val builder = AnnotatedString.Builder()
     val lines = markdown.split("\n") // Verarbeite alle Zeilen
@@ -771,7 +772,6 @@ fun parseMarkdown(markdown: String): AnnotatedString {
             }
         }
 
-        // Füge Zeilenumbrüche nur zwischen den Zeilen hinzu, nicht am Ende
         if (i < lines.size - 1) {
             builder.append("\n")
         }
@@ -779,8 +779,173 @@ fun parseMarkdown(markdown: String): AnnotatedString {
 
     return builder.toAnnotatedString()
 }
+*/
 
+fun parseMarkdown(markdown: String): AnnotatedString {
+    val builder = AnnotatedString.Builder()
+    val lines = markdown.split("\n") // Process each line individually
 
+    for (i in lines.indices) {
+        val line = lines[i]
+        var j = 0
+        var inCodeBlock = false
+
+        while (j < line.length) {
+            if (line[j] == '`') {
+                inCodeBlock = !inCodeBlock
+                j++
+                continue
+            }
+
+            if (inCodeBlock) {
+                // Append text literally when in code mode
+                val endOfCodeBlock = line.indexOf("`", j)
+                if (endOfCodeBlock != -1) {
+                    builder.withStyle(SpanStyle(fontFamily = FontFamily.Monospace)) {
+                        append(line.substring(j, endOfCodeBlock))
+                    }
+                    j = endOfCodeBlock + 1
+                    inCodeBlock = false // Close code mode
+                } else {
+                    // If no closing backtick is found, append till end of line
+                    builder.withStyle(SpanStyle(fontFamily = FontFamily.Monospace)) {
+                        append(line.substring(j))
+                    }
+                    j = line.length
+                }
+                continue
+            }
+            when {
+                line.startsWith("###### ", j) -> {
+                    builder.withStyle(SpanStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold)) {
+                        append(line.removePrefix("###### ").trim())
+                    }
+                    j = line.length
+                }
+                line.startsWith("##### ", j) -> {
+                    builder.withStyle(SpanStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)) {
+                        append(line.removePrefix("##### ").trim())
+                    }
+                    j = line.length
+                }
+                line.startsWith("#### ", j) -> {
+                    builder.withStyle(SpanStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold)) {
+                        append(line.removePrefix("#### ").trim())
+                    }
+                    j = line.length
+                }
+                line.startsWith("### ", j) -> {
+                    builder.withStyle(SpanStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)) {
+                        append(line.removePrefix("### ").trim())
+                    }
+                    j = line.length
+                }
+                line.startsWith("## ", j) -> {
+                    builder.withStyle(SpanStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold)) {
+                        append(line.removePrefix("## ").trim())
+                    }
+                    j = line.length
+                }
+                line.startsWith("# ", j) -> {
+                    builder.withStyle(SpanStyle(fontSize = 28.sp, fontWeight = FontWeight.Bold)) {
+                        append(line.removePrefix("# ").trim())
+                    }
+                    j = line.length
+                }
+                line.startsWith("[", j) -> {
+                    val endBracket = line.indexOf("]", j)
+                    val startParen = line.indexOf("(", endBracket)
+                    val endParen = line.indexOf(")", startParen)
+
+                    if (endBracket != -1 && startParen == endBracket + 1 && endParen != -1) {
+                        val linkText = line.substring(j + 1, endBracket)
+                        val linkUrl = line.substring(startParen + 1, endParen)
+
+                        builder.pushStringAnnotation(tag = "URL", annotation = linkUrl)
+                        builder.withStyle(SpanStyle(color = Color.Blue, textDecoration = TextDecoration.Underline)) {
+                            append(linkText)
+                        }
+                        builder.pop()
+                        j = endParen + 1
+                    } else {
+                        builder.append(line[j])
+                        j++
+                    }
+                }
+                line.startsWith("***", j) -> {
+                    val endIndex = line.indexOf("***", j + 3)
+                    if (endIndex != -1) {
+                        builder.withStyle(SpanStyle(fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)) {
+                            append(line.substring(j + 3, endIndex).trim())
+                        }
+                        j = endIndex + 3
+                    } else {
+                        builder.append("***")
+                        j += 3
+                    }
+                }
+                line.startsWith("**", j) -> {
+                    val endIndex = line.indexOf("**", j + 2)
+                    if (endIndex != -1) {
+                        builder.withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(line.substring(j + 2, endIndex).trim())
+                        }
+                        j = endIndex + 2
+                    } else {
+                        builder.append("**")
+                        j += 2
+                    }
+                }
+                line.startsWith("*", j) -> {
+                    val endIndex = line.indexOf("*", j + 1)
+                    if (endIndex != -1) {
+                        builder.withStyle(SpanStyle(fontStyle = FontStyle.Italic)) {
+                            append(line.substring(j + 1, endIndex).trim())
+                        }
+                        j = endIndex + 1
+                    } else {
+                        builder.append("*")
+                        j += 1
+                    }
+                }
+                line.startsWith("~~", j) -> {
+                    val endIndex = line.indexOf("~~", j + 2)
+                    if (endIndex != -1) {
+                        builder.withStyle(SpanStyle(textDecoration = TextDecoration.LineThrough)) {
+                            append(line.substring(j + 2, endIndex).trim())
+                        }
+                        j = endIndex + 2
+                    } else {
+                        builder.append("~~")
+                        j += 2
+                    }
+                }
+                line.startsWith("(c)", j, ignoreCase = true) -> {
+                    builder.append("©")
+                    j += 3
+                }
+                line.startsWith("(r)", j, ignoreCase = true) -> {
+                    builder.append("®")
+                    j += 3
+                }
+                line.startsWith("(tm)", j, ignoreCase = true) -> {
+                    builder.append("™")
+                    j += 4
+                }
+                else -> {
+                    builder.append(line[j])
+                    j++
+                }
+            }
+        }
+
+        if (i < lines.size - 1) {
+            builder.append("\n")
+        }
+    }
+
+    return builder.toAnnotatedString()
+}
 
 @Composable
 expect fun dynamicImageFromAssets(modifier: Modifier = Modifier, filename: String, scale: String, link: String)
