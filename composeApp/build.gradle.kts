@@ -46,7 +46,7 @@ kotlin {
                 implementation(compose.components.uiToolingPreview)
                 implementation(libs.androidx.lifecycle.viewmodel)
                 implementation(libs.androidx.lifecycle.runtime.compose)
-                implementation("org.jetbrains.compose.material:material-icons-extended:1.6.11")
+                implementation("org.jetbrains.compose.material:material-icons-extended:1.7.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
                 implementation("br.com.devsrsouza.compose.icons:font-awesome:1.1.1")
                 implementation("br.com.devsrsouza.compose.icons:feather:1.1.1")

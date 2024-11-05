@@ -3,12 +3,17 @@
 ## Next release
 
 ### App Part
+- Dialog transparent not working on windows...check how to get darkmode on mac
+- Big bug....in editor...type something quick and cursor is jumping at the end, producing a loop of nonsense
+- Create project, use tab instead of blanks
+- Create APK on Windows failed, we need error handling
+- On Windows all path operations looking for "/" fail, like ![icon](C:\Users\art\SourceCode\est\images\icon.png), we have to use os-separator instead
+- Widget palette should insert into editor instead...also other insert for MD...hide palette for MD
 - Watermark on non commercial version for app.
 - Error when Youtube video is not found.
 - Save progress of reading and load that page next time
 - decision path save and reset
 - Build APK has to change appId into something like at.crowdware.nocodebrowser.preCached
-- Build APK error handling
 - Browser App does not display the right colors, when pre cached
 - Theme, FontSize, FontFamily
 - FontSize changeable from end user in book app

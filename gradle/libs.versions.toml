@@ -1,7 +1,7 @@
 [versions]
 androidx-lifecycle = "2.8.0"
 kotlin = "2.0.20"
-compose = "1.6.11"
+compose = "1.7.0" # 1.6.11
 agp = "8.6.1"
 androidx-activityCompose = "1.9.2"
 androidx-uiTest = "1.7.2"

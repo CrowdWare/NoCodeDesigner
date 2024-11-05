@@ -40,6 +40,7 @@ import at.crowdware.nocodedesigner.theme.AppTheme
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 import at.crowdware.nocodedesigner.theme.darkenColor
 import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState.projectState
+import javax.swing.JFrame
 
 @Composable
 fun CustomDialog(
@@ -52,12 +53,13 @@ fun CustomDialog(
     content: @Composable () -> Unit
 ) {
     val dlgState = remember { mutableStateOf(DialogState(width = 500.dp,height = height.dp)) }
+    val isWindows = System.getProperty("os.name").contains("Windows", ignoreCase = true)
 
     DialogWindow(
         onCloseRequest = onDismissRequest,
         state = dlgState.value,
-        undecorated = false,
-        transparent = false,
+        undecorated = !isWindows,
+        transparent = !isWindows,
         resizable = false
     ) {
         projectState?.let {

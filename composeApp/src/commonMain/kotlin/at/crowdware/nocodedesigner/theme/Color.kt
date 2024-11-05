@@ -100,7 +100,7 @@ val DarkExtendedColors = ExtendedColors(
     soundColor = Color(0xFFF0766E),
     xmlColor = Color(0xFFA9704C),
     mdHeader = Color(0xFFB774B1),
-    linkColor = Color(0xFF5E90E0),
+    linkColor = Color(0xFF5C7AF1),
     commentColor = Color.Gray,
     bracketColor = Color(0xFFF5D52E)
 )
