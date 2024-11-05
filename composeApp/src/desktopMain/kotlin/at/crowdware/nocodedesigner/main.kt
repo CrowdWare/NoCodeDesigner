@@ -66,7 +66,7 @@ import java.io.PrintStream
 val LocalProjectState = compositionLocalOf<ProjectState> { error("No ProjectState provided") }
 
 fun main() = application {
-    try {
+
         val appName = "NoCodeDesigner"
         val version = Version.version
         val loadedState = loadAppState()
@@ -414,11 +414,7 @@ fun main() = application {
                 }
             }
         }
-    } catch (e: Exception) {
-        // Handle any initialization errors or unexpected issues
-        println("An error occurred during application startup: ${e.message}")
-        e.printStackTrace()
-    }
+
 }
 
 fun onAppClose(frame: ComposeWindow, folder: String) {
