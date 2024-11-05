@@ -74,12 +74,13 @@ fun desktop() {
             projectStructure(currentProject)
         else
             widgetPalette(currentProject)
-        /*syntaxEditor(
+
+        syntaxEditor(
             currentProject,
             textFieldValue = textFieldValue as TextFieldValue,
             colors = MaterialTheme.colors,
             extendedColors = ExtendedTheme.colors
-        )*/
+        )
         mobilePreview(currentProject)
         propertyPanel(currentProject)
     }

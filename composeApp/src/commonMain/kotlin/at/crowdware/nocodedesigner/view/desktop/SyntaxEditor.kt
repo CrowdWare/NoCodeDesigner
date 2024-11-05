@@ -86,7 +86,7 @@ fun RowScope.syntaxEditor(
                         currentProject
                     )
                 }
-
+                println("smlEdit created")
                 val mdEditor = remember {
                     createEditor(
                         textFieldValue,
@@ -106,6 +106,7 @@ fun RowScope.syntaxEditor(
                         currentProject
                     )
                 }
+                println("mdEdit created")
                 if (textFieldValue.text.isNotEmpty()) {
                     if (currentProject.fileName.endsWith(".sml")) {
                         currentProject.editor = smlEditor.first
@@ -121,7 +122,7 @@ fun RowScope.syntaxEditor(
                         )
                     }
                 }
-
+                println("swing panel created")
                 LaunchedEffect(textFieldValue.text) {
                     if (smlEditor.first.text != textFieldValue.text && currentProject.fileName.endsWith(".sml")) {
                         smlEditor.first.text = textFieldValue.text
