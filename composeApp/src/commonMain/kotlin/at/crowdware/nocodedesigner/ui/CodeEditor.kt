@@ -38,10 +38,18 @@ import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import javax.swing.plaf.basic.BasicScrollBarUI
 import kotlin.math.min
+import java.util.Timer
+import java.util.TimerTask
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 
 fun Color.toAwtColor(): java.awt.Color {
     return java.awt.Color(red, green, blue, alpha)
 }
+
+private const val DEBOUNCE_DELAY = 300L
+private var debounceTimer: Timer? = null
+
 
 fun createEditor(
     textFieldValue: TextFieldValue,
@@ -61,9 +69,9 @@ fun createEditor(
         background = colors.surface.toAwtColor()
         foreground = colors.onSurface.toAwtColor()
         currentLineHighlightColor = colors.surface.copy(
-            red = kotlin.math.min(colors.surface.red + 0.05f, 1f),
-            green = kotlin.math.min(colors.surface.green + 0.05f, 1f),
-            blue = kotlin.math.min(colors.surface.blue + 0.05f, 1f)
+            red = min(colors.surface.red + 0.05f, 1f),
+            green = min(colors.surface.green + 0.05f, 1f),
+            blue = min(colors.surface.blue + 0.05f, 1f)
         ).toAwtColor()
         caretColor = colors.onSurface.toAwtColor()
         selectionColor = extendedColors.accentColor.toAwtColor()
@@ -74,6 +82,7 @@ fun createEditor(
         isFocusable = true
         isRequestFocusEnabled = true
         paintTabLines = true
+
 
         addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent) {
@@ -90,22 +99,45 @@ fun createEditor(
         })
 
         document.addDocumentListener(object : DocumentListener {
-            override fun insertUpdate(e: DocumentEvent) = updateValue()
-            override fun removeUpdate(e: DocumentEvent) = updateValue()
-            override fun changedUpdate(e: DocumentEvent) = updateValue()
+            private var lastText: String = text
 
-            fun updateValue() {
-                SwingUtilities.invokeLater {
-                    val oldText = textFieldValue.text
-                    val newValue = TextFieldValue(
-                        text = text,
-                        selection = TextRange(min(caretPosition, text.length))
-                    )
-                    if (oldText != text) {
-                        currentProject.currentFileContent = newValue
-                        currentProject.saveFileContent()
-                        currentProject.reloadPage()
+            override fun insertUpdate(e: DocumentEvent) = scheduleUpdate()
+            override fun removeUpdate(e: DocumentEvent) = scheduleUpdate()
+            override fun changedUpdate(e: DocumentEvent) = scheduleUpdate()
+
+            private fun scheduleUpdate() {
+                debounceTimer?.cancel() // Cancel any existing timer
+                debounceTimer = Timer()
+
+                // Schedule a new timer task
+                debounceTimer?.schedule(object : TimerTask() {
+                    override fun run() {
+                        SwingUtilities.invokeLater {
+                            updateValue() // This will run after the user stops typing
+                        }
                     }
+                }, DEBOUNCE_DELAY)
+            }
+
+            // Update function for handling document changes
+            private fun updateValue() {
+                val currentText = text
+                val currentCaretPosition = caretPosition
+                val currentTextLength = currentText.length
+
+                // Only update if the text has actually changed
+                if (lastText != currentText) {
+                    // Create a new TextFieldValue with the current text and caret position
+                    val newValue = TextFieldValue(
+                        text = currentText,
+                        selection = TextRange(min(currentCaretPosition, currentTextLength))
+                    )
+
+                    currentProject.currentFileContent = newValue
+                    lastText = currentText // Update lastText to the current one
+
+                    currentProject.saveFileContent()
+                    currentProject.reloadPage()
                 }
             }
         })

@@ -82,7 +82,9 @@ fun main() = application {
 
 
     // setup logging, all println are stored in a log file
-    setupLogging()
+    val isDevMode = System.getenv("DEV_MODE") == "true"
+    if (!isDevMode)
+        setupLogging()
 
     System.setProperty("apple.awt.application.name", appName)
     // Check if the desktop supports macOS actions (About, Quit, etc.)
