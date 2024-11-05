@@ -152,7 +152,6 @@ class CreateAPK {
                 if (file.isDirectory) {
                     copyFilesRecursively(file, targetFile)
                 } else if (file.extension != "py" && file.name != ".DS_Store") {
-                    println("Copying ${file.absolutePath} to ${targetFile.absolutePath}")
                     file.copyTo(targetFile, overwrite = true)
                 }
             }

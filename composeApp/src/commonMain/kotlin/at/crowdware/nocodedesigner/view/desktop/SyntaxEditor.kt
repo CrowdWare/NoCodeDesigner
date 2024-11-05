@@ -107,15 +107,12 @@ fun RowScope.syntaxEditor(
                     )
                 }
                 if (textFieldValue.text.isNotEmpty()) {
-                    println("render: ${currentProject.fileName}")
                     if (currentProject.fileName.endsWith(".sml")) {
-                        println("render sml")
                         SwingPanel(
                             modifier = Modifier.fillMaxSize(),
                             factory = { smlEditor.second }
                         )
                     } else {
-                        println("render md")
                         SwingPanel(
                             modifier = Modifier.fillMaxSize(),
                             factory = { mdEditor.second }

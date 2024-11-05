@@ -337,7 +337,6 @@ actual fun createPart(path: String) {
 }
 
 actual fun renameFile(pathBefore: String, pathAfter: String) {
-    println("rename: $pathBefore $pathAfter")
     File(pathBefore).renameTo(File(pathAfter))
 }
 

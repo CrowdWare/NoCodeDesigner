@@ -29,7 +29,9 @@ import com.darkrockstudios.libraries.mpfilepicker.MPFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.awt.image.BufferedImage
 import java.io.File
+import javax.imageio.ImageIO
 import kotlin.reflect.KClass
 
 
@@ -132,7 +134,14 @@ abstract class ProjectState {
             val filename = file.path.substringAfterLast("/")
             val target = "$folder/images/$filename"
             copyAssetFile(file.path, target)
-            val node = TreeNode(title = mutableStateOf(filename), path = file.path, type = getNodeType(file.path))
+            val pngTarget = if (!target.endsWith(".png")) {
+                val pngPath = target.substringBeforeLast(".") + ".png"
+                convertToPng(File(target), File(pngPath))
+                pngPath
+            } else {
+                target
+            }
+            val node = TreeNode(title = mutableStateOf(filename), path = pngTarget, type = getNodeType(target))
             imagesNode.children.add(node)
         }
     }
@@ -236,7 +245,6 @@ abstract class ProjectState {
                 path = "$filePath.$extension"
             }
             val fileText = loadFileContent(path, "", "")
-            println("ext: $extension")
             if (extension == "sml") {
                 if (fileName == "book.sml") {
                     loadElementData(Book())
@@ -501,6 +509,11 @@ abstract class ProjectState {
         renameFile(currentTreeNode?.path!!, newPath)
         currentTreeNode!!.title.value = "$name.$ext"
         currentTreeNode!!.path = newPath
+    }
+
+    fun convertToPng(inputFile: File, outputFile: File) {
+        val image: BufferedImage = ImageIO.read(inputFile)
+        ImageIO.write(image, "png", outputFile)
     }
 }
 
