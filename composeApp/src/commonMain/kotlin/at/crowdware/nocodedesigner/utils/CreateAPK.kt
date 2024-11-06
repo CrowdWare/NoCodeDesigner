@@ -42,7 +42,7 @@ class CreateAPK {
         fun start(title: String, folder: String, source: String, app: App, currentProject: ProjectState) {
             val tempDir = createTempDirectory().toFile()
             val scope = CoroutineScope(Dispatchers.IO)
-
+            val isWindows = System.getProperty("os.name").contains("Windows", ignoreCase = true)
             scope.launch {
                 try {
                     tempDir.mkdir()
@@ -55,17 +55,25 @@ class CreateAPK {
                     currentProject.parseError += "apksigner.jar copied\n"
                     changeFilePermissions("${tempDir.path}${File.separator}apksigner")
                     currentProject.parseError += "permission added\n"
-                    copyResourceToFile("apk${File.separator}apktool", "${tempDir.path}${File.separator}apktool")
+                    if (!isWindows)
+                        copyResourceToFile("apk${File.separator}apktool", "${tempDir.path}${File.separator}apktool")
                     copyResourceToFile("apk${File.separator}apktool.bat", "${tempDir.path}${File.separator}apktool.bat")
                     currentProject.parseError += "apktool copied\n"
                     copyResourceToFile("apk${File.separator}apktool_2.9.3.jar", "${tempDir.path}${File.separator}apktool_2.9.3.jar")
                     currentProject.parseError += "apktool.jar copied\n"
                     changeFilePermissions("${tempDir.path}${File.separator}apktool")
                     currentProject.parseError += "permission added\n"
-                    runProcess(
-                        listOf("${tempDir.path}${File.separator}apktool", "d", "app-release.apk", "-f", "-o", "out${File.separator}"),
-                        "${tempDir.path}${File.separator}", currentProject
-                    )
+                    if (isWindows) {
+                        runProcess(
+                            listOf("${tempDir.path}${File.separator}apktool.bat", "d", "app-release.apk", "-f", "-o", "out${File.separator}"),
+                            "${tempDir.path}${File.separator}", currentProject
+                        )
+                    } else {
+                        runProcess(
+                            listOf("${tempDir.path}${File.separator}apktool", "d", "app-release.apk", "-f", "-o", "out${File.separator}"),
+                            "${tempDir.path}${File.separator}", currentProject
+                        )
+                    }
                     currentProject.parseError += "apk extracted\n"
                     changeAppId(app.id, "${tempDir.path}", app.name)
                     currentProject.parseError += "appId changed\n"
@@ -73,65 +81,85 @@ class CreateAPK {
                     currentProject.parseError += "icon exchanged\n"
                     copyFilesToAsset(source, tempDir.path)
                     currentProject.parseError += "assets copied\n"
-
-                    runProcess(
-                        listOf("${tempDir.path}${File.separator}apktool", "b", "out${File.separator}", "-o", "rebuild.apk"),
-                        "${tempDir.path}${File.separator}", currentProject
-                    )
+                    if (isWindows) {
+                        runProcess(
+                            listOf(
+                                "${tempDir.path}${File.separator}apktool.bat",
+                                "b",
+                                "out${File.separator}",
+                                "-o",
+                                "rebuild.apk"
+                            ),
+                            "${tempDir.path}${File.separator}", currentProject
+                        )
+                    } else {
+                        runProcess(
+                            listOf(
+                                "${tempDir.path}${File.separator}apktool",
+                                "b",
+                                "out${File.separator}",
+                                "-o",
+                                "rebuild.apk"
+                            ),
+                            "${tempDir.path}${File.separator}", currentProject
+                        )
+                    }
                     currentProject.parseError += "apk builded\n"
-                    runProcess(
-                        listOf(
-                            "keytool",
-                            "-genkey",
-                            "-v",
-                            "-keystore",
-                            "debug.keystore",
-                            "-keyalg",
-                            "RSA",
-                            "-keysize",
-                            "2048",
-                            "-validity",
-                            "10000",
-                            "-alias",
-                            "androiddebugkey",
-                            "-storepass",
-                            "android123",
-                            "-keypass",
-                            "android123",
-                            "-dname",
-                            "CN=Android Debug,O=Android,C=US"
-                        ), "${tempDir.path}${File.separator}", currentProject
-                    )
-                    currentProject.parseError += "keypair generated\n"
-                    runProcess(
-                        listOf(
-                            "${tempDir.path}${File.separator}apksigner",
-                            "sign",
-                            "--ks",
-                            "debug.keystore",
-                            "--ks-key-alias",
-                            "androiddebugkey",
-                            "--ks-pass",
-                            "pass:android123",
-                            "--key-pass",
-                            "pass:android123",
-                            "--out",
-                            "signed.apk",
-                            "rebuild.apk"
-                        ), "${tempDir.path}${File.separator}", currentProject
-                    )
-                    currentProject.parseError += "apk signed\n"
-                    runProcess(
-                        listOf(
-                            "keytool",
-                            "-delete",
-                            "-alias",
-                            "androiddebugkey",
-                            "-keystore",
-                            "debug.keystore"
-                        ), "${tempDir.path}", currentProject
-                    )
-                    currentProject.parseError += "keypair deleted\n"
+                    if (!isWindows) {
+                        runProcess(
+                            listOf(
+                                "keytool",
+                                "-genkey",
+                                "-v",
+                                "-keystore",
+                                "debug.keystore",
+                                "-keyalg",
+                                "RSA",
+                                "-keysize",
+                                "2048",
+                                "-validity",
+                                "10000",
+                                "-alias",
+                                "androiddebugkey",
+                                "-storepass",
+                                "android123",
+                                "-keypass",
+                                "android123",
+                                "-dname",
+                                "CN=Android Debug,O=Android,C=US"
+                            ), "${tempDir.path}${File.separator}", currentProject
+                        )
+                        currentProject.parseError += "keypair generated\n"
+                        runProcess(
+                            listOf(
+                                "${tempDir.path}${File.separator}apksigner",
+                                "sign",
+                                "--ks",
+                                "debug.keystore",
+                                "--ks-key-alias",
+                                "androiddebugkey",
+                                "--ks-pass",
+                                "pass:android123",
+                                "--key-pass",
+                                "pass:android123",
+                                "--out",
+                                "signed.apk",
+                                "rebuild.apk"
+                            ), "${tempDir.path}${File.separator}", currentProject
+                        )
+                        currentProject.parseError += "apk signed\n"
+                        runProcess(
+                            listOf(
+                                "keytool",
+                                "-delete",
+                                "-alias",
+                                "androiddebugkey",
+                                "-keystore",
+                                "debug.keystore"
+                            ), "${tempDir.path}", currentProject
+                        )
+                        currentProject.parseError += "keypair deleted\n"
+                    }
                     File(tempDir, "signed.apk").copyTo(File("$folder${File.separator}$title.apk"), overwrite = true)
                     tempDir.deleteRecursively()
                     currentProject.parseError += "cleaned up\n"
