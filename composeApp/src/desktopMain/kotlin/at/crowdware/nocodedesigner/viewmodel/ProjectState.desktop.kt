@@ -305,6 +305,7 @@ actual fun createProjectState(): ProjectState {
 }
 
 actual fun copyResourceToFile(resourcePath: String, outputPath: String) {
+    println("copyResourceToFile: $resourcePath, $outputPath")
     val classLoader = Thread.currentThread().contextClassLoader
     val inputStream: InputStream? = classLoader.getResourceAsStream(resourcePath)
 
