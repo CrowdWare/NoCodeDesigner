@@ -227,7 +227,7 @@ class CreateAPK {
                     .start()
                 val exitCode = process.waitFor()
                 if (exitCode == 0) {
-                    currentProject.parseError += "${cmd} executed successfully!\b"
+                    currentProject.parseError += "${cmd} executed successfully!\n"
                 } else {
                     currentProject.parseError += "${cmd} failed with exit code: $exitCode\n"
                 }

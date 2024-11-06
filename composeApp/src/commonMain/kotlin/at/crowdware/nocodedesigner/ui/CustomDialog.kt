@@ -60,6 +60,7 @@ fun CustomDialog(
     val appState = GlobalAppState.appState
 
     DialogWindow(
+        title = title,
         onCloseRequest = onDismissRequest,
         state = dlgState.value,
         undecorated = !isWindows,
