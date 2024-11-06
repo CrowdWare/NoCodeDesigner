@@ -73,8 +73,8 @@ fun createEditor(
             blue = min(colors.surface.blue + 0.05f, 1f)
         ).toAwtColor()
         caretColor = colors.onSurface.toAwtColor()
-        selectionColor = extendedColors.accentColor.toAwtColor()
-        selectedTextColor = java.awt.Color.WHITE
+        selectionColor = extendedColors.selectionColor.toAwtColor()
+        selectedTextColor = extendedColors.onSelectionColor.toAwtColor()
         font = java.awt.Font("Monospaced", java.awt.Font.PLAIN, 14)
         text = textFieldValue.text
         caretPosition = 0

@@ -30,7 +30,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.graphics.Color
@@ -45,14 +44,12 @@ import at.crowdware.nocodedesigner.theme.AppTheme
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 import at.crowdware.nocodedesigner.ui.*
 import at.crowdware.nocodedesigner.view.desktop.desktop
-import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
-import at.crowdware.nocodedesigner.viewmodel.ProjectState
-import at.crowdware.nocodedesigner.viewmodel.createProjectState
+import at.crowdware.nocodedesigner.viewmodel.*
+import at.crowdware.nocodedesigner.viewmodel.State
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.awt.Desktop
@@ -66,17 +63,20 @@ import java.io.PrintStream
 val LocalProjectState = compositionLocalOf<ProjectState> { error("No ProjectState provided") }
 
 fun main() = application {
-
     val appName = "NoCodeDesigner"
     val version = Version.version
-    val loadedState = loadAppState()
-    val windowState = rememberWindowState(
-        width = (loadedState?.windowWidth ?: 1600).dp,
-        height = (loadedState?.windowHeight ?: 800).dp
-    )
     val projectState = createProjectState()
+    val appState = createAppState()
     GlobalProjectState.projectState = projectState
-    projectState.darkMode = androidx.compose.foundation.isSystemInDarkTheme()
+    GlobalAppState.appState = appState
+
+    loadAppState()
+    val windowState = rememberWindowState(
+        width = (appState.windowWidth).dp,
+        height = (appState.windowHeight).dp
+    )
+    if (appState.theme.isEmpty())
+        appState.theme = if(androidx.compose.foundation.isSystemInDarkTheme()) "Dark" else "Light"
     val isWindows = System.getProperty("os.name").contains("Windows", ignoreCase = true)
     var isAskingToClose by remember { mutableStateOf(false) }
 
@@ -102,7 +102,7 @@ fun main() = application {
         if (desktop.isSupported(Desktop.Action.APP_QUIT_HANDLER)) {
             desktop.setQuitHandler { _, quitResponse ->
                 var frame: Window = Frame.getWindows()[0]
-                onAppClose(frame as ComposeWindow, projectState.projectName)
+                onAppClose(frame as ComposeWindow, appState.lastProject)
                 quitResponse.performQuit()
             }
         }
@@ -110,7 +110,7 @@ fun main() = application {
 
     Window(
         onCloseRequest = { isAskingToClose = true },
-        title = appName + " [" + loadedState?.lastProject.toString() + "]",
+        title = appName + " [" + appState.lastProject.toString() + "]",
         transparent = !isWindows,
         undecorated = !isWindows,
         resizable = true,
@@ -120,18 +120,19 @@ fun main() = application {
         var isMaximized by remember { mutableStateOf(window.extendedState == Frame.MAXIMIZED_BOTH) }
         window.minimumSize = Dimension(770, 735)
         CompositionLocalProvider(LocalProjectState provides projectState) {
-            LaunchedEffect(Unit) {
+            println("Window 2: ${appState.lastProject}")
+            LaunchedEffect(appState.theme) {
                 // set new location
-                window.setLocation(loadedState?.windowX ?: 100, loadedState?.windowY ?: 100)
+                window.setLocation(appState.windowX ?: 100, appState.windowY ?: 100)
 
-                projectState.LoadProject(loadedState?.lastProject.toString(), "", "")
+                projectState.LoadProject(appState.lastProject, "", "")
                 // Listen for changes in the window's maximized state
                 window.addWindowStateListener {
                     isMaximized = (window.extendedState == Frame.MAXIMIZED_BOTH)
                 }
             }
 
-            AppTheme(darkTheme = projectState.darkMode) {
+            AppTheme(darkTheme = appState.theme == "Dark") {
                 var shape = RectangleShape
                 var borderShape = RectangleShape
 
@@ -147,6 +148,7 @@ fun main() = application {
                     shape = shape
 
                 ) {
+                    println("Surface: ${appState.lastProject}")
                     // used on Windows only, no close button on MacOS
                     if (isAskingToClose) {
                         onAppClose(window, projectState.folder)
@@ -184,8 +186,8 @@ fun main() = application {
                                     }
                                     // Add the title or caption text
                                     var caption = appName
-                                    if (!projectState.projectName.isEmpty())
-                                        caption += " - " + projectState.projectName
+                                    if (!appState.lastProject.isEmpty())
+                                        caption += " - " + appState.lastProject
                                     Text(
                                         text = caption,
                                         color = MaterialTheme.colors.onPrimary,
@@ -244,6 +246,20 @@ fun main() = application {
                                     coroutineScope.launch {
                                         projectState.renameFile(fileName.text)
                                     }
+                                })
+                        }
+
+                        if (projectState.isSettingsVisible) {
+                            val coroutineScope = rememberCoroutineScope()
+                            var theme by remember { mutableStateOf(appState.theme) }
+                            settingsDialog(
+                                onDismissRequest = { projectState.isSettingsVisible = false },
+                                theme = theme,
+                                onThemeChanged = { theme = it },
+                                onCreateRequest = {
+                                    projectState.isSettingsVisible = false
+                                    appState.theme = theme
+                                    saveState(window, projectState.folder)
                                 })
                         }
 
@@ -419,16 +435,24 @@ fun main() = application {
 }
 
 fun onAppClose(frame: ComposeWindow, folder: String) {
+    saveState(frame, folder)
+}
+
+fun saveState(frame: ComposeWindow,  folder: String) {
     // Save the app state when the window is closed
-    saveAppState(
-        AppState(
-            windowWidth = frame.width,
-            windowHeight = frame.height,
-            windowX = frame.x,
-            windowY = frame.y,
-            lastProject = folder
+    val appState = GlobalAppState.appState
+    if (appState != null) {
+        saveAppState(
+            State(
+                windowHeight = frame.height,
+                windowWidth = frame.width,
+                windowX = frame.x,
+                windowY = frame.y,
+                lastProject = folder,
+                theme = appState.theme
+            )
         )
-    )
+    }
 }
 
 
@@ -456,16 +480,8 @@ fun setupLogging() {
     println("Logging initialized. Writing to: ${tempFile.absolutePath}")
 }
 
-@Serializable
-data class AppState(
-    val windowWidth: Int,
-    val windowHeight: Int,
-    val windowX: Int,
-    val windowY: Int,
-    val lastProject: String,
-)
 
-fun saveAppState(state: AppState) {
+fun saveAppState(state: State) {
     val userHome = System.getProperty("user.home")
     val configDirectory = if (System.getProperty("os.name").contains("Windows")) {
         File("$userHome/AppData/Local/NoCodeDesigner")
@@ -488,7 +504,8 @@ fun saveAppState(state: AppState) {
     }
 }
 
-fun loadAppState(): AppState? {
+fun loadAppState() {
+    val appState = GlobalAppState.appState
     val userHome = System.getProperty("user.home")
     val configDirectory = if (System.getProperty("os.name").contains("Windows")) {
         File("$userHome/AppData/Local/NoCodeDesigner")
@@ -500,13 +517,19 @@ fun loadAppState(): AppState? {
     if(!configDirectory.exists()) {
         configDirectory.mkdirs()
     }
-
-    return try {
+    try {
         val jsonState = configFile.readText()
-        Json.decodeFromString<AppState>(jsonState)
+        val state = Json.decodeFromString<State>(jsonState)
+        if (appState != null) {
+            appState.theme = state.theme
+            appState.lastProject = state.lastProject
+            appState.windowX = state.windowX
+            appState.windowY = state.windowY
+            appState.windowWidth = state.windowWidth
+            appState.windowHeight = state.windowHeight
+        }
     } catch (e: Exception) {
         e.printStackTrace()
-        null // Return null if loading fails
     }
 }
 

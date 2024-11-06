@@ -48,7 +48,10 @@ import androidx.compose.ui.res.painterResource
 
 @Composable
 fun toolbar(currentProject: ProjectState?) {
-    Column(modifier = Modifier.width(52.dp).fillMaxHeight().background(color = MaterialTheme.colors.primary),horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier.width(52.dp).fillMaxHeight().background(color = MaterialTheme.colors.primary),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         BasicText(
             text = "Build",
             modifier = Modifier.padding(8.dp),
@@ -97,7 +100,7 @@ fun toolbar(currentProject: ProjectState?) {
             }
         }
         if (currentProject != null) {
-            if( currentProject.app != null) {
+            if (currentProject.app != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 HoverableIcon(
                     onClick = { currentProject?.isCreateAPKVisible = true },
@@ -108,7 +111,7 @@ fun toolbar(currentProject: ProjectState?) {
             }
         }
         if (currentProject != null) {
-            if( currentProject.app != null) {
+            if (currentProject.app != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 HoverableIcon(
                     onClick = { currentProject.isCreateHTMLVisible = true },
@@ -117,6 +120,15 @@ fun toolbar(currentProject: ProjectState?) {
                     isSelected = currentProject.isCreateHTMLVisible == true
                 )
             }
+        }
+        if (currentProject != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            HoverableIcon(
+                onClick = { currentProject.isSettingsVisible = true },
+                painter = painterResource("drawable/settings.xml"),
+                tooltipText = "Settings",
+                isSelected = currentProject.isSettingsVisible == true
+            )
         }
     }
 }

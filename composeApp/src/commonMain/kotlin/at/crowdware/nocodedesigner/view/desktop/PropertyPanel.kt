@@ -82,13 +82,13 @@ fun propertyPanel(currentProject: ProjectState?) {
                                     color = ExtendedTheme.colors.syntaxColor
                                 )
                             }
-                            println("Element: $element")
+
                             element.members.forEach { member ->
                                 if (member is KProperty<*>) {
                                     if (member.annotations.any { it is IgnoreForDocumentation }) {
                                         return@forEach
                                     }
-                                    println("Member: $member")
+
                                     member.annotations.forEach { annotation ->
                                         when (annotation) {
                                             is WeightAnnotation -> {

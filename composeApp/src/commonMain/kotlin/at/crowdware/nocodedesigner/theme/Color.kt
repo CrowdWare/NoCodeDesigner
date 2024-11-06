@@ -22,7 +22,7 @@ package at.crowdware.nocodedesigner.theme
 import androidx.compose.ui.graphics.Color
 
 // Light Theme Colors
-val PrimaryColor = Color(0xFFDADADA)//Color(0xFF6200EA)
+val PrimaryColor = Color(0xFFDADADA)
 val SecondaryColor = Color(0xFF03DAC5)
 val BackgroundColor = Color(0xFFFFFFFF)
 val SurfaceColor = Color(0xFFFFFFFF)
@@ -45,6 +45,8 @@ data class ExtendedColors(
     val secondaryHoverColor: Color,
     val accentColor: Color,
     val onAccentColor: Color,
+    val selectionColor: Color,
+    val onSelectionColor: Color,
     val syntaxColor: Color,
     val attributeNameColor: Color,
     val attributeValueColor: Color,
@@ -63,20 +65,22 @@ data class ExtendedColors(
 
 // Light Extended Colors
 val LightExtendedColors = ExtendedColors(
-    surfaceHoverColor = Color(0xFFE0E0E0),      // Slightly darker for hover in light theme
+    surfaceHoverColor = Color(0xFFE0E0E0),
     secondaryHoverColor = Color(0xFFD0D0D0),
-    accentColor = Color(0xFF6200EA),
+    accentColor = Color(0xFF3468CA),
     onAccentColor = Color(0xFFFFFFFF),
-    syntaxColor = Color(0xFFB97A57),            // Warm orange
-    attributeNameColor = Color(0xFF6A5ACD),     // Slate blue
-    attributeValueColor = Color(0xFF008000),    // Dark green
+    selectionColor = Color(0xFFADCEFD),
+    onSelectionColor = Color(0xFFFFFFFF),
+    syntaxColor = Color(0xFFB97A57),
+    attributeNameColor = Color(0xFF6A5ACD),
+    attributeValueColor = Color(0xFF008000),
     captionColor = Color(0xFFFCF7F3),
     defaultTextColor = Color(0xFF000000),
-    directoryColor = Color(0xFF4CAF50),         // Green for directories
-    imageColor = Color(0xFFFFC107),             // Amber for images
-    videoColor = Color(0xFF2196F3),             // Blue for videos
-    soundColor = Color(0xFFF44336),             // Red for sounds
-    xmlColor = Color(0xFF9C27B0),                // Purple for XML files
+    directoryColor = Color(0xFF4CAF50),
+    imageColor = Color(0xFFFFC107),
+    videoColor = Color(0xFF2196F3),
+    soundColor = Color(0xFFF44336),
+    xmlColor = Color(0xFF9C27B0),
     mdHeader = Color(0xFFB774B1),
     linkColor = Color(0xFF5E90E0),
     commentColor = Color.Gray,
@@ -85,13 +89,15 @@ val LightExtendedColors = ExtendedColors(
 
 // Dark Extended Colors
 val DarkExtendedColors = ExtendedColors(
-    surfaceHoverColor = Color(0xFF333333),      // Slightly lighter for hover in dark theme
+    surfaceHoverColor = Color(0xFF333333),
     secondaryHoverColor = Color(0xFF555555),
-    accentColor = Color(0xFF4663E9),
+    accentColor = Color(0xFF3468CA),
     onAccentColor = Color(0xFFFFFFFF),
-    syntaxColor = Color(0xFF61BEA6),            // Gold
-    attributeNameColor = Color(0xFFA0D4FC),     // Grayish
-    attributeValueColor = Color(0xFFBE896F),    // Olive green
+    selectionColor = Color(0xFF4663E9),
+    onSelectionColor = Color(0xFFFFFFFF),
+    syntaxColor = Color(0xFF61BEA6),
+    attributeNameColor = Color(0xFFA0D4FC),
+    attributeValueColor = Color(0xFFBE896F),
     captionColor = Color(0xFF37302F),
     defaultTextColor = Color(0xFFB0B0B0),
     directoryColor = Color(0xFFB0B0B0),
@@ -104,7 +110,6 @@ val DarkExtendedColors = ExtendedColors(
     commentColor = Color.Gray,
     bracketColor = Color(0xFFF5D52E)
 )
-
 
 fun darkenColor(color: Color, factor: Float): Color {
     return Color(

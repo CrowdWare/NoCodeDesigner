@@ -39,8 +39,11 @@ import androidx.compose.ui.window.DialogWindow
 import at.crowdware.nocodedesigner.theme.AppTheme
 import at.crowdware.nocodedesigner.theme.ExtendedTheme
 import at.crowdware.nocodedesigner.theme.darkenColor
+import at.crowdware.nocodedesigner.viewmodel.GlobalAppState
+import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState
 import at.crowdware.nocodedesigner.viewmodel.GlobalProjectState.projectState
 import javax.swing.JFrame
+
 
 @Composable
 fun CustomDialog(
@@ -54,6 +57,7 @@ fun CustomDialog(
 ) {
     val dlgState = remember { mutableStateOf(DialogState(width = 500.dp,height = height.dp)) }
     val isWindows = System.getProperty("os.name").contains("Windows", ignoreCase = true)
+    val appState = GlobalAppState.appState
 
     DialogWindow(
         onCloseRequest = onDismissRequest,
@@ -63,7 +67,7 @@ fun CustomDialog(
         resizable = false
     ) {
         projectState?.let {
-            AppTheme(darkTheme = it.darkMode) {
+            AppTheme(darkTheme = appState?.theme == "Dark") {
                 Surface(
                     color = darkenColor(MaterialTheme.colors.primary, 0.8f)
                 ) {

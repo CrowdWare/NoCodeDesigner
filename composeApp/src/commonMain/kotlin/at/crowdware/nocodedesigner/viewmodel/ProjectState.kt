@@ -51,8 +51,6 @@ expect fun copyResourceToFile(resourcePath: String, outputPath: String)
 abstract class ProjectState {
     var currentFileContent by mutableStateOf(TextFieldValue(""))
     var editor by mutableStateOf(RSyntaxTextArea())
-    var projectName by mutableStateOf("")
-        private set
     var fileName by mutableStateOf("No file loaded")
     var folder by mutableStateOf("")
     var path by mutableStateOf("")
@@ -74,9 +72,9 @@ abstract class ProjectState {
     var isCreateEbookVisible by mutableStateOf(false)
     var isCreateAPKVisible by mutableStateOf(false)
     var isCreateHTMLVisible by mutableStateOf(false)
+    var isSettingsVisible by mutableStateOf(false)
     var isAboutDialogOpen by  mutableStateOf(false)
     var isEditorVisible by mutableStateOf(false)
-    var darkMode by mutableStateOf(false)
     var currentTreeNode by mutableStateOf(null as TreeNode?)
     var isPageLoaded by mutableStateOf(false)
     var actualElement: KClass<*>? by mutableStateOf(null)
@@ -124,8 +122,7 @@ abstract class ProjectState {
 
     fun LoadProject(path: String = folder, uuid: String, pid: String) {
         folder = path
-        projectName = path
-
+        println("loadProject: $folder")
         CoroutineScope(Dispatchers.Main).launch {
             loadProjectFiles(path, uuid, pid)
         }
