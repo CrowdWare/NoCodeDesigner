@@ -47,19 +47,19 @@ class CreateAPK {
                 try {
                     tempDir.mkdir()
                     currentProject.parseError = "Build APK started...\n"
-                    copyResourceToFile("apk${File.separator}app-release.apk", "${tempDir.path}${File.separator}app-release.apk")
+                    copyResourceToFile("apk/app-release.apk", "${tempDir.path}${File.separator}app-release.apk")
                     currentProject.parseError += "base apk copied\n"
-                    copyResourceToFile("apk${File.separator}apksigner", "${tempDir.path}${File.separator}apksigner")
+                    copyResourceToFile("apk/apksigner", "${tempDir.path}${File.separator}apksigner")
                     currentProject.parseError += "apksigner copied\n"
-                    copyResourceToFile("apk${File.separator}apksigner.jar", "${tempDir.path}${File.separator}apksigner.jar")
+                    copyResourceToFile("apk/apksigner.jar", "${tempDir.path}${File.separator}apksigner.jar")
                     currentProject.parseError += "apksigner.jar copied\n"
                     changeFilePermissions("${tempDir.path}${File.separator}apksigner")
                     currentProject.parseError += "permission added\n"
                     if (!isWindows)
-                        copyResourceToFile("apk${File.separator}apktool", "${tempDir.path}${File.separator}apktool")
-                    copyResourceToFile("apk${File.separator}apktool.bat", "${tempDir.path}${File.separator}apktool.bat")
+                        copyResourceToFile("apk/apktool", "${tempDir.path}${File.separator}apktool")
+                    copyResourceToFile("apk/apktool.bat", "${tempDir.path}${File.separator}apktool.bat")
                     currentProject.parseError += "apktool copied\n"
-                    copyResourceToFile("apk${File.separator}apktool_2.9.3.jar", "${tempDir.path}${File.separator}apktool_2.9.3.jar")
+                    copyResourceToFile("apk/apktool_2.9.3.jar", "${tempDir.path}${File.separator}apktool_2.9.3.jar")
                     currentProject.parseError += "apktool.jar copied\n"
                     changeFilePermissions("${tempDir.path}${File.separator}apktool")
                     currentProject.parseError += "permission added\n"
