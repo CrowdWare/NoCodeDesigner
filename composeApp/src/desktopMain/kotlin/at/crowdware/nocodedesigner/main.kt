@@ -290,8 +290,8 @@ fun main() = application {
                                     projectState.isNewProjectDialogVisible = false
                                     coroutineScope.launch {
                                         var folder = projectFolder.text
-                                        if (!projectFolder.text.endsWith("/"))
-                                            folder = projectFolder.text + "/"
+                                        if (!projectFolder.text.endsWith(File.separator))
+                                            folder = projectFolder.text + File.separator
                                         projectState.createProjectFiles(
                                             folder,
                                             "",
@@ -321,8 +321,8 @@ fun main() = application {
                                     projectState.isCreateEbookVisible = false
                                     coroutineScope.launch {
                                         var f = folder.text
-                                        if (!folder.text.endsWith("/"))
-                                            f += "/"
+                                        if (!folder.text.endsWith(File.separator))
+                                            f += File.separator
                                         projectState.createEbook(title.text, f)
                                     }
                                 })
@@ -343,8 +343,8 @@ fun main() = application {
                                     projectState.isCreateAPKVisible = false
                                     coroutineScope.launch {
                                         var f = folder.text
-                                        if (!folder.text.endsWith("/"))
-                                            f += "/"
+                                        if (!folder.text.endsWith(File.separator))
+                                            f += File.separator
                                         projectState.createAPK(title.text, f)
                                     }
                                 })
@@ -366,8 +366,8 @@ fun main() = application {
                                     projectState.isCreateHTMLVisible = false
                                     coroutineScope.launch {
                                         var f = folder.text
-                                        if (!folder.text.endsWith("/"))
-                                            f += "/"
+                                        if (!folder.text.endsWith(File.separator))
+                                            f += File.separator
                                         projectState.createHTML(f)
                                     }
                                 })

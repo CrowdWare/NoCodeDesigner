@@ -47,35 +47,35 @@ class CreateAPK {
                 try {
                     tempDir.mkdir()
                     currentProject.parseError = "Build APK started...\n"
-                    copyResourceToFile("apk/app-debug.apk", "${tempDir.path}/app-debug.apk")
+                    copyResourceToFile("apk${File.separator}app-debug.apk", "${tempDir.path}${File.separator}app-debug.apk")
                     currentProject.parseError += "base apk copied\n"
-                    copyResourceToFile("apk/apksigner", "${tempDir.path}/apksigner")
+                    copyResourceToFile("apk${File.separator}apksigner", "${tempDir.path}${File.separator}apksigner")
                     currentProject.parseError += "apksigner copied\n"
-                    copyResourceToFile("apk/apksigner.jar", "${tempDir.path}/apksigner.jar")
+                    copyResourceToFile("apk${File.separator}apksigner.jar", "${tempDir.path}${File.separator}apksigner.jar")
                     currentProject.parseError += "apksigner.jar copied\n"
-                    changeFilePermissions("${tempDir.path}/apksigner")
+                    changeFilePermissions("${tempDir.path}${File.separator}apksigner")
                     currentProject.parseError += "permission added\n"
-                    copyResourceToFile("apk/apktool", "${tempDir.path}/apktool")
+                    copyResourceToFile("apk${File.separator}apktool", "${tempDir.path}${File.separator}apktool")
                     currentProject.parseError += "apktool copied\n"
-                    copyResourceToFile("apk/apktool_2.9.3.jar", "${tempDir.path}/apktool_2.9.3.jar")
+                    copyResourceToFile("apk${File.separator}apktool_2.9.3.jar", "${tempDir.path}${File.separator}apktool_2.9.3.jar")
                     currentProject.parseError += "apktool.jar copied\n"
-                    changeFilePermissions("${tempDir.path}/apktool")
+                    changeFilePermissions("${tempDir.path}${File.separator}apktool")
                     currentProject.parseError += "permission added\n"
                     runProcess(
-                        listOf("${tempDir.path}/apktool", "d", "app-debug.apk", "-f", "-o", "out/"),
-                        "${tempDir.path}/", currentProject
+                        listOf("${tempDir.path}${File.separator}apktool", "d", "app-debug.apk", "-f", "-o", "out${File.separator}"),
+                        "${tempDir.path}${File.separator}", currentProject
                     )
                     currentProject.parseError += "apk extracted\n"
                     changeAppId(app.id, "${tempDir.path}", app.name)
                     currentProject.parseError += "appId changed\n"
-                    changeIcon("$source/images/${app.icon}", "${tempDir.path}")
+                    changeIcon("$source${File.separator}images${File.separator}${app.icon}", "${tempDir.path}")
                     currentProject.parseError += "icon exchanged\n"
                     copyFilesToAsset(source, tempDir.path)
                     currentProject.parseError += "assets copied\n"
 
                     runProcess(
-                        listOf("${tempDir.path}/apktool", "b", "out/", "-o", "rebuild.apk"),
-                        "${tempDir.path}/", currentProject
+                        listOf("${tempDir.path}${File.separator}apktool", "b", "out${File.separator}", "-o", "rebuild.apk"),
+                        "${tempDir.path}${File.separator}", currentProject
                     )
                     currentProject.parseError += "apk builded\n"
                     runProcess(
@@ -99,12 +99,12 @@ class CreateAPK {
                             "android123",
                             "-dname",
                             "CN=Android Debug,O=Android,C=US"
-                        ), "${tempDir.path}/", currentProject
+                        ), "${tempDir.path}${File.separator}", currentProject
                     )
                     currentProject.parseError += "keypair generated\n"
                     runProcess(
                         listOf(
-                            "${tempDir.path}/apksigner",
+                            "${tempDir.path}${File.separator}apksigner",
                             "sign",
                             "--ks",
                             "debug.keystore",
@@ -117,7 +117,7 @@ class CreateAPK {
                             "--out",
                             "signed.apk",
                             "rebuild.apk"
-                        ), "${tempDir.path}/", currentProject
+                        ), "${tempDir.path}${File.separator}", currentProject
                     )
                     currentProject.parseError += "apk signed\n"
                     runProcess(
@@ -131,7 +131,7 @@ class CreateAPK {
                         ), "${tempDir.path}", currentProject
                     )
                     currentProject.parseError += "keypair deleted\n"
-                    File(tempDir, "signed.apk").copyTo(File("$folder/$title.apk"), overwrite = true)
+                    File(tempDir, "signed.apk").copyTo(File("$folder${File.separator}$title.apk"), overwrite = true)
                     tempDir.deleteRecursively()
                     currentProject.parseError += "cleaned up\n"
                     currentProject.parseError += "$title.apk is copied to $folder\n"
@@ -159,7 +159,7 @@ class CreateAPK {
 
         fun copyFilesToAsset(source: String, folder: String) {
             val sourceDir = File(source)
-            val outputDir = File("$folder/out/assets")
+            val outputDir = File("$folder${File.separator}out${File.separator}assets")
             if (!outputDir.exists())
                 outputDir.mkdir()
 
@@ -170,16 +170,17 @@ class CreateAPK {
             val orgAppId = "at.crowdware.nocodebrowser"
             val orgAppPath = "at/crowdware/nocodebrowser"
             val path = newId.replace(".", "/")
+            // TODO.. check path on Windows
 
-            val outputDir = File("$folder/out")
+            val outputDir = File("$folder${File.separator}out")
             outputDir.walk().forEach { file ->
                 if (file.isFile && file.extension == "smali") {
                     changeValueInFile(file, orgAppId, newId)
                     changeValueInFile(file, orgAppPath, path)
                 }
             }
-            changeValueInFile(File("$folder/out/AndroidManifest.xml"), orgAppId, newId)
-            changeValueInFile(File("$folder/out/AndroidManifest.xml"), "\"NoCodeBrowser", "\"$name")
+            changeValueInFile(File("$folder${File.separator}out${File.separator}AndroidManifest.xml"), orgAppId, newId)
+            changeValueInFile(File("$folder${File.separator}out${File.separator}AndroidManifest.xml"), "\"NoCodeBrowser", "\"$name")
         }
 
         fun changeValueInFile(file: File, oldValue: String, newValue: String) {
@@ -189,7 +190,7 @@ class CreateAPK {
         }
 
         fun runProcess(command: List<String>, workingDirectory: String, currentProject: ProjectState) {
-            val cmd = command[0].substringAfterLast("/")
+            val cmd = command[0].substringAfterLast(File.separator)
             try {
                 val process = ProcessBuilder(command)
                     .directory(File(workingDirectory))
@@ -263,7 +264,7 @@ class CreateAPK {
             )
             g2dResult.drawImage(img, 0, 0, null)
             g2dResult.dispose()
-            ImageIO.write(result, "PNG", File("${folder}/round.png"))
+            ImageIO.write(result, "PNG", File("${folder}${File.separator}round.png"))
         }
 
         fun changeIcon(iconFileName: String, folder: String) {
@@ -275,11 +276,11 @@ class CreateAPK {
             resizeIcon(iconFileName, 72, "hdpi", 162, folder)
             resizeIcon(iconFileName, 48, "mdpi", 108, folder)
 
-            File("$folder/round.png").delete()
+            File("$folder${File.separator}round.png").delete()
         }
 
         fun resizeIcon(iconFileName: String, size: Int, subDir: String, sizeForeground: Int, folder: String) {
-            val outputDir = File("$folder/out/res/mipmap-$subDir")
+            val outputDir = File("$folder${File.separator}out${File.separator}res${File.separator}mipmap-$subDir")
             if (!outputDir.exists()) {
                 outputDir.mkdirs()
             }
@@ -292,10 +293,10 @@ class CreateAPK {
                 g2d1.drawImage(imgResized1, 0, 0, null)
                 g2d1.dispose()
 
-                ImageIO.write(bufferedImage1, "PNG", File("${outputDir.path}/ic_launcher.png"))
+                ImageIO.write(bufferedImage1, "PNG", File("${outputDir.path}${File.separator}ic_launcher.png"))
             }
 
-            val img2 = ImageIO.read(File("$folder/round.png"))
+            val img2 = ImageIO.read(File("$folder${File.separator}round.png"))
             if (img2 != null) {
                 val imgResized2 = img2.getScaledInstance(size, size, Image.SCALE_SMOOTH)
                 val bufferedImage2 = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
@@ -303,7 +304,7 @@ class CreateAPK {
                 g2d2.drawImage(imgResized2, 0, 0, null)
                 g2d2.dispose()
 
-                ImageIO.write(bufferedImage2, "PNG", File("${outputDir.path}/ic_launcher_round.png"))
+                ImageIO.write(bufferedImage2, "PNG", File("${outputDir.path}${File.separator}ic_launcher_round.png"))
             }
 
             val img3 = ImageIO.read(File(iconFileName))
@@ -314,7 +315,7 @@ class CreateAPK {
                 g2d3.drawImage(imgResized3, 0, 0, null)
                 g2d3.dispose()
 
-                ImageIO.write(bufferedImage3, "PNG", File("${outputDir.path}/ic_launcher_foreground.png"))
+                ImageIO.write(bufferedImage3, "PNG", File("${outputDir.path}${File.separator}ic_launcher_foreground.png"))
             }
         }
     }

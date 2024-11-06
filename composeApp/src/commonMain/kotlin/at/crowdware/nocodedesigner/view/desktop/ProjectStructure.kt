@@ -54,6 +54,7 @@ import at.crowdware.nocodedesigner.model.extensionToNodeType
 import at.crowdware.nocodedesigner.ui.TreeView
 import at.crowdware.nocodedesigner.viewmodel.ProjectState
 import java.awt.Cursor
+import java.io.File
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -167,7 +168,8 @@ fun projectStructure(currentProject: ProjectState) {
                                     } else if(currentProject.extension == "md") {
                                         when (type) {
                                             NodeType.IMAGE -> {
-                                                ins = "![${treeNode.title.value.substringBefore(".")}](${treeNode.path.substringAfterLast("/")})\n"
+                                                ins = "![${treeNode.title.value.substringBefore(".")}](${treeNode.path.substringAfterLast(
+                                                    File.separator)})\n"
                                             }
                                             else -> {}
                                         }

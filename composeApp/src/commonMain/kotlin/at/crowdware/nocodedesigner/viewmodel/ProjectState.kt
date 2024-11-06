@@ -130,7 +130,7 @@ abstract class ProjectState {
 
     fun ImportImageFile(list: List<MPFile<Any>>) {
         for (file in list) {
-            val filename = file.path.substringAfterLast("/")
+            val filename = file.path.substringAfterLast(File.separator)
             val target = "$folder/images/$filename"
             copyAssetFile(file.path, target)
             val pngTarget = if (!target.endsWith(".png")) {
@@ -142,7 +142,7 @@ abstract class ProjectState {
             } else {
                 target
             }
-            val node = TreeNode(title = mutableStateOf(pngTarget.substringAfterLast("/")), path = pngTarget, type = getNodeType(pngTarget))
+            val node = TreeNode(title = mutableStateOf(pngTarget.substringAfterLast(File.separator)), path = pngTarget, type = getNodeType(pngTarget))
             imagesNode.children.add(node)
         }
     }
@@ -195,8 +195,8 @@ abstract class ProjectState {
 
     fun ImportVideoFile(list: List<MPFile<Any>>) {
         for (file in list) {
-            val filename = file.path.substringAfterLast("/")
-            val target = "$folder/videos/$filename"
+            val filename = file.path.substringAfterLast(File.separator)
+            val target = "$folder${File.separator}videos${File.separator}$filename"
             copyAssetFile(file.path, target)
             val node = TreeNode(title = mutableStateOf(filename), path = file.path, type = getNodeType(file.path))
             videosNode.children.add(node)
@@ -205,8 +205,8 @@ abstract class ProjectState {
 
     fun ImportSoundFile(list: List<MPFile<Any>>) {
         for (file in list) {
-            val filename = file.path.substringAfterLast("/")
-            val target = "$folder/sounds/$filename"
+            val filename = file.path.substringAfterLast(File.separator)
+            val target = "$folder${File.separator}sounds${File.separator}$filename"
             copyAssetFile(file.path, target)
             val node = TreeNode(title = mutableStateOf(filename), path = file.path, type = getNodeType(file.path))
             soundsNode.children.add(node)
@@ -214,16 +214,16 @@ abstract class ProjectState {
     }
 
     fun ImportModelFile(path: String) {
-        val filename = path.substringAfterLast("/")
-        val target  = "$folder/models/$filename"
+        val filename = path.substringAfterLast(File.separator)
+        val target  = "$folder${File.separator}models${File.separator}$filename"
         copyAssetFile(path, target)
         val node = TreeNode(title = mutableStateOf(filename), path = path, type = getNodeType(path))
         modelsNode.children.add(node)
     }
 
     fun ImportTextureFile(path: String) {
-        val filename = path.substringAfterLast("/")
-        val target  = "$folder/textures/$filename"
+        val filename = path.substringAfterLast(File.separator)
+        val target  = "$folder${File.separator}textures${File.separator}$filename"
         copyAssetFile(path, target)
         val node = TreeNode(title = mutableStateOf(filename), path = path, type = getNodeType(path))
         texturesNode.children.add(node)
@@ -231,7 +231,7 @@ abstract class ProjectState {
 
     fun LoadFile(filePath: String) {
         path = filePath
-        fileName = path.substringAfterLast("/")
+        fileName = path.substringAfterLast(File.separator)
 
         CoroutineScope(Dispatchers.Main).launch {
             extension = path.substringAfterLast('.', "")
@@ -448,7 +448,7 @@ abstract class ProjectState {
     }
 
     fun addPage(name: String) {
-        val path = "$folder/pages/$name.sml"
+        val path = "$folder${File.separator}pages${File.separator}$name.sml"
         createPage(path, name)
 
         val newNode = TreeNode(title = mutableStateOf( "${name}.sml"), path = path, type= NodeType.SML)
@@ -459,7 +459,7 @@ abstract class ProjectState {
     }
 
     fun addPart(name: String) {
-        val path = "$folder/parts/$name.md"
+        val path = "$folder${File.separator}parts${File.separator}$name.md"
         createPart(path)
 
         val newNode = TreeNode(title = mutableStateOf( "${name}.md"), path = path, type= NodeType.MD)
@@ -504,9 +504,9 @@ abstract class ProjectState {
     }
 
     fun renameFile(name: String) {
-        val folder = currentTreeNode?.path?.substringBeforeLast("/")
+        val folder = currentTreeNode?.path?.substringBeforeLast(File.separator)
         val ext = currentTreeNode?.path?.substringAfterLast(".")
-        val newPath = "$folder/$name.$ext"
+        val newPath = "$folder${File.separator}$name.$ext"
         renameFile(currentTreeNode?.path!!, newPath)
         currentTreeNode!!.title.value = "$name.$ext"
         currentTreeNode!!.path = newPath
