@@ -20,6 +20,8 @@
 package at.crowdware.nocodedesigner.ui
 
 import androidx.compose.material.Colors
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -31,17 +33,15 @@ import org.fife.ui.rtextarea.RTextScrollPane
 import java.awt.Dimension
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import javax.swing.BorderFactory
-import javax.swing.JButton
-import javax.swing.SwingUtilities
+import java.util.*
+import java.util.Timer
+import javax.swing.*
+import javax.swing.border.LineBorder
+import javax.swing.border.MatteBorder
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import javax.swing.plaf.basic.BasicScrollBarUI
 import kotlin.math.min
-import java.util.Timer
-import java.util.TimerTask
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicInteger
 
 fun Color.toAwtColor(): java.awt.Color {
     return java.awt.Color(red, green, blue, alpha)
@@ -49,7 +49,6 @@ fun Color.toAwtColor(): java.awt.Color {
 
 private const val DEBOUNCE_DELAY = 300L
 private var debounceTimer: Timer? = null
-
 
 fun createEditor(
     textFieldValue: TextFieldValue,
@@ -82,7 +81,7 @@ fun createEditor(
         isFocusable = true
         isRequestFocusEnabled = true
         paintTabLines = true
-
+        border = BorderFactory.createEmptyBorder(5, 10, 10, 10)
 
         addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent) {
@@ -145,9 +144,17 @@ fun createEditor(
 
     val scrollPane = RTextScrollPane(textArea).apply {
         background = colors.surface.toAwtColor()
-        border = BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        gutter.background = colors.surface.toAwtColor()
+        viewport.background = colors.surface.toAwtColor()
+        border = MatteBorder(5, 5, 5, 5, colors.surface.toAwtColor())
+        horizontalScrollBar.background = colors.surface.toAwtColor()
+        verticalScrollBar.background = colors.surface.toAwtColor()
         horizontalScrollBar.ui = createCustomScrollbarUI(colors)
         verticalScrollBar.ui = createCustomScrollbarUI(colors)
+        setCorner(JScrollPane.UPPER_RIGHT_CORNER, JPanel().apply { background = colors.surface.toAwtColor() })
+        setCorner(JScrollPane.LOWER_LEFT_CORNER, JPanel().apply { background = colors.surface.toAwtColor() })
+        setCorner(JScrollPane.LOWER_RIGHT_CORNER, JPanel().apply { background = colors.surface.toAwtColor() })
+
     }
     return textArea to scrollPane
 }
