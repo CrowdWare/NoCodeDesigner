@@ -47,7 +47,7 @@ class CreateAPK {
                 try {
                     tempDir.mkdir()
                     currentProject.parseError = "Build APK started...\n"
-                    copyResourceToFile("apk${File.separator}app-debug.apk", "${tempDir.path}${File.separator}app-debug.apk")
+                    copyResourceToFile("apk${File.separator}app-release.apk", "${tempDir.path}${File.separator}app-release.apk")
                     currentProject.parseError += "base apk copied\n"
                     copyResourceToFile("apk${File.separator}apksigner", "${tempDir.path}${File.separator}apksigner")
                     currentProject.parseError += "apksigner copied\n"
@@ -63,7 +63,7 @@ class CreateAPK {
                     changeFilePermissions("${tempDir.path}${File.separator}apktool")
                     currentProject.parseError += "permission added\n"
                     runProcess(
-                        listOf("${tempDir.path}${File.separator}apktool", "d", "app-debug.apk", "-f", "-o", "out${File.separator}"),
+                        listOf("${tempDir.path}${File.separator}apktool", "d", "app-release.apk", "-f", "-o", "out${File.separator}"),
                         "${tempDir.path}${File.separator}", currentProject
                     )
                     currentProject.parseError += "apk extracted\n"

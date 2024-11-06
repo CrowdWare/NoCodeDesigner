@@ -120,7 +120,6 @@ fun main() = application {
         var isMaximized by remember { mutableStateOf(window.extendedState == Frame.MAXIMIZED_BOTH) }
         window.minimumSize = Dimension(770, 735)
         CompositionLocalProvider(LocalProjectState provides projectState) {
-            println("Window 2: ${appState.lastProject}")
             LaunchedEffect(appState.theme) {
                 // set new location
                 window.setLocation(appState.windowX ?: 100, appState.windowY ?: 100)
@@ -148,7 +147,6 @@ fun main() = application {
                     shape = shape
 
                 ) {
-                    println("Surface: ${appState.lastProject}")
                     // used on Windows only, no close button on MacOS
                     if (isAskingToClose) {
                         onAppClose(window, projectState.folder)
