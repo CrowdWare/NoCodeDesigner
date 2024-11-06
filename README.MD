@@ -16,3 +16,7 @@ Find the MSI file in composeApp/build/compose/binaries/main/msi
 **Mac**
 `./gradlew packageDistributionForCurrentOS`
 Find the DMG file in composeApp/build/compose/binaries/main/dmg
+
+
+# apktool
+The apktool can be downloaded here: https://apktool.org/docs/install

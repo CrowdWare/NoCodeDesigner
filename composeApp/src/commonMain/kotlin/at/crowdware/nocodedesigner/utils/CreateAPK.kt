@@ -56,6 +56,7 @@ class CreateAPK {
                     changeFilePermissions("${tempDir.path}${File.separator}apksigner")
                     currentProject.parseError += "permission added\n"
                     copyResourceToFile("apk${File.separator}apktool", "${tempDir.path}${File.separator}apktool")
+                    copyResourceToFile("apk${File.separator}apktool.bat", "${tempDir.path}${File.separator}apktool.bat")
                     currentProject.parseError += "apktool copied\n"
                     copyResourceToFile("apk${File.separator}apktool_2.9.3.jar", "${tempDir.path}${File.separator}apktool_2.9.3.jar")
                     currentProject.parseError += "apktool.jar copied\n"

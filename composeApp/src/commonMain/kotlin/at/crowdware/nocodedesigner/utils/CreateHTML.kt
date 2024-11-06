@@ -140,15 +140,6 @@ class CreateHTML {
 
         fun getHtmlContent(page: Page): String {
             var html = ""
-            /*html += "<header id=\"page-title\">\n"
-            html += "<div class=\"container\">\n"
-            html += "<h1>${page.title}</h1>\n"
-            html += "<ul class=\"breadcrumb\">\n"
-            html += "<li><a href=\"home.html\">Home</a></li>\n"
-            html += "<li class=\"active\">${page.title}</li>\n"
-            html += "</ul>\n"
-            html += "</div>\n"
-            html += "</header>\n"*/
 
             html += "<section class=\"container\">\n"
             html += "<div class=\"row\">\n"
@@ -186,6 +177,14 @@ class CreateHTML {
                 is ImageElement -> {
                     html += "<img class=\"img-fluid\" src=\"assets/images/${element.src}\"/>\n"
 
+                }
+                is YoutubeElement -> {
+                    html += "<iframe width=\"333\" height=\"197\" src=\"https://www.youtube.com/embed/${element.id}\" \n" +
+                            "title=\"YouTube video player\" \n" +
+                            "frameborder=\"0\" \n" +
+                            "allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" \n" +
+                            "referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen>\n" +
+                            "</iframe>"
                 }
                 else -> {
                     // ignore for now
