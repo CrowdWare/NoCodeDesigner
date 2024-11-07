@@ -38,11 +38,11 @@ data class App(
     @StringAnnotation("Version of the current SML. default is 1.1")
     var smlVersion: String = "",
     var theme: ThemeElement = ThemeElement(),
-    var navigation: NavigationElement = NavigationElement(),
+    val pages: MutableList<PageElement> = mutableListOf(),
     var deployment: DeploymentElement = DeploymentElement()
 )
 
-data class Book (
+data class Ebook (
     @StringAnnotation("Version of the current SML. Default is 1.1")
     var smlVersion: String = "1.1",
     @StringAnnotation("Theme for the book. Atm there is only \"Epub3\".")
@@ -92,11 +92,6 @@ data class ThemeElement(
     var scrim: String = ""
 )
 
-data class NavigationElement(
-    var type: String = "",
-    val items: MutableList<ItemElement> = mutableListOf()
-)
-
 data class DeploymentElement(
     val files: MutableList<FileElement> = mutableListOf()
 )
@@ -107,6 +102,7 @@ data class ItemElement (val page: String)
 
 data class PartElement (val src: String, val pdfOnly: Boolean = false)
 
+data class PageElement (val src: String)
 
 data class Markdown (
     @StringAnnotation("Headers in Markdown allow you to define section titles and headings." +

@@ -107,8 +107,8 @@ fun deserializeApp(parsedResult: List<Any>): App {
     return app
 }
 
-fun deserializeBook(parsedResult: List<Any>): Book {
-    val book = Book()
+fun deserializeBook(parsedResult: List<Any>): Ebook {
+    val book = Ebook()
 
     parsedResult.forEach { tuple ->
         when (tuple) {
@@ -345,7 +345,7 @@ fun parsePadding(padding: String): Padding {
     }
 }
 
-fun parseNestedBookElements(nestedElements: List<Any>, book: Book) {
+fun parseNestedBookElements(nestedElements: List<Any>, book: Ebook) {
     nestedElements.forEach { element ->
         when (element) {
             is Tuple7<*, *, *, *, *, *, *> -> {
@@ -373,10 +373,10 @@ fun parseNestedAppElements(nestedElements: List<Any>, app: App) {
                 val properties = extractProperties(element)
 
                 when (elementName) {
-                    "Navigation" -> {
-                        val type = (properties["type"] as? PropertyValue.StringValue)?.value ?: ""
-                        app.navigation.type = type
-                        parseNestedNavElements(extractChildElements(element), app.navigation)
+                    "Page" -> {
+                        val src = (properties["src"] as? PropertyValue.StringValue)?.value ?: ""
+                        val page = PageElement(src)
+                        app.pages.add(page)
                     }
                     "Deployment" -> {
                         parseNestedDeployElements(extractChildElements(element), app.deployment)
@@ -418,25 +418,6 @@ fun parseNestedAppElements(nestedElements: List<Any>, app: App) {
     }
 }
 
-fun parseNestedNavElements(nestedElements: List<Any>, navigation: NavigationElement) {
-    nestedElements.forEach { element ->
-        when (element) {
-            is Tuple7<*, *, *, *, *, *, *> -> {
-                val elementName = (element.t2 as? TokenMatch)?.text
-                val properties = extractProperties(element)
-
-                when (elementName) {
-                    "Item" -> {
-                        val page = (properties["page"] as? PropertyValue.StringValue)?.value ?: ""
-                        navigation.items.add(ItemElement(page))
-                    }
-                }
-            }
-        }
-    }
-}
-
-
 fun parseNestedDeployElements(nestedElements: List<Any>, deployment: DeploymentElement) {
     nestedElements.forEach { element ->
         when (element) {
@@ -477,7 +458,7 @@ fun parseApp(sml: String, ): Pair<App?, String?> {
     }
 }
 
-fun parseBook(sml: String, ): Pair<Book?, String?> {
+fun parseBook(sml: String, ): Pair<Ebook?, String?> {
     try {
         val result = SmlGrammar.parseToEnd(sml)
         return Pair(deserializeBook(result), null)

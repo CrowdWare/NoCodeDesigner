@@ -70,7 +70,6 @@ fun propertyPanel(currentProject: ProjectState?) {
                     .verticalScroll(scrollState)
                     .padding(end = 10.dp)
             ) {
-                // TODO: render annotation for Markdown
                 Row(modifier = Modifier.background(MaterialTheme.colors.primary).fillMaxWidth().padding(8.dp)) {
                     Column() {
                         if (element != null) {
@@ -119,7 +118,36 @@ fun propertyPanel(currentProject: ProjectState?) {
                         }
                     }
                 }
-                if (element != null && (element.simpleName == "Page" || element.simpleName == "ColumnElement" || element.simpleName == "RowElement")) {
+                if (element != null) {
+                    if (element.simpleName == "App") {
+                        Row(modifier = Modifier.background(MaterialTheme.colors.primary).fillMaxWidth().padding(8.dp)) {
+                            Column() {
+
+                                Text(
+                                    text = "Page",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = ExtendedTheme.colors.syntaxColor
+                                )
+                                renderAnnotation("src", "A page of the book.\nSample:\nPage {\n\tsrc: \"home.sml\"\n}")
+                            }
+                        }
+                    }
+                    else if (element.simpleName == "Ebook") {
+                        Row(modifier = Modifier.background(MaterialTheme.colors.primary).fillMaxWidth().padding(8.dp)) {
+                            Column() {
+
+                                Text(
+                                    text = "Part",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = ExtendedTheme.colors.syntaxColor
+                                )
+                                renderAnnotation("src", "A part of the ebook.\nSample:\nPart {\n\tsrc: \"home.md\"\n}")
+                            }
+                        }
+                    }
+                    else if (element.simpleName == "Page" || element.simpleName == "ColumnElement" || element.simpleName == "RowElement") {
 
                         Row(modifier = Modifier.background(MaterialTheme.colors.primary).fillMaxWidth().padding(8.dp)) {
                             Column() {
@@ -136,7 +164,7 @@ fun propertyPanel(currentProject: ProjectState?) {
 
                                 subclasses.forEach { subclass ->
                                     subclass.simpleName?.let {
-                                        if(it != "Zero") {
+                                        if (it != "Zero") {
                                             var clsName = ""
                                             if (it == "Page") {
                                                 clsName = "at.crowdware.nocodedesigner.utils.Page"
@@ -168,6 +196,7 @@ fun propertyPanel(currentProject: ProjectState?) {
                                 }
                             }
                         }
+                    }
                 }
             }
             VerticalScrollbar(

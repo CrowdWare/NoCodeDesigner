@@ -70,7 +70,7 @@ fun createProjectDialog(
                     modifier = Modifier.weight(1f),
                     checked = book,
                     onCheckedChange = onCheckBookChanged,
-                    label = "Book", color = MaterialTheme.colors.onPrimary)
+                    label = "Ebook", color = MaterialTheme.colors.onPrimary)
                 CheckboxItem(modifier = Modifier.weight(1f),
                     checked = app,
                     onCheckedChange = onCheckAppChanged,

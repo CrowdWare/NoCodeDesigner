@@ -80,7 +80,7 @@ fun toolbar(currentProject: ProjectState?) {
             isSelected = currentProject?.isProjectStructureVisible == true
         )
         Spacer(modifier = Modifier.height(8.dp))
-        if(currentProject?.extension == "sml" && currentProject.fileName != "app.sml" && currentProject.fileName != "book.sml") {
+        if(currentProject?.extension == "sml" && currentProject.fileName != "app.sml" && currentProject.fileName != "ebook.sml") {
             currentProject.isProjectStructureVisible.let {
                 HoverableIcon(
                     onClick = { currentProject.isProjectStructureVisible = false },

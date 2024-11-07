@@ -123,7 +123,7 @@ class DesktopProjectState : ProjectState() {
                 it.name != ".DS_Store" &&
                         !it.name.endsWith(".py") &&
                         (it.isDirectory && it.name in listOf("pages", "parts", "images", "sounds", "videos", "models", "textures")) ||
-                        (it.isFile && it.name in listOf("app.sml", "book.sml")) // Füge die gewünschten Dateien hinzu
+                        (it.isFile && it.name in listOf("app.sml", "ebook.sml")) // Füge die gewünschten Dateien hinzu
             }
             ?.map { mapFileToTreeNode(it) }
             ?: emptyList()
@@ -194,7 +194,7 @@ class DesktopProjectState : ProjectState() {
             val textures = File("$path$name/textures")
             textures.mkdirs()
             val app = File("$path$name/app.sml")
-            var appContent = "App {\n\tsmlVersion: \"1.0\"\n\tname: \"$name\"\n\tversion: \"1.0\"\n\tid: \"$appId.$name\"\n\ticon: \"icon.png\"\n\n\tNavigation {\n\t\ttype: \"HorizontalPager\"\n\n\t\tItem { page: \"home\" }\n\t}\n\n"
+            var appContent = "App {\n\tsmlVersion: \"1.1\"\n\tname: \"$name\"\n\tversion: \"1.0\"\n\tid: \"$appId.$name\"\n\ticon: \"icon.png\"\n\n\tNavigation {\n\t\ttype: \"HorizontalPager\"\n\n\t\tItem { page: \"home\" }\n\t}\n\n"
             if(theme == "Light")
                 appContent += writeLightTheme()
             else
@@ -217,7 +217,7 @@ class DesktopProjectState : ProjectState() {
             homemd.writeText("# BookTitle\nLorem ipsum dolor\n")
 
             val book = File("$path$name/book.sml")
-            var bookContent = "Ebook {\n\tsmlVersion: \"1.0\"\n\tname: \"$name\"\n\tversion: \"1.0\"\n\ttheme: \"Epub3\"\n\tcreator: \"\"\n\tlanguage: \"en\"\n\n\tPart {\n\t\tsrc: \"home.md\"\n\t}\n}\n"
+            var bookContent = "Ebook {\n\tsmlVersion: \"1.1\"\n\tname: \"$name\"\n\tversion: \"1.0\"\n\ttheme: \"Epub3\"\n\tcreator: \"\"\n\tlanguage: \"en\"\n\n\tPart {\n\t\tsrc: \"home.md\"\n\t}\n}\n"
             book.writeText(bookContent)
         }
 

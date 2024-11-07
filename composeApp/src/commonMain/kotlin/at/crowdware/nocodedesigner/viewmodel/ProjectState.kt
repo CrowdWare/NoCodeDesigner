@@ -88,7 +88,7 @@ abstract class ProjectState {
     lateinit var modelsNode: TreeNode
     lateinit var texturesNode: TreeNode
     var app: App? by mutableStateOf(null)
-    var book: Book? by mutableStateOf(null)
+    var book: Ebook? by mutableStateOf(null)
     var page: Page? by mutableStateOf(null)
     var cachedPage: Page? by mutableStateOf(null)
 
@@ -247,8 +247,8 @@ abstract class ProjectState {
             }
             val fileText = loadFileContent(path, "", "")
             if (extension == "sml") {
-                if (fileName == "book.sml") {
-                    loadElementData(Book())
+                if (fileName == "ebook.sml") {
+                    loadElementData(Ebook())
                 } else if (fileName == "app.sml") {
                     loadElementData(App())
                 } else {
@@ -278,7 +278,7 @@ abstract class ProjectState {
     }
 
     fun reloadPage() {
-        if(extension == "sml") {
+        if(extension == "sml" && fileName != "app.sml" && fileName != "ebook.sml") {
             val result = parsePage(currentFileContent.text)
             page = result.first
             parseError = result.second
@@ -299,14 +299,14 @@ abstract class ProjectState {
                 actualElement = clazz
             }
             is App -> {
-                elementData = listOf(mapAppToTreeNode(obj!! as App))
+                elementData = listOf(mapAppToTreeNode(obj as App))
                 val clsName = "at.crowdware.nocodedesigner.utils.App"
                 val clazz = Class.forName(clsName).kotlin
                 actualElement = clazz
             }
-            is Book -> {
-                elementData = listOf(mapBookToTreeNode(obj!! as Book))
-                val clsName = "at.crowdware.nocodedesigner.utils.Book"
+            is Ebook -> {
+                elementData = listOf(mapBookToTreeNode(obj as Ebook))
+                val clsName = "at.crowdware.nocodedesigner.utils.Ebook"
                 val clazz = Class.forName(clsName).kotlin
                 actualElement = clazz
             }
@@ -407,10 +407,10 @@ abstract class ProjectState {
         }
     }
 
-    fun mapBookToTreeNode(book: Book): TreeNode {
+    fun mapBookToTreeNode(book: Ebook): TreeNode {
         val rootNode = TreeNode(
-            title = mutableStateOf("Book"),
-            type = mutableStateOf("Book"),
+            title = mutableStateOf("Ebook"),
+            type = mutableStateOf("Ebook"),
             path = "",
             children = mutableStateListOf(),
             expanded = mutableStateOf(true)

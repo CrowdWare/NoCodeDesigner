@@ -3,9 +3,6 @@
 ## Next release
 
 ### App Part
-- Context menu is dark in light mode
-- When loading app.sml the property page shows a Page, should be App.
-- Navigation dropped from app.sml.
 - Progressbar für build.
 - Still the editor bug, that cursor jumps at the end of the file
 - Create APK on Windows failed, we need error handling

@@ -42,7 +42,7 @@ import kotlin.io.path.createTempDirectory
 
 class CreateEbook {
     companion object {
-        fun start(title: String, folder: String, source: String, book: Book) {
+        fun start(title: String, folder: String, source: String, book: Ebook) {
             val dir = File(folder)
             dir.mkdirs()
 
@@ -161,7 +161,7 @@ class CreateEbook {
                     "</container>", Charsets.UTF_8)
         }
 
-        fun generatePackage(dir: File, book: Book, guid: String) {
+        fun generatePackage(dir: File, book: Ebook, guid: String) {
             val context = mutableMapOf<String, Any>()
             val isFreeVersion = true // TODO
 
@@ -231,7 +231,7 @@ class CreateEbook {
             File(outputPath.toUri()).writeText(renderedXml, Charsets.UTF_8)
         }
 
-        fun generateParts(dir: File, book: Book, source: String): List<Map<String, Any>> {
+        fun generateParts(dir: File, book: Ebook, source: String): List<Map<String, Any>> {
             val toc = mutableListOf<Map<String, Any>>()
             val item = mutableMapOf<String, Any>(
                 "href" to "toc.xhtml",
@@ -302,7 +302,7 @@ class CreateEbook {
                 .replace("<td align=\"left\"", "<td class=\"left\"")
         }
 
-        fun generateToc(dir: File, book: Book, parts: List<Map<String, Any>>) {
+        fun generateToc(dir: File, book: Ebook, parts: List<Map<String, Any>>) {
             val context = mutableMapOf<String, Any>()
             val isFreeVersion = false // TODO
             context["lang"] = book.language

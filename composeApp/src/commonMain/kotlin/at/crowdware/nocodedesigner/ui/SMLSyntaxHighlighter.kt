@@ -91,8 +91,8 @@ class SMLTokenMaker : AbstractTokenMaker() {
         val keywords = arrayOf(
             "Page", "Text", "Column", "Row", "Button", "Image",
             "Spacer", "Video", "Youtube", "Sound", "Scene",
-            "Markdown", "App", "Navigation", "Theme", "Deployment",
-            "Item", "File", "Ebook", "Part", "App", "Book"
+            "Markdown", "App", "Theme", "Deployment",
+            "Item", "File", "Ebook", "Part", "App"
         )
 
         for (word in keywords) {

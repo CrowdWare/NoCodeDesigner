@@ -120,11 +120,11 @@ fun projectStructure(currentProject: ProjectState) {
                 DropdownMenu(
                     modifier = Modifier
                         .background(
-                            color = Color.DarkGray,
+                            color = MaterialTheme.colors.primary,
                             shape = RoundedCornerShape(8.dp)
                         )
                         .border(
-                            border = BorderStroke(1.dp, color = Color.Gray),
+                            border = BorderStroke(1.dp, color = MaterialTheme.colors.primary),
                             shape = RoundedCornerShape(8.dp)
                         ),
                     expanded = expanded,
@@ -184,7 +184,6 @@ fun projectStructure(currentProject: ProjectState) {
                             }
 
                             DropdownMenuItem(
-                                modifier = Modifier.background(color = Color.DarkGray),
                                 onClick = {
                                     expanded = false
                                     currentProject.currentTreeNode = treeNode
@@ -285,8 +284,8 @@ fun projectStructure(currentProject: ProjectState) {
                     var clsName = ""
                     if (node.title.value == "Page") {
                         clsName = "at.crowdware.nocodedesigner.utils.Page"
-                    } else if (node.title.value == "Book") {
-                        clsName = "at.crowdware.nocodedesigner.utils.Book"
+                    } else if (node.title.value == "Ebook") {
+                        clsName = "at.crowdware.nocodedesigner.utils.Ebook"
                     } else {
                         clsName = "at.crowdware.nocodedesigner.utils.UIElement\$${node.title.value}Element"
                     }
