@@ -3,6 +3,10 @@
 ## Next release
 
 ### App Part
+- When loading app.sml the property page shows a Page should be App.
+- Navigation dropped from app.sml.
+- Progressbar für build.
+- Still the editor bug, that cursor jumps at the end of the file
 - Create APK on Windows failed, we need error handling
 - Widget palette should insert into editor instead...also other insert for MD...hide palette for MD
 - Watermark on non commercial version for app.

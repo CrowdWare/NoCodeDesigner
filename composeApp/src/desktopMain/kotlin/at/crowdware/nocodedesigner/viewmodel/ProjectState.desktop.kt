@@ -194,7 +194,7 @@ class DesktopProjectState : ProjectState() {
             val textures = File("$path$name/textures")
             textures.mkdirs()
             val app = File("$path$name/app.sml")
-            var appContent = "App {\n\tsmlVersion: \"1.0\"\n\tname: \"$name\"\n\tversion: \"1.0\"\n\tid: \"$appId.$name\"\n\ticon: \"icon.png\"\n\n"
+            var appContent = "App {\n\tsmlVersion: \"1.0\"\n\tname: \"$name\"\n\tversion: \"1.0\"\n\tid: \"$appId.$name\"\n\ticon: \"icon.png\"\n\n\tNavigation {\n\t\ttype: \"HorizontalPager\"\n\n\t\tItem { page: \"home\" }\n\t}\n\n"
             if(theme == "Light")
                 appContent += writeLightTheme()
             else
