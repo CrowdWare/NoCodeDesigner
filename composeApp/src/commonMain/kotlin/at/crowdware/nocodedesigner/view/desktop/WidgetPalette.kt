@@ -119,13 +119,13 @@ fun widgetPalette(currentProject: ProjectState?) {
                                     ClickableIcon(
                                         painter = painterResource("drawable/row.xml"),
                                         label = "Row",
-                                        sml = "Row {\n\n}\n"
+                                        sml = "\tRow {\n\n}\n"
                                     )
                                     ClickableIcon(
                                         //imageVector = Icons.Outlined.TextFields,
                                         painter = painterResource("drawable/column.xml"),
                                         label = "Column",
-                                        sml ="Column {\n\n}\n"
+                                        sml ="\tColumn {\n\n}\n"
                                     )
                                 }
                             }
@@ -177,17 +177,17 @@ fun widgetPalette(currentProject: ProjectState?) {
                                     ClickableIcon(
                                         painter = painterResource("drawable/text.xml"),
                                         label = "Text",
-                                        sml ="Text { text: \"Lorem ipsum dolor\" }\n"
+                                        sml ="\tText { text: \"Lorem ipsum dolor\" }\n"
                                     )
                                     ClickableIcon(
                                         painter = painterResource("drawable/markdown.xml"),
                                         label = "Markdown",
-                                        sml ="Markdown { text: \"# Header\" }\n"
+                                        sml ="\tMarkdown { text: \"# Header\" }\n"
                                     )
                                     ClickableIcon(
                                         painter = painterResource("drawable/spacer.xml"),
                                         label = "Spacer",
-                                        sml = "Spacer { amount: 8 }\n"
+                                        sml = "\tSpacer { amount: 8 }\n"
                                     )
 
                                 }
@@ -198,17 +198,17 @@ fun widgetPalette(currentProject: ProjectState?) {
                                         ClickableIcon(
                                             painter = painterResource("drawable/image.xml"),
                                             label = "Image",
-                                            sml ="Image { src: \"sample.png\" }\n"
+                                            sml ="\tImage { src: \"sample.png\" }\n"
                                         )
                                         ClickableIcon(
                                             painter = painterResource("drawable/video.xml"),
                                             label = "Video",
-                                            sml ="Video { src: \"sample.mp4\" }\n"
+                                            sml ="\tVideo { src: \"sample.mp4\" }\n"
                                         )
                                         ClickableIcon(
                                             painter = painterResource("drawable/youtube.xml"),
                                             label = "Youtube",
-                                            sml ="Youtube { id: \"xyz\" }\n"
+                                            sml ="\tYoutube { id: \"xyz\" }\n"
                                         )
                                     }
                                 }
@@ -260,7 +260,7 @@ fun widgetPalette(currentProject: ProjectState?) {
                                     ClickableIcon(
                                         painter = painterResource("drawable/button.xml"),
                                         label = "Button",
-                                        sml = "Button { label: \"Click me\" link: \"page:home\" }\n"
+                                        sml = "\tButton { label: \"Click me\" link: \"page:home\" }\n"
                                     )
                                 }
                             }

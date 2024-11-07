@@ -80,13 +80,15 @@ fun toolbar(currentProject: ProjectState?) {
             isSelected = currentProject?.isProjectStructureVisible == true
         )
         Spacer(modifier = Modifier.height(8.dp))
-        currentProject?.isProjectStructureVisible?.let {
-            HoverableIcon(
-                onClick = { currentProject.isProjectStructureVisible = false },
-                painter = painterResource("drawable/library.xml"),
-                tooltipText = "Widget Palette",
-                isSelected = !it
-            )
+        if(currentProject?.extension == "sml" && currentProject.fileName != "app.sml" && currentProject.fileName != "book.sml") {
+            currentProject.isProjectStructureVisible.let {
+                HoverableIcon(
+                    onClick = { currentProject.isProjectStructureVisible = false },
+                    painter = painterResource("drawable/library.xml"),
+                    tooltipText = "Widget Palette",
+                    isSelected = !it
+                )
+            }
         }
         if (currentProject != null) {
             if (currentProject.book != null) {
@@ -103,10 +105,10 @@ fun toolbar(currentProject: ProjectState?) {
             if (currentProject.app != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 HoverableIcon(
-                    onClick = { currentProject?.isCreateAPKVisible = true },
+                    onClick = { currentProject.isCreateAPKVisible = true },
                     painter = painterResource("drawable/android.xml"),
                     tooltipText = "Create APK",
-                    isSelected = currentProject?.isCreateAPKVisible == true
+                    isSelected = currentProject.isCreateAPKVisible == true
                 )
             }
         }

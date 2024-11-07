@@ -70,7 +70,7 @@ fun desktop() {
             .background(color = MaterialTheme.colors.primary)
     ) {
         toolbar(currentProject)
-        if (currentProject?.isProjectStructureVisible == true)
+        if (currentProject?.isProjectStructureVisible == true || currentProject?.extension == "md")
             projectStructure(currentProject)
         else
             widgetPalette(currentProject)

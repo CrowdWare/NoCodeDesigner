@@ -175,22 +175,9 @@ fun projectStructure(currentProject: ProjectState) {
                                         }
                                     }
 
-                                    //val cursorPosition = currentProject.currentFileContent.selection.start
                                     val cursorPosition = currentProject.editor.caretPosition
                                     currentProject.editor.insert(ins, cursorPosition)
                                     currentProject.editor.caretPosition = cursorPosition + ins.length
-
-
-                                    /*val currentText = currentProject.currentFileContent.text
-                                    val newTextValue = currentText.substring(0, cursorPosition) + ins + currentText.substring(cursorPosition)
-                                    currentProject.currentFileContent = currentProject.currentFileContent.copy(
-                                        text = newTextValue,
-                                        selection = TextRange(cursorPosition + ins.length)
-                                    )
-*/
-
-                                    //currentProject.saveFileContent()
-                                    //currentProject.reloadPage()
                                 }) {
                                     Text(text = "Insert", fontSize = 12.sp)
                                 }
