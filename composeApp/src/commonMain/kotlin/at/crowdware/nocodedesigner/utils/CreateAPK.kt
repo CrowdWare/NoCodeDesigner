@@ -75,7 +75,7 @@ class CreateAPK {
                         )
                     }
                     currentProject.parseError += "apk extracted\n"
-                    changeAppId(app.id, "${tempDir.path}", app.name)
+                    changeAppId(app.id + ".precached", "${tempDir.path}", app.name)
                     currentProject.parseError += "appId changed\n"
                     changeIcon("$source${File.separator}images${File.separator}${app.icon}", "${tempDir.path}")
                     currentProject.parseError += "icon exchanged\n"

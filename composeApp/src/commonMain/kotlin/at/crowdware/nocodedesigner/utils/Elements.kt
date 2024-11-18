@@ -38,7 +38,6 @@ data class App(
     @StringAnnotation("Version of the current SML. default is 1.1")
     var smlVersion: String = "",
     var theme: ThemeElement = ThemeElement(),
-    val pages: MutableList<PageElement> = mutableListOf(),
     var deployment: DeploymentElement = DeploymentElement()
 )
 
@@ -98,11 +97,7 @@ data class DeploymentElement(
 
 data class FileElement(val path: String, val time: LocalDateTime)
 
-data class ItemElement (val page: String)
-
 data class PartElement (val src: String, val pdfOnly: Boolean = false)
-
-data class PageElement (val src: String)
 
 data class Markdown (
     @StringAnnotation("Headers in Markdown allow you to define section titles and headings." +

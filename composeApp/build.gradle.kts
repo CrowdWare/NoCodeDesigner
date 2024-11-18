@@ -57,6 +57,10 @@ kotlin {
                 implementation("net.pwall.mustache:kotlin-mustache:0.12")
                 implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
                 implementation("com.fifesoft:rsyntaxtextarea:3.3.4")
+                implementation("io.ktor:ktor-client-cio:3.0.0")
+                implementation("io.ktor:ktor-client-core:3.0.0")
+                implementation("io.ktor:ktor-client-content-negotiation:3.0.0")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.0")
                 kotlin.srcDir(layout.buildDirectory.dir("generated/version"))
             }
         }

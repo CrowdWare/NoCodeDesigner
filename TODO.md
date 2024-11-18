@@ -3,10 +3,15 @@
 ## Next release
 
 ### App Part
+- App description is overwritten when creating a website.
+- License check via web service
+- Support license cancel from user
+- Download app after getting a license, send license file and download link
+- Navigation should respect language, also in desktop app
+- One of the worst bugs. Load file...press cmd-z and editor is empty
 - Progressbar für build.
 - Still the editor bug, that cursor jumps at the end of the file
 - Create APK on Windows failed, we need error handling
-- Widget palette should insert into editor instead...also other insert for MD...hide palette for MD
 - Watermark on non commercial version for app.
 - Error when Youtube video is not found.
 - Save progress of reading and load that page next time
@@ -17,6 +22,12 @@
 - FontSize changeable from end user in book app
 
 ## Nice to have
+- Page title, should be displayed in navbar of the app, at least for the browser app
+- Glossar for Dein Leben
+- Puzzle Solve Counter, Rewards
+- Reader kan join in to create chapters...
+- chapter rating like / dislike
+- meeting with god after finish a chapter, changes the story and also the available chapters
 - Plugins for website generation, umami analytics for example
 - MD syntax highlighting more detailed
 - SML syntax highlighting more detailed

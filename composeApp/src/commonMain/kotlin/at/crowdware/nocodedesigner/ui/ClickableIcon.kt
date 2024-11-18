@@ -88,14 +88,9 @@ fun ClickableIcon(
     Box(contentAlignment = Alignment.Center,
         modifier = Modifier
             .clickable {
-                val cursorPosition = currentProject.currentFileContent.selection.start
-                val currentText = currentProject.currentFileContent.text
-                val newTextValue = currentText.substring(0, cursorPosition) + sml + currentText.substring(cursorPosition)
-                currentProject.currentFileContent = currentProject.currentFileContent.copy(
-                    text = newTextValue,
-                    selection = TextRange(cursorPosition + sml.length)
-                )
-                currentProject.saveFileContent()
+                val cursorPosition = currentProject.editor.caretPosition
+                currentProject.editor.insert(sml, cursorPosition)
+                currentProject.editor.caretPosition = cursorPosition + sml.length
             }
             .width(95.dp)
             .border(2.dp, borderColor, shape = RoundedCornerShape(8.dp))

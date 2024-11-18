@@ -124,12 +124,12 @@ fun propertyPanel(currentProject: ProjectState?) {
                             Column() {
 
                                 Text(
-                                    text = "Page",
+                                    text = "Theme",
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = ExtendedTheme.colors.syntaxColor
                                 )
-                                renderAnnotation("src", "A page of the book.\nSample:\nPage {\n\tsrc: \"home.sml\"\n}")
+                                renderAnnotation("colorName", "A definition of all available colors. The colors are entered as hex values.\nSample:\nTheme {\n\tprimary: \"#825500\"\n}")
                             }
                         }
                     }
@@ -143,7 +143,16 @@ fun propertyPanel(currentProject: ProjectState?) {
                                     fontWeight = FontWeight.Bold,
                                     color = ExtendedTheme.colors.syntaxColor
                                 )
-                                renderAnnotation("src", "A part of the ebook.\nSample:\nPart {\n\tsrc: \"home.md\"\n}")
+                                val md = parseMarkdown("The list of the parts will also organise the order in the ebook.")
+                                Text(
+                                    text = md,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    color = MaterialTheme.colors.onPrimary
+                                )
+                                renderAnnotation("src", "A part of the ebook.\nSample:\nPart {\n\tsrc: \"home.md\"\n}\n\nPart {\n" +
+                                        "\tsrc: \"second.md\"\n" +
+                                        "}")
                             }
                         }
                     }

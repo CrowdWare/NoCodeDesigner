@@ -373,11 +373,6 @@ fun parseNestedAppElements(nestedElements: List<Any>, app: App) {
                 val properties = extractProperties(element)
 
                 when (elementName) {
-                    "Page" -> {
-                        val src = (properties["src"] as? PropertyValue.StringValue)?.value ?: ""
-                        val page = PageElement(src)
-                        app.pages.add(page)
-                    }
                     "Deployment" -> {
                         parseNestedDeployElements(extractChildElements(element), app.deployment)
                     }

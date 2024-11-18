@@ -56,6 +56,7 @@ class CreateHTML {
                         val html = getHtmlContent(page.first!!)
                         val context = mutableMapOf<String, Any>()
 
+                        println("desc: ${app.description}")
                         context["name"] = app.name
                         context["description"] = app.description
                         context["title"] = app.name + " - " + page.first!!.title

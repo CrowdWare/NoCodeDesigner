@@ -127,11 +127,15 @@ fun createEditor(
                 // Only update if the text has actually changed
                 if (lastText != currentText) {
                     // Create a new TextFieldValue with the current text and caret position
-                    val newValue = TextFieldValue(
+                    /*val newValue = TextFieldValue(
                         text = currentText,
                         selection = TextRange(min(currentCaretPosition, currentTextLength))
-                    )
+                    )*/
 
+                    val newValue = TextFieldValue(
+                        text = currentText,
+                        selection = TextRange(currentCaretPosition)
+                    )
                     currentProject.currentFileContent = newValue
                     lastText = currentText // Update lastText to the current one
 
