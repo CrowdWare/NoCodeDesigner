@@ -2,8 +2,9 @@
 
 The idea of this project is to create a desktop app where the user is able to build 
 dynamic Android apps with NO CODE. So the user doesn't have to be a developer at all.
-One aim is be able to create ebooks with new media content like movies, 3D objects, 
+The initial aim was be able to create ebooks with new media content like movies, 3D objects, 
 buttons for interactions.
+We have now splitted the project into NoCodeDesigner only for apps and the BookDesigner only for ebooks.
 
 # Platforms
 This desktop app will be available for Mac, Window, Linux.
