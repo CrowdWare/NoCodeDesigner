@@ -1,0 +1,49 @@
+    <nav epub:type="toc" id="toc">
+    <h1>Table of Contents</h1>
+    <ol>
+      {% for a in parts %}
+      <li><a href="{{ a.href }}">{{ a.name }}</a>
+        {% if a.parts %}
+        <ol>
+          {% for b in a.parts %}
+          <li><a href="{{ b.href }}">{{ b.name }}</a>
+            {% if b.parts %}
+            <ol>
+              {% for c in b.parts %}
+              <li><a href="{{ c.href }}">{{ c.name }}</a>
+                {% if c.parts %}
+                <ol>
+                  {% for d in c.parts %}
+                  <li><a href="{{ d.href }}">{{ d.name }}</a>
+                    {% if d.parts %}
+                    <ol>
+                      {% for e in d.parts %}
+                      <li><a href="{{ e.href }}">{{ e.name }}</a>
+                        {% if e.parts %}
+                        <ol>
+                          {% for f in e.parts %}
+                          <li><a href="{{ f.href }}">{{ f.name }}</a>
+                          </li>
+                          {% endfor %}
+                        </ol>
+                        {% endif %}
+                      </li>
+                      {% endfor %}
+                    </ol>
+                    {% endif %}
+                  </li>
+                  {% endfor %}
+                </ol>
+                {% endif %}
+              </li>
+              {% endfor %}
+            </ol>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ol>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+    </nav>

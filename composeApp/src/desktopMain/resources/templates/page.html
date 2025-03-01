@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{{ title }}}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+
+    <style>
+        /* Basic layout */
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* Dark and Light Theme for page */
+        .dark-theme {
+            background-color: #181818;
+            color: #f8f9fa;
+        }
+
+        .light-theme {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        /* Main container layout */
+        .main-container {
+            display: flex;
+            width: 90%;
+            max-width: 1800px;
+            gap: 50px;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            text-align: left;
+        }
+
+        /* Tablet mockup styling */
+        .tablet {
+            width: 500px;
+            height: 800px;
+            border: 16px solid #333;
+            border-radius: 30px;
+            padding: 10px;
+            background-color: #444;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Screen area styling */
+        .screen {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            border-radius: 20px;
+            background-color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Mobile-specific styling: Fullscreen content */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column; /* Vertikale Anordnung */
+                align-items: center; /* Zentriert den Inhalt */
+                gap: 20px; /* Abstand zwischen den Abschnitten */
+            }
+
+            .sidebar:first-of-type {
+                order: -1; /* Verschiebt die linke Sidebar nach oben */
+                width: 100%; /* Breite auf 100% setzen */
+                text-align: center; /* Text zentrieren (optional) */
+            }
+
+            .tablet {
+                order: 0; /* Tablet bleibt in der Mitte */
+                width: 100%; /* Füllt die Breite des Bildschirms aus */
+            }
+
+            .sidebar:last-of-type {
+                order: 1; /* Verschiebt die rechte Sidebar nach unten */
+                width: 100%; /* Breite auf 100% setzen */
+                text-align: center; /* Text zentrieren (optional) */
+            }
+        }
+
+        /* Dark theme for book content */
+        .book-dark-theme {
+            background-color: #333;
+            color: #f8f9fa;
+        }
+
+        /* Light theme for book content */
+        .book-light-theme {
+            background-color: #fff;
+            color: #333;
+        }
+
+        /* Book content */
+        .book-content {
+            font-size: 1rem;
+            line-height: 1.6;
+            white-space: normal;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+        }
+
+        /* Hide scrollbar for screen */
+        .screen::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Theme toggle button styling */
+        .theme-toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        /* Book theme toggle button styling */
+        .book-theme-toggle-btn {
+            position: fixed;
+            top: 60px; /* Placed below main theme button */
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        /* Button styles for dark theme */
+        .dark-theme .theme-toggle-btn,
+        .dark-theme .book-theme-toggle-btn {
+            color: #f8f9fa;
+        }
+    </style>
+</head>
+<body class="dark-theme"> <!-- Startet mit Dark Theme -->
+
+<div class="main-container">
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+        <h3>{{{ name }}}</h3>
+        <p>{{{ description }}}</p>
+    </div>
+
+    <!-- Tablet Mockup -->
+    <div class="tablet">
+        <div class="screen book-dark-theme" id="bookScreen"> <!-- Standardmäßig das dunkle Buch-Theme aktiv -->
+            <div class="book-content">
+                <section class="container">
+                   {{{ content }}}
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="sidebar">
+        <h3>Informationen</h3>
+        <p>
+            Dieses Buch wurde mit dem <a target="_blank" href="https://freebook.crowdware.at/">FreeBookDesigner</a> erstellt.<br>
+            Der FreeBookDesigner ist ein Desktop-Tool, das Ihnen hilft, eine neue Art von eBooks zu erstellen.<br>
+            Diese sogennten FreeBooks können als EPUB3 exportiert werden, die dann beispielsweise bei Verlagen veröffentlicht werden können.<br>
+            Es kann auch als Webseite veröffentlicht werden, wie diese Seite hier.<br>
+            Und Sie können Ihr Buch auch als Android-App veröffentlichen, in die Sie auch Videos, Ton, Schaltflächen, 3D-Objekte usw. integrieren können.
+            <br><br>
+            <strong>Wichtig</strong><br>
+            Du darfst mit dem FreeBookDesigner und Deinem damit erstellten FreeBook über nachhaltigen Inhalt informieren, aber nicht dafür werben.<br>
+            Das bedeutet, das du zwar einen Link auf ein Produkt oder eine Dienstleistung einfügen darfst, in diesem Inhalt dann aber auch KEINE
+            Werbung enthalten sein darf. Wir wollen hiermit ein Beispiel liefern, wie man a) die Werbung und Propaganda auf diesem unseren Planeten abschaffen kann
+            und b) wollen wir kreativen Menschen einen Weg aufzeigen, wie man auch ohne Geld ein Projekt unterstützen, bzw um Unterstützung bitten kann,
+            ohne das irgendwo anders in diesem Universum sich jemand anderes daran bereichert, sei es über Umsatzbeteiligung, Tantiemen oder Steuereinnahmen.<br><br>
+
+            Dies ist unser Beitrag für einen sauberen Planeten.<br>
+            Ich persönlich tue dies in Liebe zu unserem gemeinsamen Planeten, der uns alle mit reichlich Fülle versorgt,
+            wenn wir denn die Augen aufmachen und nicht überall ein Preisschild drankleben würden.<br>
+            Aho ❤️
+        </p>
+    </div>
+</div>
+
+<!-- Theme toggle icon button for page theme -->
+<button class="theme-toggle-btn" onclick="togglePageTheme()" id="themeIcon">
+    <i class="bi bi-moon-fill"></i> <!-- Initial icon for Dark Theme -->
+</button>
+
+<!-- Theme toggle icon button for book theme -->
+<button class="book-theme-toggle-btn" onclick="toggleBookTheme()" id="bookThemeIcon">
+    <i class="bi bi-book-half"></i> <!-- Initial icon for Light Book Theme -->
+</button>
+
+<script>
+
+    function setThemeCookie(theme) {
+        document.cookie = "theme=" + theme + "; path=/; max-age=" + (60 * 60 * 24 * 30); // 30 Tage gültig
+    }
+
+    function setBookThemeCookie(theme) {
+        document.cookie = "bookTheme=" + theme + "; path=/; max-age=" + (60 * 60 * 24 * 30); // 30 Tage gültig
+    }
+
+    function getThemeCookie() {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; theme=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function getBookThemeCookie() {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; bookTheme=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function togglePageTheme() {
+        const body = document.body;
+        const icon = document.getElementById("themeIcon").querySelector("i");
+
+        body.classList.toggle('dark-theme');
+        body.classList.toggle('light-theme');
+
+        if (body.classList.contains('dark-theme')) {
+            icon.classList.remove('bi-sun-fill');
+            icon.classList.add('bi-moon-fill');
+            setThemeCookie('dark');
+        } else {
+            icon.classList.remove('bi-moon-fill');
+            icon.classList.add('bi-sun-fill');
+            setThemeCookie('light');
+        }
+    }
+
+    function toggleBookTheme() {
+        const screen = document.getElementById("bookScreen");
+        const bookIcon = document.getElementById("bookThemeIcon").querySelector("i");
+
+        if (screen.classList.contains('book-dark-theme')) {
+            screen.classList.remove('book-dark-theme');
+            screen.classList.add('book-light-theme');
+            bookIcon.classList.remove('bi-book');
+            bookIcon.classList.add('bi-book-half');
+            setBookThemeCookie('book-light');
+        } else {
+            screen.classList.remove('book-light-theme');
+            screen.classList.add('book-dark-theme');
+            bookIcon.classList.remove('bi-book-half');
+            bookIcon.classList.add('bi-book');
+            setBookThemeCookie('book-dark');
+        }
+    }
+
+    window.onload = function() {
+        const theme = getThemeCookie();
+        if (theme === 'light') {
+            document.body.classList.remove('dark-theme');
+            document.body.classList.add('light-theme');
+            document.getElementById("themeIcon").querySelector("i").classList.replace("bi-moon-fill", "bi-sun-fill");
+        } else if (theme === 'dark') {
+            document.body.classList.add('dark-theme');
+            document.getElementById("themeIcon").querySelector("i").classList.replace("bi-sun-fill", "bi-moon-fill");
+        }
+
+        const bookTheme = getBookThemeCookie();
+        const bookScreen = document.getElementById("bookScreen");
+        if (bookTheme === 'book-light') {
+            bookScreen.classList.remove('book-dark-theme');
+            bookScreen.classList.add('book-light-theme');
+            document.getElementById("bookThemeIcon").querySelector("i").classList.replace("bi-book", "bi-book-half");
+        } else if (bookTheme === 'book-dark') {
+            bookScreen.classList.add('book-dark-theme');
+            document.getElementById("bookThemeIcon").querySelector("i").classList.replace("bi-book-half", "bi-book");
+        }
+    };
+</script>
+</body>
+</html>
