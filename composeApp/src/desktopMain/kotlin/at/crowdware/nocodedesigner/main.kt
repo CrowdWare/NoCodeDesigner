@@ -39,20 +39,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import at.crowdware.nocodelib.*
-import at.crowdware.nocodelib.theme.AppTheme
-import at.crowdware.nocodelib.theme.ExtendedTheme
-import at.crowdware.nocodelib.ui.*
+import at.crowdware.nocode.*
+import at.crowdware.nocode.theme.AppTheme
+import at.crowdware.nocode.theme.ExtendedTheme
+import at.crowdware.nocode.ui.*
 import at.crowdware.nocodedesigner.view.desktop.desktop
-import at.crowdware.nocodelib.viewmodel.*
-import at.crowdware.nocodelib.ui.WindowCaptionArea
-import at.crowdware.nocodelib.ui.WindowControlButton
+import at.crowdware.nocode.viewmodel.*
+import at.crowdware.nocode.ui.WindowCaptionArea
+import at.crowdware.nocode.ui.WindowControlButton
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.awt.Desktop
 import java.awt.Dimension
 import java.awt.Frame
@@ -68,7 +66,7 @@ fun main() = application {
     var appName = APPNAME
     var appTitle by mutableStateOf("")
     val version = Version.version
-    val projectState = at.crowdware.nocodelib.viewmodel.createProjectState()
+    val projectState = createProjectState()
     val appState = createAppState()
     GlobalProjectState.projectState = projectState
     GlobalAppState.appState = appState

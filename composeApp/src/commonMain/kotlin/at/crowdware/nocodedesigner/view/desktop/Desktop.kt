@@ -29,7 +29,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
-import at.crowdware.nocodelib.viewmodel.GlobalProjectState
+import at.crowdware.nocode.viewmodel.GlobalProjectState
 
 @Composable
 fun desktop() {
