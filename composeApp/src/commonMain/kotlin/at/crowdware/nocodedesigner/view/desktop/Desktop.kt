@@ -23,13 +23,33 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
+import at.crowdware.nocode.model.NodeType
+import at.crowdware.nocode.model.TreeNode
+import at.crowdware.nocode.theme.ExtendedTheme
+import at.crowdware.nocode.view.desktop.*
 import at.crowdware.nocode.viewmodel.GlobalProjectState
+
+
+@Composable
+fun fileTreeIconProvider(node: TreeNode) {
+    when (node.type) { // Assuming you have a `type` field in TreeNode to determine the type
+        NodeType.DIRECTORY -> Icon(Icons.Default.Folder, modifier = Modifier.size(16.dp), contentDescription = null, tint = ExtendedTheme.colors.directoryColor)
+        NodeType.IMAGE -> Icon(Icons.Default.Image, modifier = Modifier.size(16.dp), contentDescription = null, tint = ExtendedTheme.colors.imageColor)
+        NodeType.VIDEO -> Icon(Icons.Default.Movie, modifier = Modifier.size(16.dp), contentDescription = null, tint = ExtendedTheme.colors.videoColor)
+        NodeType.SOUND -> Icon(Icons.Default.MusicNote, modifier = Modifier.size(16.dp), contentDescription = null, tint = ExtendedTheme.colors.soundColor)
+        NodeType.XML -> Icon(Icons.Default.InsertDriveFile, modifier = Modifier.size(16.dp), contentDescription = null, tint = ExtendedTheme.colors.xmlColor)
+        else -> Icon(Icons.Default.InsertDriveFile, modifier = Modifier.size(16.dp), contentDescription = null, tint = MaterialTheme.colors.onSurface) // Default file icon
+    }
+}
 
 @Composable
 fun desktop() {
@@ -46,12 +66,18 @@ fun desktop() {
             .fillMaxHeight()
             .background(color = MaterialTheme.colors.primary)
     ) {
-        // Initially empty or with minimal components
-        // Will be expanded as NoCodeDesigner functionality is developed
-        Text(
-            text = "NoCodeDesigner - Coming Soon",
-            color = MaterialTheme.colors.onPrimary,
-            modifier = Modifier.align(Alignment.CenterVertically)
-        )
+        toolbar(currentProject)
+        if (currentProject?.isProjectStructureVisible == true || currentProject?.extension == "md")
+            projectStructure(currentProject)
+        //else
+        //widgetPalette(currentProject)
+        syntaxEditor(
+            currentProject, textFieldValue = textFieldValue as TextFieldValue
+        ) { newValue ->
+            textFieldValue = newValue
+            currentProject?.currentFileContent = newValue
+        }
+        mobilePreview(currentProject)
+        propertyPanel(currentProject)
     }
 }
