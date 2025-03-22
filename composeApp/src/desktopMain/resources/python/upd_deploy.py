@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024 CrowdWare
+# Copyright (C) 2025 CrowdWare
 #
 # This file is part of FreeBookDesigner.
 #

@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 include(":composeApp")
 include(":nocodelib")
-project(":nocodelib").projectDir = file("../NoCodeLib/composeApp")
+project(":nocodelib").projectDir = file("nocodelib/composeApp")
