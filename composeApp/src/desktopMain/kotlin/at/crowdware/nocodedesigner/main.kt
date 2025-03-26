@@ -73,7 +73,6 @@ fun main() = application {
 
     loadAppState(APPNAME)
     appState.theme = "Dark"
-    appState.initLicense()
 
     appTitle = appName + " - " + appState.lastProject
     val windowState = rememberWindowState(
@@ -249,21 +248,6 @@ fun main() = application {
                                     }
                                 })
                         }
-
-                        if (projectState.isSettingsVisible) {
-                            var license by remember { mutableStateOf(TextFieldValue(appState.license)) }
-                            settingsDialog(
-                                onDismissRequest = { projectState.isSettingsVisible = false },
-                                license = license,
-                                onLicenseChange = { license = it },
-                                onCreateRequest = {
-                                    projectState.isSettingsVisible = false
-                                    appState.license = license.text
-                                    appState.initLicense()
-                                    saveState(window, projectState.folder, APPNAME)
-                                })
-                        }
-
                         if (projectState.isNewProjectDialogVisible) {
                             val folder = System.getProperty("user.home") + "/Ebooks"
                             val coroutineScope = rememberCoroutineScope()

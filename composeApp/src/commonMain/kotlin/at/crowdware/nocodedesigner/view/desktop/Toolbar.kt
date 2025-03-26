@@ -79,7 +79,18 @@ fun toolbar(currentProject: ProjectState?) {
             }
         }*/
 
-
+        if (currentProject != null) {
+            if (currentProject.book != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                HoverableIcon(
+                    onClick = { currentProject.isCreateEbookVisible = true },
+                    painter = painterResource("drawable/book.xml"),
+                    tooltipText = "Create Ebook",
+                    isSelected = currentProject.isCreateEbookVisible == true
+                )
+            }
+        }
+        
         if (currentProject != null) {
             if (currentProject.app != null) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -91,7 +102,7 @@ fun toolbar(currentProject: ProjectState?) {
                 )
             }
         }
-        println("Test 1")
+
         if (currentProject != null) {
             println("Test: ${currentProject.app}")
             if (currentProject.app != null) {
@@ -103,15 +114,6 @@ fun toolbar(currentProject: ProjectState?) {
                     isSelected = currentProject.isCreateCourseVisible == true
                 )
             }
-        }
-        if (currentProject != null) {
-            Spacer(modifier = Modifier.height(8.dp))
-            HoverableIcon(
-                onClick = { currentProject.isSettingsVisible = true },
-                painter = painterResource("drawable/settings.xml"),
-                tooltipText = "Settings",
-                isSelected = currentProject.isSettingsVisible == true
-            )
         }
     }
 }
