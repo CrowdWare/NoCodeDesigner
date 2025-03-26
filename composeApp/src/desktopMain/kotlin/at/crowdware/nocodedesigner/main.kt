@@ -248,51 +248,49 @@ fun main() = application {
                                     }
                                 })
                         }
+
                         if (projectState.isNewProjectDialogVisible) {
-                            val folder = System.getProperty("user.home") + "/Ebooks"
+                            val folder = System.getProperty("user.home")
                             val coroutineScope = rememberCoroutineScope()
                             var projectName by remember { mutableStateOf(TextFieldValue("")) }
                             var appId by remember { mutableStateOf(TextFieldValue("com.sample.app")) }
-                            var projectFolder by remember { mutableStateOf(TextFieldValue(folder)) }
                             var theme by remember { mutableStateOf("Light") }
-                            var createBook by remember { mutableStateOf(false) }
-                            var createApp by remember { mutableStateOf(false) }
+                            var selectedType by remember { mutableStateOf("") }
 
                             createProjectDialog(
                                 name = projectName,
-                                folder = projectFolder,
-                                onFolderChange = { projectFolder = it },
                                 onNameChange = { projectName = it },
                                 id = appId,
-                                app = createApp,
-                                book = createBook,
-                                lang = "de,en,pt,fr,es,eo",
                                 onIdChange = { appId = it },
-                                onDismissRequest = { projectState.isNewProjectDialogVisible = false },
+                                selectedType = selectedType,
+                                onTypeSelected = { selectedType = it },
                                 theme = theme,
                                 onThemeChanged = { theme = it },
-                                onCheckBookChanged = { createBook = it },
-                                onCheckAppChanged = { createApp = it },
-                                onCreateRequest = { langs->
+                                lang = "de,en,pt,fr,es,eo",
+                                userFolder = folder,
+                                onDismissRequest = { projectState.isNewProjectDialogVisible = false },
+                                onCreateRequest = { langs, projectFolder ->
                                     projectState.isNewProjectDialogVisible = false
                                     coroutineScope.launch {
-                                        var folder = projectFolder.text
-                                        if (!projectFolder.text.endsWith(File.separator))
-                                            folder = projectFolder.text + File.separator
-                                        appTitle = appName + " - " + folder + projectName.text
+                                        var folderPath = projectFolder
+                                        if (!folderPath.endsWith(File.separator)) {
+                                            folderPath += File.separator
+                                        }
+                                        appTitle = appName + " - " + folderPath + projectName.text
                                         projectState.createProjectFiles(
-                                            folder,
-                                            "",
-                                            "",
+                                            folderPath,
+                                            "", "",
                                             projectName.text,
                                             appId.text,
                                             theme,
-                                            createBook,
-                                            createApp,
+                                            selectedType == "Book",
+                                            selectedType == "App",
+                                            selectedType == "Website",
                                             langs
                                         )
                                     }
-                                })
+                                }
+                            )
                         }
 
                         if (projectState.isCreateEbookVisible) {
