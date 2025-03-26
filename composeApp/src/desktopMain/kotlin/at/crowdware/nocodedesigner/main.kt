@@ -322,7 +322,7 @@ fun main() = application {
                                         var f = folder.text
                                         if (!folder.text.endsWith(File.separator))
                                             f += File.separator
-                                        projectState.createEbook(title.text, f, langs)
+                                        projectState.createEbook(title.text, f, langs, "NoCodeDesigner $version")
                                     }
                                 })
                         }

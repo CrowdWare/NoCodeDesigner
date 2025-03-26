@@ -36,7 +36,7 @@ NoCodeDesigner is built using Kotlin Multiplatform and Compose for Desktop. It u
 
 ## License
 
-FreeBookDesigner is licensed under the **GNU General Public License v3.0 (GPLv3)**.
+NoCodeDesigner is licensed under the **GNU General Public License v3.0 (GPLv3)**.
 
 You are free to use, modify, and distribute this software under the terms of the GPLv3.  
 If you modify the code and distribute it, you must also share your changes under the same license and retain proper attribution to the original author.
@@ -46,7 +46,7 @@ If you modify the code and distribute it, you must also share your changes under
 I believe technology should be free, empowering, and accessible.  
 You're welcome to explore, learn from, and build on this project.
 
-If you use FreeBookDesigner in a commercial context or wish to integrate it into proprietary systems, I kindly ask that you reach out. While the GPL permits commercial use, I value transparency and fair collaboration.
+If you use NoCodeDesigner in a commercial context or wish to integrate it into proprietary systems, I kindly ask that you reach out. While the GPL permits commercial use, I value transparency and fair collaboration.
 
 You're not required to contact me — but I always appreciate hearing from people who use or extend this project. Let's grow something meaningful together.
 
