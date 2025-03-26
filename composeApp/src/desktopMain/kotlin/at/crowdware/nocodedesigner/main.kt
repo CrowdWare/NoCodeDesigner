@@ -41,6 +41,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import at.crowdware.nocode.*
 import at.crowdware.nocode.plugin.PluginManager
+import at.crowdware.nocode.plugin.SmlExportPlugin
 import at.crowdware.nocode.theme.AppTheme
 import at.crowdware.nocode.theme.ExtendedTheme
 import at.crowdware.nocode.ui.*
@@ -112,8 +113,14 @@ fun main() = application {
         }
     }
 
-    // TODO register Plugins here
-    //PluginManager.register(EpubExportPlugin())
+    val pluginFolder = File("plugins")
+    println("folder: ${pluginFolder.absolutePath}")
+    val loadedPlugins = PluginManager.loadAllFromPluginsFolder(pluginFolder)
+
+    println("✅ ${loadedPlugins.size} Plugins geladen.")
+    loadedPlugins.forEach {
+        println("🔌 Plugin: ${it.label} (${it.id})")
+    }
 
     Window(
         onCloseRequest = { isAskingToClose = true },

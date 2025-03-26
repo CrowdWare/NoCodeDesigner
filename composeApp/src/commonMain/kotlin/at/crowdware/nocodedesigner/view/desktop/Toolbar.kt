@@ -30,8 +30,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import at.crowdware.nocode.plugin.PluginManager
+import at.crowdware.nocode.theme.AppTheme
 import at.crowdware.nocode.ui.HoverableIcon
+import at.crowdware.nocode.utils.App
 import at.crowdware.nocode.viewmodel.ProjectState
+import java.io.File
 
 @Composable
 fun toolbar(currentProject: ProjectState?) {
@@ -114,6 +118,41 @@ fun toolbar(currentProject: ProjectState?) {
                     isSelected = currentProject.isCreateCourseVisible == true
                 )
             }
+        }
+
+        PluginManager.all().forEach { plugin ->
+            Spacer(modifier = Modifier.height(8.dp))
+            HoverableIcon(
+                onClick = {
+                    val outputDir = File("export/${plugin.id}")
+                    outputDir.mkdirs()
+                    println("export: ${outputDir.absolutePath}")
+                    val app = App(name = "TestName")
+                    val result = plugin.export(app, outputDir)
+                    println("▶️ Export mit Plugin ${plugin.label}: ${result.message}")
+                },
+                painter = painterResource("drawable/course.xml"),
+                tooltipText = plugin.label,
+                isSelected = false
+            )
+            /*
+            IconButton(onClick = {
+                val outputDir = File("export/${plugin.id}")
+                outputDir.mkdirs()
+
+                val result = plugin.export(app, outputDir)
+
+                println("▶️ Export mit Plugin ${plugin.label}: ${result.message}")
+            }) {
+                // Optional: lade Icon von Pfad
+                val iconPath = ".plugin-cache/${plugin.id}/${plugin.icon}"
+                if (File(iconPath).exists()) {
+                    val image = loadSvgResource(iconPath)
+                    image?.let { Icon(it, contentDescription = plugin.label) }
+                } else {
+                    Icon(Icons.Default.Extension, contentDescription = plugin.label)
+                }
+            }*/
         }
     }
 }
