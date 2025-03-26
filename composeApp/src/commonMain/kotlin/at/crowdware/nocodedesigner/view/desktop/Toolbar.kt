@@ -92,7 +92,7 @@ fun toolbar(currentProject: ProjectState?) {
         }
         
         if (currentProject != null) {
-            if (currentProject.app != null) {
+            if (currentProject.site != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 HoverableIcon(
                     onClick = { currentProject.isCreateHTMLVisible = true },
@@ -105,7 +105,7 @@ fun toolbar(currentProject: ProjectState?) {
 
         if (currentProject != null) {
             println("Test: ${currentProject.app}")
-            if (currentProject.app != null) {
+            if (currentProject.site != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 HoverableIcon(
                     onClick = { currentProject.isCreateCourseVisible = true },

@@ -326,8 +326,8 @@ fun main() = application {
                         }
 
                         if (projectState.isCreateHTMLVisible) {
-                            val appName = projectState.app?.name!!
-                            var deploymentDir = projectState.app?.deployDirHtml
+                            val appName = projectState.site?.name!!
+                            var deploymentDir = projectState.site?.deployDirHtml
                             if (deploymentDir == null || deploymentDir.isEmpty()) {
                                 deploymentDir = System.getProperty("user.home") + "/" + APPNAME
                             }
@@ -349,8 +349,8 @@ fun main() = application {
                         }
 
                         if (projectState.isCreateCourseVisible) {
-                            val appName = projectState.app?.name!!
-                            var deploymentDir = projectState.app?.deployDirHtml
+                            val appName = projectState.site?.name!!
+                            var deploymentDir = projectState.site?.deployDirHtml
                             if (deploymentDir == null || deploymentDir.isEmpty()) {
                                 deploymentDir = System.getProperty("user.home") + "/" + APPNAME
                             }
