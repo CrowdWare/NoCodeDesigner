@@ -282,13 +282,14 @@ fun main() = application {
                                 id = appId,
                                 app = createApp,
                                 book = createBook,
+                                lang = "de,en,pt,fr,es,eo",
                                 onIdChange = { appId = it },
                                 onDismissRequest = { projectState.isNewProjectDialogVisible = false },
                                 theme = theme,
                                 onThemeChanged = { theme = it },
                                 onCheckBookChanged = { createBook = it },
                                 onCheckAppChanged = { createApp = it },
-                                onCreateRequest = {
+                                onCreateRequest = { langs->
                                     projectState.isNewProjectDialogVisible = false
                                     coroutineScope.launch {
                                         var folder = projectFolder.text
@@ -303,7 +304,8 @@ fun main() = application {
                                             appId.text,
                                             theme,
                                             createBook,
-                                            createApp
+                                            createApp,
+                                            langs
                                         )
                                     }
                                 })
@@ -320,21 +322,23 @@ fun main() = application {
                             if (deployDir.isEmpty()) {
                                 deployDir = System.getProperty("user.home") + "/" + APPNAME
                             }
+                            var lang = projectState.book?.language!!
                             var folder by remember { mutableStateOf(TextFieldValue(deployDir)) }
 
                             createEbookDialog(
                                 name = title,
                                 folder = folder,
+                                lang = lang,
                                 onFolderChange = { folder = it },
                                 onNameChange = { title = it },
                                 onDismissRequest = { projectState.isCreateEbookVisible = false },
-                                onCreateRequest = {
+                                onCreateRequest = { langs ->
                                     projectState.isCreateEbookVisible = false
                                     coroutineScope.launch {
                                         var f = folder.text
                                         if (!folder.text.endsWith(File.separator))
                                             f += File.separator
-                                        projectState.createEbook(title.text, f)
+                                        projectState.createEbook(title.text, f, langs)
                                     }
                                 })
                         }
@@ -346,7 +350,7 @@ fun main() = application {
                                 deploymentDir = System.getProperty("user.home") + "/" + APPNAME
                             }
                             val coroutineScope = rememberCoroutineScope()
-                            var folder by remember { mutableStateOf(TextFieldValue(deploymentDir)) }
+                            var folder by remember { mutableStateOf(TextFieldValue(deploymentDir!!)) }
                             createHTMLDialog(
                                 folder = folder,
                                 onFolderChange = { folder = it },
