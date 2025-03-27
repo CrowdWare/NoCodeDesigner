@@ -34,11 +34,15 @@ import at.crowdware.nocode.plugin.PluginManager
 import at.crowdware.nocode.theme.AppTheme
 import at.crowdware.nocode.ui.HoverableIcon
 import at.crowdware.nocode.utils.App
+import at.crowdware.nocode.utils.Padding
+import at.crowdware.nocode.utils.Page
+import at.crowdware.nocode.utils.UIElement
 import at.crowdware.nocode.viewmodel.ProjectState
 import java.io.File
 
 @Composable
 fun toolbar(currentProject: ProjectState?) {
+    val app = currentProject?.app
     Column(
         modifier = Modifier.width(52.dp).fillMaxHeight().background(color = MaterialTheme.colors.primary),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -126,10 +130,13 @@ fun toolbar(currentProject: ProjectState?) {
                 onClick = {
                     val outputDir = File("export/${plugin.id}")
                     outputDir.mkdirs()
-                    println("export: ${outputDir.absolutePath}")
-                    val app = App(name = "TestName")
-                    val result = plugin.export(app, outputDir)
-                    println("▶️ Export mit Plugin ${plugin.label}: ${result.message}")
+                    val pages = mutableListOf<Page>()
+                    pages.add(Page(title = "Page 1", color = "", "", Padding(0,0,0,0), "false", mutableListOf<UIElement>()))
+                    pages.add(Page(title = "Page 2", color = "", "", Padding(0,0,0,0), "false", mutableListOf<UIElement>()))
+                    pages.add(Page(title = "Page 3", color = "", "", Padding(0,0,0,0), "false", mutableListOf<UIElement>()))
+
+                    val result = plugin.export(app!!, pages, outputDir)
+                    println("▶️ Export mit Plugin ${plugin.label}: ${result.message} to ${outputDir.absolutePath}")
                 },
                 painter = painterResource("drawable/course.xml"),
                 tooltipText = plugin.label,
