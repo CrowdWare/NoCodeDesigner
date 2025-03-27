@@ -121,7 +121,7 @@ fun toolbar(currentProject: ProjectState?) {
             }
         }
 
-
+        // here we dynamically list all plugins installed, and execute them on click
         PluginManager.all().forEach { plugin ->
             val iconPath = ".plugin-cache/${plugin.id}/${plugin.icon}"
             val iconPainter = if (plugin.icon != null && File(iconPath).exists()) {
