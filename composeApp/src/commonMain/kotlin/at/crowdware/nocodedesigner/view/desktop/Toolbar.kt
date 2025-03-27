@@ -95,7 +95,8 @@ fun toolbar(currentProject: ProjectState?) {
                 )
             }
         }
-        
+
+    /*
         if (currentProject != null) {
             if (currentProject.site != null) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -107,7 +108,8 @@ fun toolbar(currentProject: ProjectState?) {
                 )
             }
         }
-
+        */
+/*
         if (currentProject != null) {
             println("Test: ${currentProject.app}")
             if (currentProject.site != null) {
@@ -120,7 +122,7 @@ fun toolbar(currentProject: ProjectState?) {
                 )
             }
         }
-
+*/
         // here we dynamically list all plugins installed, and execute them on click
         PluginManager.all().forEach { plugin ->
             val iconPath = ".plugin-cache/${plugin.id}/${plugin.icon}"
@@ -141,6 +143,7 @@ fun toolbar(currentProject: ProjectState?) {
                     val source = currentProject?.folder
                     val languages = listOf("de", "en", "pt", "fr", "eo", "es")
                     val pages = mutableListOf<Page>()
+                    val parts = mutableListOf<PartElement>()
                     for (lang in languages) {
                         val sourceDir = File(source, "pages-$lang")
                         sourceDir.walkTopDown().forEach { file ->
@@ -154,7 +157,7 @@ fun toolbar(currentProject: ProjectState?) {
                             }
                         }
                     }
-                    val result = plugin.export(app!!, pages, outputDir)
+                    val result = plugin.export(app!!, pages, parts, outputDir)
                     println("▶️ Export mit Plugin ${plugin.label}: ${result.message} to ${outputDir.absolutePath}")
                 },
                 painter = iconPainter!!,
