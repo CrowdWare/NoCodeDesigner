@@ -293,9 +293,9 @@ fun main() = application {
                                             projectName.text,
                                             appId.text,
                                             theme,
-                                            selectedType == "Book",
-                                            selectedType == "App",
-                                            selectedType == "Website",
+                                            //selectedType == "Book",
+                                            //selectedType == "App",
+                                            //selectedType == "Website",
                                             langs
                                         )
                                     }
@@ -303,6 +303,7 @@ fun main() = application {
                             )
                         }
 
+                        /*
                         if (projectState.isCreateEbookVisible) {
                             val bookName = projectState.book?.name!!
                             val coroutineScope = rememberCoroutineScope()
@@ -333,8 +334,9 @@ fun main() = application {
                                         projectState.createEbook(title.text, f, langs, "NoCodeDesigner $version")
                                     }
                                 })
-                        }
+                        }*/
 
+                        /*
                         if (projectState.isCreateHTMLVisible) {
                             val appName = projectState.site?.name!!
                             var deploymentDir = projectState.site?.deployDirHtml
@@ -356,8 +358,9 @@ fun main() = application {
                                         projectState.createHTML(f)
                                     }
                                 })
-                        }
+                        }*/
 
+                        /*
                         if (projectState.isCreateCourseVisible) {
                             val appName = projectState.site?.name!!
                             var deploymentDir = projectState.site?.deployDirHtml
@@ -379,7 +382,7 @@ fun main() = application {
                                         projectState.createCourse(f, "de")  // TODO: set language via dialog
                                     }
                                 })
-                        }
+                        }*/
 
                         DirectoryPicker(
                             show = projectState.isOpenProjectDialogVisible,

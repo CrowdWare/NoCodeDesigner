@@ -84,6 +84,7 @@ fun toolbar(currentProject: ProjectState?) {
             }
         }*/
 
+        /*
         if (currentProject != null) {
             if (currentProject.book != null) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -94,7 +95,7 @@ fun toolbar(currentProject: ProjectState?) {
                     isSelected = currentProject.isCreateEbookVisible == true
                 )
             }
-        }
+        }*/
 
     /*
         if (currentProject != null) {
