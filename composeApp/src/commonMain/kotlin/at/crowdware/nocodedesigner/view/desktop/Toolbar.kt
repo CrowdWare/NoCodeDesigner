@@ -33,10 +33,7 @@ import androidx.compose.ui.unit.dp
 import at.crowdware.nocode.plugin.PluginManager
 import at.crowdware.nocode.theme.AppTheme
 import at.crowdware.nocode.ui.HoverableIcon
-import at.crowdware.nocode.utils.App
-import at.crowdware.nocode.utils.Padding
-import at.crowdware.nocode.utils.Page
-import at.crowdware.nocode.utils.UIElement
+import at.crowdware.nocode.utils.*
 import at.crowdware.nocode.viewmodel.ProjectState
 import java.io.File
 
@@ -124,42 +121,45 @@ fun toolbar(currentProject: ProjectState?) {
             }
         }
 
+
         PluginManager.all().forEach { plugin ->
+            val iconPath = ".plugin-cache/${plugin.id}/${plugin.icon}"
+            val iconPainter = if (plugin.icon != null && File(iconPath).exists()) {
+                try {
+                    loadSvgResource(iconPath)
+                } catch (e: Exception) {
+                    painterResource("drawable/course.xml")
+                }
+            } else {
+                painterResource("drawable/course.xml")
+            }
             Spacer(modifier = Modifier.height(8.dp))
             HoverableIcon(
                 onClick = {
                     val outputDir = File("export/${plugin.id}")
                     outputDir.mkdirs()
+                    val source = currentProject?.folder
+                    val languages = listOf("de", "en", "pt", "fr", "eo", "es")
                     val pages = mutableListOf<Page>()
-                    pages.add(Page(title = "Page 1", color = "", "", Padding(0,0,0,0), "false", mutableListOf<UIElement>()))
-                    pages.add(Page(title = "Page 2", color = "", "", Padding(0,0,0,0), "false", mutableListOf<UIElement>()))
-                    pages.add(Page(title = "Page 3", color = "", "", Padding(0,0,0,0), "false", mutableListOf<UIElement>()))
-
+                    for (lang in languages) {
+                        val sourceDir = File(source, "pages-$lang")
+                        sourceDir.walkTopDown().forEach { file ->
+                            if (file.isFile) {
+                                val pageContent = file.readText()
+                                val page = parsePage(pageContent)
+                                if (page.first != null) {
+                                    pages.add(page.first!!)
+                                }
+                            }
+                        }
+                    }
                     val result = plugin.export(app!!, pages, outputDir)
                     println("▶️ Export mit Plugin ${plugin.label}: ${result.message} to ${outputDir.absolutePath}")
                 },
-                painter = painterResource("drawable/course.xml"),
+                painter = iconPainter!!,
                 tooltipText = plugin.label,
                 isSelected = false
             )
-            /*
-            IconButton(onClick = {
-                val outputDir = File("export/${plugin.id}")
-                outputDir.mkdirs()
-
-                val result = plugin.export(app, outputDir)
-
-                println("▶️ Export mit Plugin ${plugin.label}: ${result.message}")
-            }) {
-                // Optional: lade Icon von Pfad
-                val iconPath = ".plugin-cache/${plugin.id}/${plugin.icon}"
-                if (File(iconPath).exists()) {
-                    val image = loadSvgResource(iconPath)
-                    image?.let { Icon(it, contentDescription = plugin.label) }
-                } else {
-                    Icon(Icons.Default.Extension, contentDescription = plugin.label)
-                }
-            }*/
         }
     }
 }
