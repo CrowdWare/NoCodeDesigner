@@ -148,6 +148,7 @@ fun toolbar(currentProject: ProjectState?) {
                                 val pageContent = file.readText()
                                 val page = parsePage(pageContent)
                                 if (page.first != null) {
+                                    page.first!!.language = lang
                                     pages.add(page.first!!)
                                 }
                             }
