@@ -150,7 +150,7 @@ fun toolbar(currentProject: ProjectState?) {
                         sourceDir.walkTopDown().forEach { file ->
                             if (file.isFile) {
                                 val pageContent = file.readText()
-                                val page = parsePage(pageContent)
+                                val page = parsePage(pageContent, lang)
                                 if (page.first != null) {
                                     page.first!!.language = lang
                                     pages.add(page.first!!)
