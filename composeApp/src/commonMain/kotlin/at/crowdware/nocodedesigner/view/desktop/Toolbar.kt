@@ -143,17 +143,19 @@ fun toolbar(currentProject: ProjectState?) {
                     outputDir.mkdirs()
                     val source = currentProject?.folder
                     val languages = listOf("de", "en", "pt", "fr", "eo", "es")
-                    val pages = mutableListOf<Page>()
+                    val pages = mutableListOf<SmlNode>()
                     val parts = mutableListOf<PartElement>()
                     for (lang in languages) {
                         val sourceDir = File(source, "pages-$lang")
                         sourceDir.walkTopDown().forEach { file ->
                             if (file.isFile) {
                                 val pageContent = file.readText()
-                                val page = parsePage(pageContent, lang)
-                                if (page.first != null) {
-                                    page.first!!.language = lang
-                                    pages.add(page.first!!)
+                                //val page = parsePage(pageContent, lang)
+                                val (parsedPage, error) = parseSML(pageContent)
+                                // TODO
+                                if (parsedPage != null) {
+                                    //page.first!!.language = lang
+                                    pages.add(parsedPage)
                                 }
                             }
                         }
