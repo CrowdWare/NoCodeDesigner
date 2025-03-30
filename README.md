@@ -13,6 +13,9 @@ NoCodeDesigner is a desktop application that allows users to design applications
 - Preview functionality
 - Export to various formats
 
+## Plugins
+You will find plugin samples [here](https://github.com/CrowdWare/NoCodeDesignerPlugins).
+
 ## Development
 
 NoCodeDesigner is built using Kotlin Multiplatform and Compose for Desktop. It uses NoCodeLib as a shared library.
