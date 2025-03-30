@@ -22,8 +22,11 @@ package at.crowdware.nocodedesigner.view.desktop
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -124,6 +127,23 @@ fun toolbar(currentProject: ProjectState?) {
             }
         }
 */
+
+        var openDialog by remember { mutableStateOf(false) }
+        var dlgMessage by remember { mutableStateOf("") }
+
+        if (openDialog) {
+            AlertDialog(
+                onDismissRequest = { openDialog = false },
+                title = { Text("Information") },
+                text = { Text(dlgMessage) },
+                confirmButton = {
+                    Button(onClick = { openDialog = false }) {
+                        Text("OK")
+                    }
+                }
+            )
+        }
+
         // here we dynamically list all plugins installed, and execute them on click
         PluginManager.all().forEach { plugin ->
             val iconPath = ".plugin-cache/${plugin.id}/${plugin.icon}"
@@ -139,30 +159,21 @@ fun toolbar(currentProject: ProjectState?) {
             Spacer(modifier = Modifier.height(8.dp))
             HoverableIcon(
                 onClick = {
-                    val outputDir = File("export/${plugin.id}")
+                    val home = System.getProperty("user.home")
+                    val outputDir = File("$home/NoCodeDesigner/${plugin.id}")
                     outputDir.mkdirs()
                     val source = currentProject?.folder
-                    val languages = listOf("de", "en", "pt", "fr", "eo", "es")
-                    val pages = mutableListOf<SmlNode>()
-                    val parts = mutableListOf<PartElement>()
-                    for (lang in languages) {
-                        val sourceDir = File(source, "pages-$lang")
-                        sourceDir.walkTopDown().forEach { file ->
-                            if (file.isFile) {
-                                val pageContent = file.readText()
-                                //val page = parsePage(pageContent, lang)
-                                val (parsedPage, error) = parseSML(pageContent)
-                                // TODO
-                                if (parsedPage != null) {
-                                    //page.first!!.language = lang
-                                    pages.add(parsedPage)
-                                }
-                            }
-                        }
-                    }
-                    val result = plugin.export(app!!, pages, parts, outputDir)
-                    println("▶️ Export mit Plugin ${plugin.label}: ${result.message} to ${outputDir.absolutePath}")
-                },
+                    try {
+                        val result = plugin.export(source!!, outputDir)
+                        val msg = "Export with plugin ${plugin.label} ${result.message} into ${outputDir.absolutePath}"
+                        println(msg)
+                        dlgMessage = msg
+                        openDialog = true
+                    } catch(e: Exception) {
+                        println("An exception occured excuting the plugin ${plugin.id}: ${e.message}")
+                        dlgMessage = "An exception occured excuting the plugin ${plugin.id}"
+                        openDialog = true
+                    } },
                 painter = iconPainter!!,
                 tooltipText = plugin.label,
                 isSelected = false
