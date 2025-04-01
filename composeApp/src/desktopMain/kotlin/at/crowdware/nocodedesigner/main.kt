@@ -113,8 +113,9 @@ fun main() = application {
         }
     }
 
-    val pluginFolder = File("plugins")
-    println("folder: ${pluginFolder.absolutePath}")
+    val home = System.getProperty("user.home")
+    val macPluginPath = "$home/Library/Application Support/NoCodeDesigner/plugins"
+    val pluginFolder = File(macPluginPath)
     val loadedPlugins = PluginManager.loadAllFromPluginsFolder(pluginFolder)
 
     println("✅ ${loadedPlugins.size} Plugins geladen.")
