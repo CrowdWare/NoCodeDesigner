@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import at.crowdware.nocode.model.NodeType
@@ -37,7 +38,8 @@ import at.crowdware.nocode.model.TreeNode
 import at.crowdware.nocode.theme.ExtendedTheme
 import at.crowdware.nocode.view.desktop.*
 import at.crowdware.nocode.viewmodel.GlobalProjectState
-
+import com.darkrockstudios.texteditor.state.TextEditorState
+import com.darkrockstudios.texteditor.state.rememberTextEditorState
 
 @Composable
 fun fileTreeIconProvider(node: TreeNode) {
@@ -54,10 +56,10 @@ fun fileTreeIconProvider(node: TreeNode) {
 @Composable
 fun desktop() {
     val currentProject = GlobalProjectState.projectState
-    var textFieldValue by remember { mutableStateOf(currentProject?.currentFileContent ?: "") }
+    val state: TextEditorState = rememberTextEditorState(AnnotatedString(""))
 
     LaunchedEffect(currentProject?.currentFileContent) {
-        textFieldValue = currentProject?.currentFileContent ?: ""
+        currentProject?.currentFileContent?.let { state.setText(it.text) }
     }
 
     Row(
@@ -69,14 +71,7 @@ fun desktop() {
         toolbar(currentProject)
         if (currentProject?.isProjectStructureVisible == true || currentProject?.extension == "md")
             projectStructure(currentProject)
-        //else
-        //widgetPalette(currentProject)
-        syntaxEditor(
-            currentProject, textFieldValue = textFieldValue as TextFieldValue
-        ) { newValue ->
-            textFieldValue = newValue
-            currentProject?.currentFileContent = newValue
-        }
+        syntaxEditor(currentProject, state = state)
         mobilePreview(currentProject)
         propertyPanel(currentProject)
     }
