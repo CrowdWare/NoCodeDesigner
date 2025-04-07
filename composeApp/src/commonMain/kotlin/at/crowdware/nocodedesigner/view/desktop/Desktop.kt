@@ -38,8 +38,8 @@ import at.crowdware.nocode.model.TreeNode
 import at.crowdware.nocode.theme.ExtendedTheme
 import at.crowdware.nocode.view.desktop.*
 import at.crowdware.nocode.viewmodel.GlobalProjectState
-import com.darkrockstudios.texteditor.state.TextEditorState
-import com.darkrockstudios.texteditor.state.rememberTextEditorState
+import at.crowdware.nocode.texteditor.state.TextEditorState
+import at.crowdware.nocode.texteditor.state.rememberTextEditorState
 
 @Composable
 fun fileTreeIconProvider(node: TreeNode) {

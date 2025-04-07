@@ -51,6 +51,7 @@ kotlin {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material)
+                implementation(compose.material3)
                 implementation(compose.ui)
                 implementation(compose.components.resources)
                 implementation(compose.components.uiToolingPreview)
@@ -70,7 +71,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-core:3.0.0")
                 implementation("io.ktor:ktor-client-content-negotiation:3.0.0")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.0")
-                implementation("com.darkrockstudios:composetexteditor:0.7.0")
+                implementation(files("../../CodeEditor/ComposeTextEditor/build/libs/ComposeTextEditor-desktop-1.0.0.jar"))
                 kotlin.srcDir(layout.buildDirectory.dir("generated/version"))
             }
         }
