@@ -23,9 +23,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -304,86 +302,59 @@ fun main() = application {
                             )
                         }
 
-                        /*
-                        if (projectState.isCreateEbookVisible) {
-                            val bookName = projectState.book?.name!!
-                            val coroutineScope = rememberCoroutineScope()
-                            var title by remember { mutableStateOf(TextFieldValue(bookName)) }
+                        if (projectState.isExportDialogVisible) {
+                            var openDialog by remember { mutableStateOf(false) }
+                            var dlgMessage by remember { mutableStateOf("") }
 
-                            // reload the book to have newly added properties
-                            projectState.loadBook()
-                            var deployDir = projectState.book?.deployDirEpub!!
-                            if (deployDir.isEmpty()) {
-                                deployDir = System.getProperty("user.home") + "/" + APPNAME
-                            }
-                            var lang = projectState.book?.language!!
-                            var folder by remember { mutableStateOf(TextFieldValue(deployDir)) }
-
-                            createEbookDialog(
-                                name = title,
-                                folder = folder,
-                                lang = lang,
-                                onFolderChange = { folder = it },
-                                onNameChange = { title = it },
-                                onDismissRequest = { projectState.isCreateEbookVisible = false },
-                                onCreateRequest = { langs ->
-                                    projectState.isCreateEbookVisible = false
-                                    coroutineScope.launch {
-                                        var f = folder.text
-                                        if (!folder.text.endsWith(File.separator))
-                                            f += File.separator
-                                        projectState.createEbook(title.text, f, langs, "NoCodeDesigner $version")
+                            if (openDialog) {
+                                AlertDialog(
+                                    onDismissRequest = { openDialog = false },
+                                    title = { Text("Information") },
+                                    text = { Text(dlgMessage) },
+                                    confirmButton = {
+                                        Button(onClick = { openDialog = false }) {
+                                            Text("OK")
+                                        }
                                     }
-                                })
-                        }*/
-
-                        /*
-                        if (projectState.isCreateHTMLVisible) {
-                            val appName = projectState.site?.name!!
-                            var deploymentDir = projectState.site?.deployDirHtml
-                            if (deploymentDir == null || deploymentDir.isEmpty()) {
-                                deploymentDir = System.getProperty("user.home") + "/" + APPNAME
+                                )
                             }
-                            val coroutineScope = rememberCoroutineScope()
-                            var folder by remember { mutableStateOf(TextFieldValue(deploymentDir!!)) }
-                            createHTMLDialog(
-                                folder = folder,
-                                onFolderChange = { folder = it },
-                                onDismissRequest = { projectState.isCreateHTMLVisible = false },
-                                onCreateRequest = {
-                                    projectState.isCreateHTMLVisible = false
-                                    coroutineScope.launch {
-                                        var f = folder.text
-                                        if (!folder.text.endsWith(File.separator))
-                                            f += File.separator
-                                        projectState.createHTML(f)
-                                    }
-                                })
-                        }*/
 
-                        /*
-                        if (projectState.isCreateCourseVisible) {
-                            val appName = projectState.site?.name!!
-                            var deploymentDir = projectState.site?.deployDirHtml
-                            if (deploymentDir == null || deploymentDir.isEmpty()) {
-                                deploymentDir = System.getProperty("user.home") + "/" + APPNAME
-                            }
+                            val outDir = projectState.folder.substringAfterLast("/")
+                            val deploymentDir = "$home/$APPNAME/$outDir"
                             val coroutineScope = rememberCoroutineScope()
                             var folder by remember { mutableStateOf(TextFieldValue(deploymentDir)) }
-                            createCourseDialog(
+                            val caption = "Export with ${projectState.exportPlugin?.label}"
+                            createExportDialog(
                                 folder = folder,
+                                caption = caption,
                                 onFolderChange = { folder = it },
-                                onDismissRequest = { projectState.isCreateCourseVisible = false },
+                                onDismissRequest = { projectState.isExportDialogVisible = false },
                                 onCreateRequest = {
-                                    projectState.isCreateCourseVisible = false
+                                    projectState.isExportDialogVisible = false
                                     coroutineScope.launch {
                                         var f = folder.text
                                         if (!folder.text.endsWith(File.separator))
                                             f += File.separator
-                                        projectState.createCourse(f, "de")  // TODO: set language via dialog
+
+                                        val outputDir = File(f)
+                                        outputDir.mkdirs()
+                                        val source = projectState.folder
+                                        val plugin = projectState.exportPlugin
+                                        try {
+                                            val result = plugin?.export(source!!, outputDir)
+                                            val msg =
+                                                "Export with plugin ${plugin?.label} ${result?.message} into ${outputDir.absolutePath}"
+                                            println(msg)
+                                            dlgMessage = msg
+                                            openDialog = true
+                                        } catch (e: Exception) {
+                                            println("An exception occured excuting the plugin ${plugin?.id}: ${e.message}")
+                                            dlgMessage = "An exception occured excuting the plugin ${plugin?.id}"
+                                            openDialog = true
+                                        }
                                     }
                                 })
-                        }*/
+                        }
 
                         DirectoryPicker(
                             show = projectState.isOpenProjectDialogVisible,

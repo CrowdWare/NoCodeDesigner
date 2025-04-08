@@ -128,21 +128,7 @@ fun toolbar(currentProject: ProjectState?) {
         }
 */
 
-        var openDialog by remember { mutableStateOf(false) }
-        var dlgMessage by remember { mutableStateOf("") }
 
-        if (openDialog) {
-            AlertDialog(
-                onDismissRequest = { openDialog = false },
-                title = { Text("Information") },
-                text = { Text(dlgMessage) },
-                confirmButton = {
-                    Button(onClick = { openDialog = false }) {
-                        Text("OK")
-                    }
-                }
-            )
-        }
 
         // here we dynamically list all plugins installed, and execute them on click
         PluginManager.all().forEach { plugin ->
@@ -159,21 +145,9 @@ fun toolbar(currentProject: ProjectState?) {
             Spacer(modifier = Modifier.height(8.dp))
             HoverableIcon(
                 onClick = {
-                    val home = System.getProperty("user.home")
-                    val outputDir = File("$home/NoCodeDesigner/${plugin.id}")
-                    outputDir.mkdirs()
-                    val source = currentProject?.folder
-                    try {
-                        val result = plugin.export(source!!, outputDir)
-                        val msg = "Export with plugin ${plugin.label} ${result.message} into ${outputDir.absolutePath}"
-                        println(msg)
-                        dlgMessage = msg
-                        openDialog = true
-                    } catch(e: Exception) {
-                        println("An exception occured excuting the plugin ${plugin.id}: ${e.message}")
-                        dlgMessage = "An exception occured excuting the plugin ${plugin.id}"
-                        openDialog = true
-                    } },
+                    currentProject?.exportPlugin = plugin
+                    currentProject?.isExportDialogVisible = true
+                          },
                 painter = iconPainter!!,
                 tooltipText = plugin.label,
                 isSelected = false
