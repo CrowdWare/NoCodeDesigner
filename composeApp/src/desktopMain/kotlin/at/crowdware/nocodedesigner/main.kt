@@ -325,24 +325,23 @@ fun main() = application {
                                 }
                             )
                         }
+                        var openDialog by remember { mutableStateOf(false) }
+                        var dlgMessage by remember { mutableStateOf("") }
+
+                        if (openDialog) {
+                            AlertDialog(
+                                onDismissRequest = { openDialog = false },
+                                title = { Text("Information") },
+                                text = { Text(dlgMessage) },
+                                confirmButton = {
+                                    Button(onClick = { openDialog = false }) {
+                                        Text("OK")
+                                    }
+                                }
+                            )
+                        }
 
                         if (projectState.isExportDialogVisible) {
-                            var openDialog by remember { mutableStateOf(false) }
-                            var dlgMessage by remember { mutableStateOf("") }
-
-                            if (openDialog) {
-                                AlertDialog(
-                                    onDismissRequest = { openDialog = false },
-                                    title = { Text("Information") },
-                                    text = { Text(dlgMessage) },
-                                    confirmButton = {
-                                        Button(onClick = { openDialog = false }) {
-                                            Text("OK")
-                                        }
-                                    }
-                                )
-                            }
-
                             val outDir = projectState.folder.substringAfterLast("/")
                             val deploymentDir = "$home/$APPNAME/$outDir"
                             val coroutineScope = rememberCoroutineScope()

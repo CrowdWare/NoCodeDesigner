@@ -96,7 +96,7 @@ fun desktopPreview(currentProject: ProjectState?) {
                         ),
                     ) {
                         if (node != null && node.children.isNotEmpty() && currentProject?.extension == "sml") {
-                            val pageBackgroundColor = hexToColor(getStringValue(node, "backgroundColor", "background"))
+                            val pageBackgroundColor = hexToColor(getStringValue(node, "background", "background"))
                             Box(
                                 modifier = Modifier
                                     .size((1.0 / scale * 960.0).dp, (1.0 / scale * 540).dp)
@@ -135,7 +135,7 @@ fun desktopPreview(currentProject: ProjectState?) {
                             )
                             Box(
                                 modifier = Modifier
-                                    .size((1.0 / scale * 640.0).dp, (1.0 / scale * 360).dp)
+                                    .size((1.0 / scale * 960.0).dp, (1.0 / scale * 540).dp)
                                     .background(hexToColor("#F6F6F6"))
 
                             ) {
