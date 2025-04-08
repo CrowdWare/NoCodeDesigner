@@ -38,13 +38,15 @@ import at.crowdware.nocode.theme.AppTheme
 import at.crowdware.nocode.ui.HoverableIcon
 import at.crowdware.nocode.utils.*
 import at.crowdware.nocode.viewmodel.ProjectState
+import java.awt.Desktop
 import java.io.File
+import java.net.URI
 
 @Composable
 fun toolbar(currentProject: ProjectState?) {
     val app = currentProject?.app
     Column(
-        modifier = Modifier.width(52.dp).fillMaxHeight().background(color = MaterialTheme.colors.primary),
+        modifier = Modifier.width(65.dp).fillMaxHeight().background(color = MaterialTheme.colors.primary),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BasicText(
@@ -100,7 +102,7 @@ fun toolbar(currentProject: ProjectState?) {
             }
         }*/
 
-    /*
+        /*
         if (currentProject != null) {
             if (currentProject.site != null) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -113,7 +115,7 @@ fun toolbar(currentProject: ProjectState?) {
             }
         }
         */
-/*
+        /*
         if (currentProject != null) {
             println("Test: ${currentProject.app}")
             if (currentProject.site != null) {
@@ -129,6 +131,15 @@ fun toolbar(currentProject: ProjectState?) {
 */
 
 
+
+
+        BasicText(
+            text = "Plugins",
+            modifier = Modifier.padding(8.dp),
+            maxLines = 1,
+            style = TextStyle(color = MaterialTheme.colors.onPrimary),
+            overflow = TextOverflow.Ellipsis
+        )
 
         // here we dynamically list all plugins installed, and execute them on click
         PluginManager.all().forEach { plugin ->
@@ -147,7 +158,7 @@ fun toolbar(currentProject: ProjectState?) {
                 onClick = {
                     currentProject?.exportPlugin = plugin
                     currentProject?.isExportDialogVisible = true
-                          },
+                },
                 painter = iconPainter!!,
                 tooltipText = plugin.label,
                 isSelected = false

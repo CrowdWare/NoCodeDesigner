@@ -20,27 +20,28 @@
 package at.crowdware.nocodedesigner.view.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import at.crowdware.nocode.model.NodeType
-import at.crowdware.nocode.model.TreeNode
-import at.crowdware.nocode.theme.ExtendedTheme
-import at.crowdware.nocode.view.desktop.*
-import at.crowdware.nocode.viewmodel.GlobalProjectState
 import at.crowdware.nocode.texteditor.state.TextEditorState
 import at.crowdware.nocode.texteditor.state.rememberTextEditorState
+import at.crowdware.nocode.view.desktop.mobilePreview
+import at.crowdware.nocode.view.desktop.projectStructure
+import at.crowdware.nocode.view.desktop.propertyPanel
+import at.crowdware.nocode.view.desktop.syntaxEditor
+import at.crowdware.nocode.viewmodel.GlobalProjectState
+import java.awt.Cursor
 
+/*
 @Composable
 fun fileTreeIconProvider(node: TreeNode) {
     when (node.type) { // Assuming you have a `type` field in TreeNode to determine the type
@@ -52,6 +53,7 @@ fun fileTreeIconProvider(node: TreeNode) {
         else -> Icon(Icons.Default.InsertDriveFile, modifier = Modifier.size(16.dp), contentDescription = null, tint = MaterialTheme.colors.onSurface) // Default file icon
     }
 }
+*/
 
 @Composable
 fun desktop() {
@@ -72,7 +74,14 @@ fun desktop() {
         if (currentProject?.isProjectStructureVisible == true || currentProject?.extension == "md")
             projectStructure(currentProject)
         syntaxEditor(currentProject, state = state)
-        mobilePreview(currentProject)
-        propertyPanel(currentProject)
+        if (currentProject?.isPortrait == true) {
+            mobilePreview(currentProject)
+            propertyPanel(Modifier.width(320.dp), currentProject)
+        } else if (currentProject?.isPortrait == false) {
+            Column() {
+                desktopPreview(currentProject)
+                propertyPanel(Modifier.width(960.dp),currentProject)
+            }
+        }
     }
 }

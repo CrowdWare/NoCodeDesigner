@@ -56,6 +56,7 @@ import java.awt.Dimension
 import java.awt.Frame
 import java.awt.Window
 import java.io.File
+import java.net.URI
 
 val LocalProjectState = compositionLocalOf<ProjectState> { error("No ProjectState provided") }
 
@@ -195,12 +196,35 @@ fun main() = application {
                                             window.extendedState =
                                                 if (isMaximized) Frame.NORMAL else Frame.MAXIMIZED_BOTH
                                         } // Fullscreen/Restore
+                                        Spacer(modifier = Modifier.weight(1f))
+                                        Text(
+                                            text = appTitle,
+                                            color = MaterialTheme.colors.onPrimary,
+                                           // modifier = Modifier.align(Alignment.Center)
+                                        )
+                                        Spacer(modifier = Modifier.weight(1f))
+                                        Box(modifier = Modifier.height(24.dp)) {
+                                            HoverableIcon(
+                                                painter = painterResource("drawable/docu.xml"),
+                                                onClick = {
+                                                    try {
+                                                        Desktop.getDesktop()
+                                                            .browse(URI("https://crowdware.info/nocodedesigner-help/"))
+                                                    } catch (e: Exception) {
+                                                        println("Error opening webpage: ${e.message}")
+                                                    }
+                                                },
+                                                tooltipText = "Documentation",
+                                                isSelected = false,
+                                                tooltipPosition = TooltipPosition.Left
+                                            )
+
+                                        }
                                     }
-                                    Text(
-                                        text = appTitle,
-                                        color = MaterialTheme.colors.onPrimary,
-                                        modifier = Modifier.align(Alignment.Center)
-                                    )
+
+
+
+
                                 }
                             }
                         }
