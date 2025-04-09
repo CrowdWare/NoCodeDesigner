@@ -89,50 +89,6 @@ fun toolbar(currentProject: ProjectState?) {
             }
         }*/
 
-        /*
-        if (currentProject != null) {
-            if (currentProject.book != null) {
-                Spacer(modifier = Modifier.height(8.dp))
-                HoverableIcon(
-                    onClick = { currentProject.isCreateEbookVisible = true },
-                    painter = painterResource("drawable/book.xml"),
-                    tooltipText = "Create Ebook",
-                    isSelected = currentProject.isCreateEbookVisible == true
-                )
-            }
-        }*/
-
-        /*
-        if (currentProject != null) {
-            if (currentProject.site != null) {
-                Spacer(modifier = Modifier.height(8.dp))
-                HoverableIcon(
-                    onClick = { currentProject.isCreateHTMLVisible = true },
-                    painter = painterResource("drawable/html.xml"),
-                    tooltipText = "Create HTML",
-                    isSelected = currentProject.isCreateHTMLVisible == true
-                )
-            }
-        }
-        */
-        /*
-        if (currentProject != null) {
-            println("Test: ${currentProject.app}")
-            if (currentProject.site != null) {
-                Spacer(modifier = Modifier.height(8.dp))
-                HoverableIcon(
-                    onClick = { currentProject.isCreateCourseVisible = true },
-                    painter = painterResource("drawable/course.xml"),
-                    tooltipText = "Create Course",
-                    isSelected = currentProject.isCreateCourseVisible == true
-                )
-            }
-        }
-*/
-
-
-
-
         BasicText(
             text = "Plugins",
             modifier = Modifier.padding(8.dp),
@@ -143,7 +99,8 @@ fun toolbar(currentProject: ProjectState?) {
 
         // here we dynamically list all plugins installed, and execute them on click
         PluginManager.all().forEach { plugin ->
-            val iconPath = ".plugin-cache/${plugin.id}/${plugin.icon}"
+            val iconPath = System.getProperty("user.home") + "/Library/Application Support/NoCodeDesigner/plugin-cache/${plugin.id}/${plugin.icon}"
+            //val iconPath = ".plugin-cache/${plugin.id}/${plugin.icon}"
             val iconPainter = if (plugin.icon != null && File(iconPath).exists()) {
                 try {
                     loadSvgResource(iconPath)
