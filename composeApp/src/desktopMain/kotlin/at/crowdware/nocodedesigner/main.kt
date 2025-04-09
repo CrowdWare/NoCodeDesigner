@@ -365,14 +365,17 @@ fun main() = application {
                                         val plugin = projectState.exportPlugin
                                         try {
                                             val result = plugin?.export(source!!, outputDir)
-                                            val msg =
-                                                "Export with plugin ${plugin?.label} ${result?.message} into ${outputDir.absolutePath}"
+                                            var msg = ""
+                                            if (result?.success == true)
+                                                msg = "✅ Export with plugin ${plugin?.label} ${result?.message} into ${outputDir.absolutePath}"
+                                            else
+                                                msg = "❌ Export with plugin ${plugin?.label} ${result?.message} into ${outputDir.absolutePath}"
                                             println(msg)
                                             dlgMessage = msg
                                             openDialog = true
                                         } catch (e: Exception) {
-                                            println("An exception occured excuting the plugin ${plugin?.id}: ${e.message}")
-                                            dlgMessage = "An exception occured excuting the plugin ${plugin?.id}"
+                                            println("❌ An exception occured excuting the plugin ${plugin?.id}: ${e.message}")
+                                            dlgMessage = "❌ An exception occured excuting the plugin ${plugin?.id}"
                                             openDialog = true
                                         }
                                     }
