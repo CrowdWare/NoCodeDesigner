@@ -56,3 +56,38 @@ You're not required to contact me — but I always appreciate hearing from peopl
 
 📬 Contact: [artanidos@crowdware.at](mailto:artanidos@crowdware.at)  
 
+---
+
+## 📦 Submodules
+
+This repository uses Git submodules to keep shared components synchronized across tools:
+
+### 🧩 `nocodelib`
+
+Located at:
+
+```
+nocodelib/
+```
+
+This is a shared Kotlin Multiplatform library that contains core functionality for rendering, parsing, and working with SML-based UI elements. It is used by both [NoCodeDesigner](https://github.com/CrowdWare/NoCodeDesigner) and [FreeBookDesigner](https://github.com/CrowdWare/FreeBookDesigner), ensuring consistent logic and UI components across tools.
+
+### 📘 `sml` (as sub-submodule)
+
+Located inside the `nocodelib` submodule at:
+
+```
+nocodelib/composeApp/src/desktopMain/resources/sml
+```
+
+This is the [SML (Simple Markdown Language)](https://github.com/CrowdWare/sml) submodule, which contains runtime documentation for all SML elements.
+
+This layout is intentional: the documentation is displayed live in NoCodeDesigner and also used in [smile](https://github.com/CrowdWare/smile) and the submodule ensures that the content only needs to be maintained in one place.
+
+To clone the full repository including all submodules and sub-submodules:
+
+```bash
+git clone --recurse-submodules https://github.com/CrowdWare/NoCodeDesigner.git
+cd NoCodeDesigner
+git submodule update --init --recursive
+```
