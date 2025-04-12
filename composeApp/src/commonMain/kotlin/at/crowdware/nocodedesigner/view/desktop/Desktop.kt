@@ -62,7 +62,7 @@ fun desktop() {
     ) {
         toolbar(currentProject)
         if (currentProject?.isProjectStructureVisible == true || currentProject?.extension == "md")
-            projectStructure(currentProject)
+            projectStructure(currentProject, state)
         else
             widgetPalette(currentProject, state)
         syntaxEditor(currentProject, state = state)
