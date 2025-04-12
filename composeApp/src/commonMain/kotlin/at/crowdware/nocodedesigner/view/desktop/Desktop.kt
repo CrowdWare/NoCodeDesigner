@@ -20,26 +20,16 @@
 package at.crowdware.nocodedesigner.view.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.PointerIcon
-import androidx.compose.ui.input.pointer.pointerHoverIcon
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import at.crowdware.nocode.texteditor.state.TextEditorState
 import at.crowdware.nocode.texteditor.state.rememberTextEditorState
-import at.crowdware.nocode.view.desktop.mobilePreview
-import at.crowdware.nocode.view.desktop.projectStructure
-import at.crowdware.nocode.view.desktop.propertyPanel
-import at.crowdware.nocode.view.desktop.syntaxEditor
+import at.crowdware.nocode.view.desktop.*
 import at.crowdware.nocode.viewmodel.GlobalProjectState
-import java.awt.Cursor
 
 /*
 @Composable
@@ -73,6 +63,8 @@ fun desktop() {
         toolbar(currentProject)
         if (currentProject?.isProjectStructureVisible == true || currentProject?.extension == "md")
             projectStructure(currentProject)
+        else
+            widgetPalette(currentProject, state)
         syntaxEditor(currentProject, state = state)
         if (currentProject?.isPortrait == true) {
             mobilePreview(currentProject)
