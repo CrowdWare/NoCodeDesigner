@@ -266,6 +266,20 @@ fun main() = application {
                                     }
                                 })
                         }
+                        if (projectState.isDataDialogVisible) {
+                            val coroutineScope = rememberCoroutineScope()
+                            var dataName by remember { mutableStateOf(TextFieldValue("")) }
+                            dataDialog(
+                                name = dataName,
+                                onNameChange = { dataName = it },
+                                onDismissRequest = { projectState.isDataDialogVisible = false },
+                                onCreateRequest = {
+                                    projectState.isDataDialogVisible = false
+                                    coroutineScope.launch {
+                                        projectState.addData(dataName.text, projectState.currentTreeNode)
+                                    }
+                                })
+                        }
                         if (projectState.isRenameFileDialogVisible) {
                             val coroutineScope = rememberCoroutineScope()
                             val title = projectState.currentTreeNode?.title?.value?.substringBefore(".")
@@ -435,6 +449,15 @@ fun main() = application {
                             fileExtensions = listOf("\"png\", \"jpg\", \"jpeg\", \"webp\", \"gif\", \"bmp\"")
                         ) { platformFile ->
                             projectState.isImportTextureDialogVisible = false
+                            if (platformFile != null)
+                                projectState.ImportTextureFile(platformFile.path)
+                        }
+                        FilePicker(
+                            show = projectState.isImportDataDialogVisible,
+                            title = "Pick a data file to import",
+                            fileExtensions = listOf("\"json\"")
+                        ) { platformFile ->
+                            projectState.isImportDataDialogVisible = false
                             if (platformFile != null)
                                 projectState.ImportTextureFile(platformFile.path)
                         }
