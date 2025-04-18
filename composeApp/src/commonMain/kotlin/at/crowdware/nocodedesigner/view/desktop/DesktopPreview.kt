@@ -120,7 +120,7 @@ fun desktopPreview(currentProject: ProjectState?) {
                                         .fillMaxSize()
                                         .background(color = pageBackgroundColor)
                                 ) {
-                                    RenderPage(node, lang!!)
+                                    RenderPage(node, lang!!,"", currentProject)
                                 }
                             }
                         } else if (currentProject != null && currentProject.extension == "md") {

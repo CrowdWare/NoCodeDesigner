@@ -39,7 +39,6 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import at.crowdware.nocode.*
 import at.crowdware.nocode.plugin.PluginManager
-import at.crowdware.nocode.plugin.SmlExportPlugin
 import at.crowdware.nocode.theme.AppTheme
 import at.crowdware.nocode.theme.ExtendedTheme
 import at.crowdware.nocode.ui.*
@@ -228,6 +227,7 @@ fun main() = application {
                                 }
                             }
                         }
+
                         desktop()
 
                         if (projectState.isAboutDialogOpen) {
