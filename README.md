@@ -1,6 +1,5 @@
 ![Preview](desktop.png)
 # NoCodeDesigner
-
 A no-code application designer built on the NoCodeLib library.
 
 ## Overview
