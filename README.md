@@ -91,3 +91,11 @@ git clone --recurse-submodules https://github.com/CrowdWare/NoCodeDesigner.git
 cd NoCodeDesigner
 git submodule update --init --recursive
 ```
+
+### There is another submodul which we only use temporary
+Therefore its not a real github submodule.
+We will replace it as soon our own code editor is ready. 
+You should check it out on the same level as NoCodeDesigner and build it prior.
+```bash
+git clone https://github.com/CrowdWare/NoCodeDesignerCodeEditor.git
+```
