@@ -31,19 +31,6 @@ import at.crowdware.nocode.texteditor.state.rememberTextEditorState
 import at.crowdware.nocode.view.desktop.*
 import at.crowdware.nocode.viewmodel.GlobalProjectState
 
-/*
-@Composable
-fun fileTreeIconProvider(node: TreeNode) {
-    when (node.type) { // Assuming you have a `type` field in TreeNode to determine the type
-        NodeType.DIRECTORY -> Icon(Icons.Default.Folder, modifier = Modifier.size(16.dp), contentDescription = null, tint = ExtendedTheme.colors.directoryColor)
-        NodeType.IMAGE -> Icon(Icons.Default.Image, modifier = Modifier.size(16.dp), contentDescription = null, tint = ExtendedTheme.colors.imageColor)
-        NodeType.VIDEO -> Icon(Icons.Default.Movie, modifier = Modifier.size(16.dp), contentDescription = null, tint = ExtendedTheme.colors.videoColor)
-        NodeType.SOUND -> Icon(Icons.Default.MusicNote, modifier = Modifier.size(16.dp), contentDescription = null, tint = ExtendedTheme.colors.soundColor)
-        NodeType.XML -> Icon(Icons.Default.InsertDriveFile, modifier = Modifier.size(16.dp), contentDescription = null, tint = ExtendedTheme.colors.xmlColor)
-        else -> Icon(Icons.Default.InsertDriveFile, modifier = Modifier.size(16.dp), contentDescription = null, tint = MaterialTheme.colors.onSurface) // Default file icon
-    }
-}
-*/
 
 @Composable
 fun desktop() {
