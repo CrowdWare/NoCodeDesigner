@@ -410,7 +410,7 @@ fun main() = application {
                         MultipleFilePicker(
                             show = projectState.isImportImageDialogVisible,
                             title = "Pick one or more image files to import",
-                            fileExtensions = listOf("png", "jpg", "jpeg", "webp", "gif", "bmp")
+                            fileExtensions = listOf("png", "jpg", "jpeg", "gif", "bmp")
                         ) { platformFile ->
                             projectState.isImportImageDialogVisible = false
                             if (platformFile != null)
