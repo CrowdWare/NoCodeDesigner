@@ -316,7 +316,7 @@ fun main() = application {
                                 lang = "de,en,pt,fr,es,eo",
                                 userFolder = folder,
                                 onDismissRequest = { projectState.isNewProjectDialogVisible = false },
-                                onCreateRequest = { langs, projectFolder ->
+                                onCreateRequest = { projectFolder ->
                                     projectState.isNewProjectDialogVisible = false
                                     coroutineScope.launch {
                                         var folderPath = projectFolder
@@ -329,11 +329,7 @@ fun main() = application {
                                             "", "",
                                             projectName.text,
                                             appId.text,
-                                            theme,
-                                            //selectedType == "Book",
-                                            //selectedType == "App",
-                                            //selectedType == "Website",
-                                            langs
+                                            theme
                                         )
                                     }
                                 }
