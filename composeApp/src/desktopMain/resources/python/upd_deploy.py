@@ -72,6 +72,7 @@ def update():
     sounds_path = os.path.join(base_path, 'sounds')
     videos_path = os.path.join(base_path, 'videos')
     textures_path = os.path.join(base_path, 'textures')
+    translations_path = os.path.join(base_path, 'translations')
     models_path = os.path.join(base_path, 'models')
 
     deployment_data += generate_deployment_data("page", pages_eo_path, exclude_files=['.DS_Store'])
@@ -80,6 +81,7 @@ def update():
     deployment_data += generate_deployment_data("sound", sounds_path, exclude_files=['.DS_Store'])
     deployment_data += generate_deployment_data("video", videos_path, exclude_files=['.DS_Store'])
     deployment_data += generate_deployment_data("texture", textures_path, exclude_files=['.DS_Store'])
+    deployment_data += generate_deployment_data("translations", translations_path, exclude_files=['.DS_Store'])
     deployment_data += generate_deployment_data("model", models_path, exclude_files=['.DS_Store'])
 
     print("Updating app.sml with deployment files...")
