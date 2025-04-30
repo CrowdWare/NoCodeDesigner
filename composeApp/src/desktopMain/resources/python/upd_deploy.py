@@ -81,7 +81,7 @@ def update():
     deployment_data += generate_deployment_data("sound", sounds_path, exclude_files=['.DS_Store'])
     deployment_data += generate_deployment_data("video", videos_path, exclude_files=['.DS_Store'])
     deployment_data += generate_deployment_data("texture", textures_path, exclude_files=['.DS_Store'])
-    deployment_data += generate_deployment_data("translations", translations_path, exclude_files=['.DS_Store'])
+    deployment_data += generate_deployment_data("translation", translations_path, exclude_files=['.DS_Store'])
     deployment_data += generate_deployment_data("model", models_path, exclude_files=['.DS_Store'])
 
     print("Updating app.sml with deployment files...")
