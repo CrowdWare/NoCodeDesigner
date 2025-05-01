@@ -335,10 +335,10 @@ fun main() = application {
                                 }
                             )
                         }
-                        var openDialog by remember { mutableStateOf(false) }
-                        var dlgMessage by remember { mutableStateOf("") }
+                        //var openDialog by remember { mutableStateOf(false) }
+                        //var dlgMessage by remember { mutableStateOf("") }
 
-                        if (openDialog) {
+                        /*if (openDialog) {
                             AlertDialog(
                                 onDismissRequest = { openDialog = false },
                                 title = { Text("Information") },
@@ -349,7 +349,7 @@ fun main() = application {
                                     }
                                 }
                             )
-                        }
+                        }*/
 
                         if (projectState.isExportDialogVisible) {
                             val outDir = projectState.folder.substringAfterLast("/")
@@ -360,9 +360,11 @@ fun main() = application {
                             createExportDialog(
                                 folder = folder,
                                 caption = caption,
+                                source =  projectState.folder,
+                                plugin =  projectState.exportPlugin!!,
                                 onFolderChange = { folder = it },
                                 onDismissRequest = { projectState.isExportDialogVisible = false },
-                                onCreateRequest = {
+                                /*onCreateRequest = {
                                     projectState.isExportDialogVisible = false
                                     coroutineScope.launch {
                                         var f = folder.text
@@ -374,10 +376,10 @@ fun main() = application {
                                         val source = projectState.folder
                                         val plugin = projectState.exportPlugin
                                         try {
-                                            val result = plugin?.export(source!!, outputDir)
+                                            val result = plugin?.export(source, outputDir)
                                             var msg = ""
                                             if (result?.success == true)
-                                                msg = "✅ Export with plugin ${plugin?.label} ${result?.message} into ${outputDir.absolutePath}"
+                                                msg = "✅ Export with plugin ${plugin.label} ${result.message} into ${outputDir.absolutePath}"
                                             else
                                                 msg = "❌ Export with plugin ${plugin?.label} ${result?.message} into ${outputDir.absolutePath}"
                                             println(msg)
@@ -389,7 +391,7 @@ fun main() = application {
                                             openDialog = true
                                         }
                                     }
-                                })
+                                }*/)
                         }
 
                         DirectoryPicker(
