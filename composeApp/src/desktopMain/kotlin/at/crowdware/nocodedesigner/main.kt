@@ -42,10 +42,10 @@ import at.crowdware.nocode.plugin.PluginManager
 import at.crowdware.nocode.theme.AppTheme
 import at.crowdware.nocode.theme.ExtendedTheme
 import at.crowdware.nocode.ui.*
-import at.crowdware.nocodedesigner.view.desktop.desktop
 import at.crowdware.nocode.viewmodel.*
 import at.crowdware.nocode.ui.WindowCaptionArea
 import at.crowdware.nocode.ui.WindowControlButton
+import at.crowdware.nocode.view.desktop.desktop
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
