@@ -220,10 +220,6 @@ fun main() = application {
 
                                         }
                                     }
-
-
-
-
                                 }
                             }
                         }
@@ -335,21 +331,6 @@ fun main() = application {
                                 }
                             )
                         }
-                        //var openDialog by remember { mutableStateOf(false) }
-                        //var dlgMessage by remember { mutableStateOf("") }
-
-                        /*if (openDialog) {
-                            AlertDialog(
-                                onDismissRequest = { openDialog = false },
-                                title = { Text("Information") },
-                                text = { Text(dlgMessage) },
-                                confirmButton = {
-                                    Button(onClick = { openDialog = false }) {
-                                        Text("OK")
-                                    }
-                                }
-                            )
-                        }*/
 
                         if (projectState.isExportDialogVisible) {
                             val outDir = projectState.folder.substringAfterLast("/")
@@ -363,35 +344,7 @@ fun main() = application {
                                 source =  projectState.folder,
                                 plugin =  projectState.exportPlugin!!,
                                 onFolderChange = { folder = it },
-                                onDismissRequest = { projectState.isExportDialogVisible = false },
-                                /*onCreateRequest = {
-                                    projectState.isExportDialogVisible = false
-                                    coroutineScope.launch {
-                                        var f = folder.text
-                                        if (!folder.text.endsWith(File.separator))
-                                            f += File.separator
-
-                                        val outputDir = File(f)
-                                        outputDir.mkdirs()
-                                        val source = projectState.folder
-                                        val plugin = projectState.exportPlugin
-                                        try {
-                                            val result = plugin?.export(source, outputDir)
-                                            var msg = ""
-                                            if (result?.success == true)
-                                                msg = "✅ Export with plugin ${plugin.label} ${result.message} into ${outputDir.absolutePath}"
-                                            else
-                                                msg = "❌ Export with plugin ${plugin?.label} ${result?.message} into ${outputDir.absolutePath}"
-                                            println(msg)
-                                            dlgMessage = msg
-                                            openDialog = true
-                                        } catch (e: Exception) {
-                                            println("❌ An exception occured excuting the plugin ${plugin?.id}: ${e.message}")
-                                            dlgMessage = "❌ An exception occured excuting the plugin ${plugin?.id}"
-                                            openDialog = true
-                                        }
-                                    }
-                                }*/)
+                                onDismissRequest = { projectState.isExportDialogVisible = false })
                         }
 
                         DirectoryPicker(
